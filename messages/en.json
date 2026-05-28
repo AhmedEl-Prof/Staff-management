@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "Staff Management",
+    "company": "Everest Ads"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "back": "Back"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Enter your credentials to access the dashboard",
+    "email": "Email",
+    "password": "Password",
+    "login": "Sign in",
+    "loggingIn": "Signing in...",
+    "forgotPassword": "Forgot password?",
+    "invalidCredentials": "Invalid email or password",
+    "noSignupNote": "No public signup — accounts are created by an administrator"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome"
+  }
+}

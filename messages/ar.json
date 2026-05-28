@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "إدارة الموظفين",
+    "company": "Everest Ads"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "search": "بحث",
+    "back": "رجوع"
+  },
+  "auth": {
+    "loginTitle": "تسجيل الدخول",
+    "loginSubtitle": "ادخل بياناتك للوصول إلى لوحة التحكم",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة السر",
+    "login": "دخول",
+    "loggingIn": "جاري الدخول...",
+    "forgotPassword": "نسيت كلمة السر؟",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة السر غير صحيحة",
+    "noSignupNote": "لا يوجد تسجيل عام — يتم إنشاء الحسابات عن طريق المدير"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "أهلاً بك"
+  }
+}
