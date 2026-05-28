@@ -1,0 +1,137 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { requireRole, requireUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+
+// Project writes rely on RLS (projects_insert/update/delete check
+// manages_department, project_members_manage checks manages_project). The
+// requireRole guards keep unauthorized callers out of the actions early.
+
+const projectSchema = z.object({
+  name: z.string().trim().min(1).max(160),
+  name_ar: z.string().trim().max(160).optional(),
+  description: z.string().trim().max(2000).optional(),
+  client_name: z.string().trim().max(160).optional(),
+  department_id: z.string().uuid(),
+  status: z.enum(["planning", "active", "on_hold", "completed", "cancelled"]),
+  priority: z.enum(["low", "medium", "high", "urgent"]),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
+});
+
+function parseProject(formData: FormData) {
+  return projectSchema.safeParse({
+    name: formData.get("name"),
+    name_ar: formData.get("name_ar") || undefined,
+    description: formData.get("description") || undefined,
+    client_name: formData.get("client_name") || undefined,
+    department_id: formData.get("department_id"),
+    status: formData.get("status"),
+    priority: formData.get("priority"),
+    start_date: formData.get("start_date") || undefined,
+    end_date: formData.get("end_date") || undefined,
+  });
+}
+
+export async function createProject(formData: FormData) {
+  const caller = await requireRole(["super_admin", "team_leader"]);
+  const parsed = parseProject(formData);
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .insert({
+      department_id: parsed.data.department_id,
+      name: parsed.data.name,
+      name_ar: parsed.data.name_ar ?? null,
+      description: parsed.data.description ?? null,
+      client_name: parsed.data.client_name ?? null,
+      status: parsed.data.status,
+      priority: parsed.data.priority,
+      start_date: parsed.data.start_date ?? null,
+      end_date: parsed.data.end_date ?? null,
+      created_by: caller.id,
+    })
+    .select("id")
+    .single();
+
+  if (error || !data) return;
+
+  revalidatePath("/projects");
+  redirect(`/projects/${data.id}`);
+}
+
+export async function updateProject(formData: FormData) {
+  await requireRole(["super_admin", "team_leader"]);
+  const id = String(formData.get("id") ?? "");
+  const parsed = parseProject(formData);
+  if (!id || !parsed.success) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("projects")
+    .update({
+      department_id: parsed.data.department_id,
+      name: parsed.data.name,
+      name_ar: parsed.data.name_ar ?? null,
+      description: parsed.data.description ?? null,
+      client_name: parsed.data.client_name ?? null,
+      status: parsed.data.status,
+      priority: parsed.data.priority,
+      start_date: parsed.data.start_date ?? null,
+      end_date: parsed.data.end_date ?? null,
+    })
+    .eq("id", id);
+
+  revalidatePath(`/projects/${id}`);
+  redirect(`/projects/${id}`);
+}
+
+export async function deleteProject(formData: FormData) {
+  await requireRole(["super_admin", "team_leader"]);
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const supabase = await createClient();
+  await supabase.from("projects").delete().eq("id", id);
+
+  revalidatePath("/projects");
+  redirect("/projects");
+}
+
+export async function addProjectMember(formData: FormData) {
+  await requireUser();
+  const projectId = String(formData.get("project_id") ?? "");
+  const userId = String(formData.get("user_id") ?? "");
+  const roleValue = String(formData.get("role") ?? "member");
+  const role = ["lead", "member", "observer"].includes(roleValue)
+    ? (roleValue as "lead" | "member" | "observer")
+    : "member";
+  if (!projectId || !userId) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("project_members")
+    .upsert(
+      { project_id: projectId, user_id: userId, role },
+      { onConflict: "project_id,user_id" },
+    );
+
+  revalidatePath(`/projects/${projectId}`);
+}
+
+export async function removeProjectMember(formData: FormData) {
+  await requireUser();
+  const id = String(formData.get("id") ?? "");
+  const projectId = String(formData.get("project_id") ?? "");
+  if (!id) return;
+
+  const supabase = await createClient();
+  await supabase.from("project_members").delete().eq("id", id);
+
+  revalidatePath(`/projects/${projectId}`);
+}
