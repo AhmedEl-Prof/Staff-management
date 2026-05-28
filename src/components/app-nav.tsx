@@ -3,17 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { LayoutDashboard, Users, UserCircle, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Building2,
+  FolderKanban,
+  Users,
+  UserCircle,
+  LogOut,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/lib/auth-actions";
 
 export interface NavItem {
   href: string;
-  key: "dashboard" | "employees" | "profile";
+  key: "dashboard" | "departments" | "projects" | "employees" | "profile";
 }
 
 const icons = {
   dashboard: LayoutDashboard,
+  departments: Building2,
+  projects: FolderKanban,
   employees: Users,
   profile: UserCircle,
 } as const;

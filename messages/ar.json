@@ -16,10 +16,16 @@
     "actions": "إجراءات",
     "optional": "اختياري",
     "yes": "نعم",
-    "no": "لا"
+    "no": "لا",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "none": "لا شيء",
+    "details": "تفاصيل"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
+    "departments": "الأقسام",
+    "projects": "المشاريع",
     "employees": "الموظفون",
     "profile": "الملف الشخصي",
     "logout": "تسجيل الخروج"
@@ -81,6 +87,68 @@
     "role": "الدور",
     "emailExists": "هذا البريد مستخدم بالفعل",
     "notAllowed": "غير مصرّح لك بهذا الإجراء"
+  },
+  "departments": {
+    "title": "الأقسام",
+    "subtitle": "إدارة أقسام الشركة وقادة الفرق",
+    "create": "قسم جديد",
+    "createTitle": "إنشاء قسم",
+    "editTitle": "تعديل القسم",
+    "name": "الاسم بالإنجليزية",
+    "nameAr": "الاسم بالعربية",
+    "description": "الوصف",
+    "color": "اللون",
+    "icon": "الأيقونة",
+    "manager": "قائد الفريق",
+    "noManager": "بدون قائد",
+    "members": "الأعضاء",
+    "memberCount": "عدد الأعضاء",
+    "empty": "لا توجد أقسام بعد",
+    "deleteConfirm": "متأكد من حذف هذا القسم؟ هيتم حذف مشاريعه وتاسكاته.",
+    "addMember": "إضافة عضو",
+    "selectEmployee": "اختر موظفاً"
+  },
+  "projects": {
+    "title": "المشاريع",
+    "subtitle": "إدارة المشاريع وفرق العمل",
+    "create": "مشروع جديد",
+    "createTitle": "إنشاء مشروع",
+    "editTitle": "تعديل المشروع",
+    "name": "اسم المشروع (إنجليزي)",
+    "nameAr": "اسم المشروع (عربي)",
+    "description": "الوصف",
+    "client": "العميل",
+    "department": "القسم",
+    "status": "الحالة",
+    "priority": "الأولوية",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية",
+    "members": "أعضاء المشروع",
+    "addMember": "إضافة عضو",
+    "memberRole": "الدور في المشروع",
+    "empty": "لا توجد مشاريع بعد",
+    "deleteConfirm": "متأكد من حذف هذا المشروع؟ هيتم حذف تاسكاته.",
+    "selectEmployee": "اختر موظفاً",
+    "noMembers": "لا يوجد أعضاء بعد",
+    "notAllowed": "غير مصرّح لك بهذا الإجراء"
+  },
+  "projectStatus": {
+    "planning": "تخطيط",
+    "active": "نشط",
+    "on_hold": "متوقف مؤقتاً",
+    "completed": "مكتمل",
+    "cancelled": "ملغي"
+  },
+  "priority": {
+    "low": "منخفضة",
+    "medium": "متوسطة",
+    "high": "عالية",
+    "urgent": "عاجلة"
+  },
+  "projectRole": {
+    "lead": "قائد",
+    "member": "عضو",
+    "observer": "مراقب"
   },
   "roles": {
     "super_admin": "مدير عام",

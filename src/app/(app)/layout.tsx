@@ -13,11 +13,16 @@ export default async function AppLayout({
   const { profile } = await requireUser();
   const t = await getTranslations("app");
 
+  const isSuperAdmin = profile.role === "super_admin";
   const canManageEmployees =
     profile.role === "super_admin" || profile.role === "team_leader";
 
   const navItems: NavItem[] = [
     { href: "/", key: "dashboard" },
+    ...(isSuperAdmin
+      ? [{ href: "/departments", key: "departments" as const }]
+      : []),
+    { href: "/projects", key: "projects" },
     ...(canManageEmployees
       ? [{ href: "/employees", key: "employees" as const }]
       : []),

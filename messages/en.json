@@ -16,10 +16,16 @@
     "actions": "Actions",
     "optional": "optional",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "add": "Add",
+    "remove": "Remove",
+    "none": "None",
+    "details": "Details"
   },
   "nav": {
     "dashboard": "Dashboard",
+    "departments": "Departments",
+    "projects": "Projects",
     "employees": "Employees",
     "profile": "Profile",
     "logout": "Sign out"
@@ -81,6 +87,68 @@
     "role": "Role",
     "emailExists": "This email is already in use",
     "notAllowed": "You are not allowed to perform this action"
+  },
+  "departments": {
+    "title": "Departments",
+    "subtitle": "Manage company departments and team leaders",
+    "create": "New department",
+    "createTitle": "Create department",
+    "editTitle": "Edit department",
+    "name": "Name (English)",
+    "nameAr": "Name (Arabic)",
+    "description": "Description",
+    "color": "Color",
+    "icon": "Icon",
+    "manager": "Team leader",
+    "noManager": "No leader",
+    "members": "Members",
+    "memberCount": "Members",
+    "empty": "No departments yet",
+    "deleteConfirm": "Delete this department? Its projects and tasks will be removed.",
+    "addMember": "Add member",
+    "selectEmployee": "Select an employee"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage projects and teams",
+    "create": "New project",
+    "createTitle": "Create project",
+    "editTitle": "Edit project",
+    "name": "Project name (English)",
+    "nameAr": "Project name (Arabic)",
+    "description": "Description",
+    "client": "Client",
+    "department": "Department",
+    "status": "Status",
+    "priority": "Priority",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "members": "Project members",
+    "addMember": "Add member",
+    "memberRole": "Project role",
+    "empty": "No projects yet",
+    "deleteConfirm": "Delete this project? Its tasks will be removed.",
+    "selectEmployee": "Select an employee",
+    "noMembers": "No members yet",
+    "notAllowed": "You are not allowed to perform this action"
+  },
+  "projectStatus": {
+    "planning": "Planning",
+    "active": "Active",
+    "on_hold": "On hold",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "projectRole": {
+    "lead": "Lead",
+    "member": "Member",
+    "observer": "Observer"
   },
   "roles": {
     "super_admin": "Super Admin",
