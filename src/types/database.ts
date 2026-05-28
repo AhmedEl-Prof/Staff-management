@@ -43,7 +43,7 @@ type WithDefaults<Row, Optional extends keyof Row> = Omit<Row, Optional> &
   Partial<Pick<Row, Optional>>;
 
 // -- Row shapes ---------------------------------------------------------------
-export interface ProfileRow {
+export type ProfileRow = {
   id: string;
   full_name: string | null;
   arabic_name: string | null;
@@ -58,7 +58,7 @@ export interface ProfileRow {
   updated_at: string;
 }
 
-export interface DepartmentRow {
+export type DepartmentRow = {
   id: string;
   name: string;
   name_ar: string;
@@ -70,7 +70,7 @@ export interface DepartmentRow {
   updated_at: string;
 }
 
-export interface DepartmentMemberRow {
+export type DepartmentMemberRow = {
   id: string;
   department_id: string;
   user_id: string;
@@ -78,7 +78,7 @@ export interface DepartmentMemberRow {
   joined_at: string;
 }
 
-export interface ProjectRow {
+export type ProjectRow = {
   id: string;
   department_id: string;
   name: string;
@@ -95,7 +95,7 @@ export interface ProjectRow {
   updated_at: string;
 }
 
-export interface ProjectMemberRow {
+export type ProjectMemberRow = {
   id: string;
   project_id: string;
   user_id: string;
@@ -103,7 +103,7 @@ export interface ProjectMemberRow {
   assigned_at: string;
 }
 
-export interface TaskRow {
+export type TaskRow = {
   id: string;
   project_id: string;
   parent_task_id: string | null;
@@ -122,7 +122,7 @@ export interface TaskRow {
   updated_at: string;
 }
 
-export interface TaskCommentRow {
+export type TaskCommentRow = {
   id: string;
   task_id: string;
   user_id: string | null;
@@ -131,7 +131,7 @@ export interface TaskCommentRow {
   created_at: string;
 }
 
-export interface TaskAttachmentRow {
+export type TaskAttachmentRow = {
   id: string;
   task_id: string;
   file_name: string;
@@ -141,13 +141,13 @@ export interface TaskAttachmentRow {
   created_at: string;
 }
 
-export interface TaskDependencyRow {
+export type TaskDependencyRow = {
   id: string;
   task_id: string;
   depends_on_task_id: string;
 }
 
-export interface TimeLogRow {
+export type TimeLogRow = {
   id: string;
   task_id: string;
   user_id: string | null;
@@ -157,7 +157,7 @@ export interface TimeLogRow {
   created_at: string;
 }
 
-export interface DriveConnectionRow {
+export type DriveConnectionRow = {
   id: string;
   user_id: string;
   access_token: string;
@@ -167,7 +167,7 @@ export interface DriveConnectionRow {
   updated_at: string;
 }
 
-export interface DriveFolderRow {
+export type DriveFolderRow = {
   id: string;
   project_id: string;
   folder_id: string;
@@ -176,7 +176,7 @@ export interface DriveFolderRow {
   created_at: string;
 }
 
-export interface NotificationRow {
+export type NotificationRow = {
   id: string;
   user_id: string;
   type: string;
@@ -187,7 +187,7 @@ export interface NotificationRow {
   created_at: string;
 }
 
-export interface NotificationPreferenceRow {
+export type NotificationPreferenceRow = {
   id: string;
   user_id: string;
   email_task_assigned: boolean;
@@ -197,7 +197,7 @@ export interface NotificationPreferenceRow {
   in_app_notifications: boolean;
 }
 
-export interface KpiDefinitionRow {
+export type KpiDefinitionRow = {
   id: string;
   department_id: string | null;
   name: string;
@@ -209,7 +209,7 @@ export interface KpiDefinitionRow {
   created_at: string;
 }
 
-export interface KpiLogRow {
+export type KpiLogRow = {
   id: string;
   user_id: string;
   kpi_id: string;
@@ -219,7 +219,7 @@ export interface KpiLogRow {
   recorded_at: string;
 }
 
-export interface EvaluationRow {
+export type EvaluationRow = {
   id: string;
   user_id: string;
   evaluator_id: string | null;
@@ -233,7 +233,7 @@ export interface EvaluationRow {
   generated_at: string;
 }
 
-export interface PeerReviewRow {
+export type PeerReviewRow = {
   id: string;
   reviewer_id: string;
   reviewee_id: string;
@@ -245,7 +245,7 @@ export interface PeerReviewRow {
   created_at: string;
 }
 
-export interface StandupResponseRow {
+export type StandupResponseRow = {
   id: string;
   user_id: string;
   date: string;
@@ -256,7 +256,7 @@ export interface StandupResponseRow {
   submitted_at: string;
 }
 
-export interface PointsLogRow {
+export type PointsLogRow = {
   id: string;
   user_id: string;
   points: number;
@@ -266,7 +266,7 @@ export interface PointsLogRow {
   created_at: string;
 }
 
-export interface BadgeRow {
+export type BadgeRow = {
   id: string;
   name: string;
   name_ar: string | null;
@@ -276,14 +276,14 @@ export interface BadgeRow {
   created_at: string;
 }
 
-export interface UserBadgeRow {
+export type UserBadgeRow = {
   id: string;
   user_id: string;
   badge_id: string;
   earned_at: string;
 }
 
-export interface AuditLogRow {
+export type AuditLogRow = {
   id: string;
   user_id: string | null;
   action: string;

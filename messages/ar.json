@@ -6,12 +6,23 @@
   "common": {
     "loading": "جاري التحميل...",
     "save": "حفظ",
+    "saving": "جاري الحفظ...",
     "cancel": "إلغاء",
     "delete": "حذف",
     "edit": "تعديل",
     "create": "إنشاء",
     "search": "بحث",
-    "back": "رجوع"
+    "back": "رجوع",
+    "actions": "إجراءات",
+    "optional": "اختياري",
+    "yes": "نعم",
+    "no": "لا"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "employees": "الموظفون",
+    "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",
@@ -22,7 +33,64 @@
     "loggingIn": "جاري الدخول...",
     "forgotPassword": "نسيت كلمة السر؟",
     "invalidCredentials": "البريد الإلكتروني أو كلمة السر غير صحيحة",
-    "noSignupNote": "لا يوجد تسجيل عام — يتم إنشاء الحسابات عن طريق المدير"
+    "noSignupNote": "لا يوجد تسجيل عام — يتم إنشاء الحسابات عن طريق المدير",
+    "forgotTitle": "استعادة كلمة السر",
+    "forgotSubtitle": "هنبعتلك رابط لإعادة تعيين كلمة السر",
+    "sendResetLink": "إرسال الرابط",
+    "resetLinkSent": "لو البريد موجود، هيوصلك رابط إعادة التعيين",
+    "resetTitle": "تعيين كلمة سر جديدة",
+    "newPassword": "كلمة السر الجديدة",
+    "confirmPassword": "تأكيد كلمة السر",
+    "passwordsDontMatch": "كلمتا السر غير متطابقتين",
+    "passwordTooShort": "كلمة السر يجب أن تكون 8 أحرف على الأقل",
+    "passwordUpdated": "تم تحديث كلمة السر بنجاح",
+    "updatePassword": "تحديث كلمة السر",
+    "backToLogin": "العودة لتسجيل الدخول",
+    "sessionExpired": "انتهت صلاحية الرابط، اطلب رابطاً جديداً"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "fullName": "الاسم بالإنجليزية",
+    "arabicName": "الاسم بالعربية",
+    "phone": "رقم الهاتف",
+    "employmentType": "نوع التوظيف",
+    "weeklyHours": "ساعات العمل الأسبوعية",
+    "hireDate": "تاريخ التعيين",
+    "role": "الدور",
+    "saved": "تم حفظ التغييرات"
+  },
+  "employees": {
+    "title": "الموظفون",
+    "subtitle": "إدارة حسابات الفريق",
+    "invite": "دعوة موظف",
+    "inviteTitle": "دعوة موظف جديد",
+    "inviteSubtitle": "هيوصله إيميل برابط لتفعيل حسابه وتعيين كلمة السر",
+    "sendInvite": "إرسال الدعوة",
+    "inviteSent": "تم إرسال الدعوة بنجاح",
+    "department": "القسم",
+    "noDepartment": "بدون قسم",
+    "status": "الحالة",
+    "active": "نشط",
+    "inactive": "معطّل",
+    "activate": "تفعيل",
+    "deactivate": "تعطيل",
+    "empty": "لا يوجد موظفون بعد",
+    "name": "الاسم",
+    "nameAr": "الاسم بالعربية",
+    "nameEn": "الاسم بالإنجليزية",
+    "role": "الدور",
+    "emailExists": "هذا البريد مستخدم بالفعل",
+    "notAllowed": "غير مصرّح لك بهذا الإجراء"
+  },
+  "roles": {
+    "super_admin": "مدير عام",
+    "team_leader": "قائد فريق",
+    "team_member": "عضو فريق"
+  },
+  "employment": {
+    "full_time": "دوام كامل",
+    "part_time": "دوام جزئي",
+    "freelance": "حر / فريلانس"
   },
   "dashboard": {
     "title": "لوحة التحكم",
