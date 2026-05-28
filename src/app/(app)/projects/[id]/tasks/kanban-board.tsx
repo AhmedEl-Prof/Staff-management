@@ -86,7 +86,12 @@ export function KanbanBoard({
                     )}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-sm font-medium">{task.title}</span>
+                      <Link
+                        href={`/projects/${projectId}/tasks/${task.id}`}
+                        className="text-sm font-medium hover:underline"
+                      >
+                        {task.title}
+                      </Link>
                       {canEdit ? (
                         <Link
                           href={`/projects/${projectId}/tasks/${task.id}/edit`}

@@ -134,7 +134,14 @@ export default async function TasksPage({
             <TableBody>
               {tasks.map((task) => (
                 <TableRow key={task.id}>
-                  <TableCell className="font-medium">{task.title}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/projects/${id}/tasks/${task.id}`}
+                      className="hover:underline"
+                    >
+                      {task.title}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{tStatus(task.status)}</Badge>
                   </TableCell>
