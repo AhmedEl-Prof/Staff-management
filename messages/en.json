@@ -189,7 +189,13 @@
     "noComments": "No comments yet",
     "you": "You",
     "deleteComment": "Delete comment?",
-    "selfDependencyError": "A task cannot depend on itself"
+    "selfDependencyError": "A task cannot depend on itself",
+    "attachments": "Attachments",
+    "upload": "Upload",
+    "uploadFailed": "Upload failed, please try again",
+    "fileTooLarge": "File is larger than the 10 MB limit",
+    "noAttachments": "No attachments",
+    "deleteAttachment": "Delete attachment?"
   },
   "taskStatus": {
     "todo": "To do",

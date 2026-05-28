@@ -16,7 +16,8 @@ supabase/
 │   ├── 0006_gamification_audit_tables.sql points, badges, audit logs
 │   ├── 0007_functions_and_triggers.sql    updated_at, new-user, audit triggers
 │   ├── 0008_rls_helpers.sql               SECURITY DEFINER helper functions
-│   └── 0009_rls_policies.sql              RLS policies (the permission matrix)
+│   ├── 0009_rls_policies.sql              RLS policies (the permission matrix)
+│   └── 0010_storage_and_realtime.sql      task-attachments bucket + realtime
 └── seed.sql                               departments + KPI catalogue + badges
 ```
 

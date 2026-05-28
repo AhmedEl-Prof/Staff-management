@@ -189,7 +189,13 @@
     "noComments": "لا توجد تعليقات بعد",
     "you": "أنت",
     "deleteComment": "حذف التعليق؟",
-    "selfDependencyError": "التاسك لا يمكن أن يعتمد على نفسه"
+    "selfDependencyError": "التاسك لا يمكن أن يعتمد على نفسه",
+    "attachments": "المرفقات",
+    "upload": "رفع",
+    "uploadFailed": "فشل الرفع، حاول مرة أخرى",
+    "fileTooLarge": "حجم الملف أكبر من المسموح (10 ميجا)",
+    "noAttachments": "لا توجد مرفقات",
+    "deleteAttachment": "حذف المرفق؟"
   },
   "taskStatus": {
     "todo": "للعمل",

@@ -18,6 +18,7 @@ import {
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { cn } from "@/lib/utils";
 import { KanbanBoard } from "./kanban-board";
+import { ProjectTasksRealtime } from "./realtime";
 import { deleteTask } from "./actions";
 import type { TaskRow } from "@/types/database";
 
@@ -182,6 +183,8 @@ export default async function TasksPage({
           </Table>
         </div>
       )}
+
+      <ProjectTasksRealtime projectId={id} />
     </div>
   );
 }

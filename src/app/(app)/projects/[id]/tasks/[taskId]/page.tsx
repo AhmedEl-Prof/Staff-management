@@ -13,9 +13,18 @@ import { Label } from "@/components/ui/label";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { CommentForm, type Mentionable } from "./comment-form";
 import { DependencyPicker, type TaskOption } from "./dependency-picker";
+import { AttachmentUpload } from "./attachment-upload";
+import { AttachmentDownload } from "./attachment-download";
+import { TaskRealtime } from "./realtime";
 import { createSubtask, deleteComment, removeDependency } from "../relations-actions";
+import { deleteAttachment } from "../attachments-actions";
 import { updateTaskStatus } from "../actions";
-import type { TaskRow, TaskCommentRow, TaskStatus } from "@/types/database";
+import type {
+  TaskRow,
+  TaskCommentRow,
+  TaskAttachmentRow,
+  TaskStatus,
+} from "@/types/database";
 
 const STATUSES: TaskStatus[] = [
   "todo",
@@ -107,11 +116,20 @@ export default async function TaskDetailPage({
     .order("created_at", { ascending: true });
   const comments = (commentRows ?? []) as TaskCommentRow[];
 
+  // Attachments
+  const { data: attachmentRows } = await supabase
+    .from("task_attachments")
+    .select("*")
+    .eq("task_id", taskId)
+    .order("created_at", { ascending: false });
+  const attachments = (attachmentRows ?? []) as TaskAttachmentRow[];
+
   // Profiles for assignee + commenters + mentionables
   const admin = createAdminClient();
   const peopleIds = new Set<string>();
   if (task.assigned_to) peopleIds.add(task.assigned_to);
   comments.forEach((c) => c.user_id && peopleIds.add(c.user_id));
+  attachments.forEach((a) => a.uploaded_by && peopleIds.add(a.uploaded_by));
   ctx.assignees.forEach((a) => peopleIds.add(a.id));
 
   let people: Array<{ id: string; arabic_name: string | null; full_name: string | null }> = [];
@@ -292,6 +310,57 @@ export default async function TaskDetailPage({
         ) : null}
       </section>
 
+      {/* Attachments */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">{t("attachments")}</h2>
+
+        {attachments.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("noAttachments")}</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {attachments.map((a) => {
+              const isOwn = a.uploaded_by === profile.id;
+              const uploader = a.uploaded_by
+                ? nameById.get(a.uploaded_by)
+                : null;
+              return (
+                <li
+                  key={a.id}
+                  className="flex items-center justify-between gap-3 rounded-md border p-3"
+                >
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <AttachmentDownload
+                      attachmentId={a.id}
+                      fileName={a.file_name}
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      {uploader ?? ""}
+                      {a.file_size
+                        ? ` · ${formatBytes(a.file_size)}`
+                        : ""}
+                    </span>
+                  </div>
+                  {isOwn || ctx.canManage ? (
+                    <ConfirmDelete
+                      action={deleteAttachment}
+                      hidden={{
+                        id: a.id,
+                        project_id: id,
+                        task_id: taskId,
+                      }}
+                      message={t("deleteAttachment")}
+                      label={tc("remove")}
+                    />
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        <AttachmentUpload projectId={id} taskId={taskId} />
+      </section>
+
       {/* Comments */}
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">{t("comments")}</h2>
@@ -343,8 +412,16 @@ export default async function TaskDetailPage({
           mentionables={mentionables}
         />
       </section>
+
+      <TaskRealtime taskId={taskId} />
     </div>
   );
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 // -----------------------------------------------------------------------------
