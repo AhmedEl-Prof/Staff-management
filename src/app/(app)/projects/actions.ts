@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireRole, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import {
+  revokeMemberFromDrive,
+  sharePendingMemberWithDrive,
+} from "@/lib/drive-projects";
 
 // Project writes rely on RLS (projects_insert/update/delete check
 // manages_department, project_members_manage checks manages_project). The
@@ -121,6 +125,9 @@ export async function addProjectMember(formData: FormData) {
       { onConflict: "project_id,user_id" },
     );
 
+  // Best-effort share of the project's Drive folder with the new member.
+  await sharePendingMemberWithDrive(projectId, userId);
+
   revalidatePath(`/projects/${projectId}`);
 }
 
@@ -131,7 +138,19 @@ export async function removeProjectMember(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
+  // Capture the user id before deleting the row so the Drive permission
+  // revocation can resolve their email.
+  const { data: memberRow } = await supabase
+    .from("project_members")
+    .select("user_id")
+    .eq("id", id)
+    .single();
+
   await supabase.from("project_members").delete().eq("id", id);
+
+  if (memberRow?.user_id) {
+    await revokeMemberFromDrive(projectId, memberRow.user_id);
+  }
 
   revalidatePath(`/projects/${projectId}`);
 }
