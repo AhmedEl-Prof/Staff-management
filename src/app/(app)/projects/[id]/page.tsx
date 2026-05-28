@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Pencil, ListChecks } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -33,6 +33,7 @@ export default async function ProjectDetailPage({
   const tStatus = await getTranslations("projectStatus");
   const tPriority = await getTranslations("priority");
   const tRole = await getTranslations("projectRole");
+  const tTasks = await getTranslations("tasks");
 
   // RLS: returns the project only if the caller can access it.
   const supabase = await createClient();
@@ -78,26 +79,38 @@ export default async function ProjectDetailPage({
             <Badge variant="outline">{tPriority(project.priority)}</Badge>
           </div>
         </div>
-        {canManage ? (
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/projects/${id}/edit`}
-              className={buttonVariants({
-                variant: "outline",
-                size: "sm",
-                className: "gap-2",
-              })}
-            >
-              <Pencil className="size-4" />
-              {tc("edit")}
-            </Link>
-            <ConfirmDelete
-              action={deleteProject}
-              hidden={{ id }}
-              message={t("deleteConfirm")}
-            />
-          </div>
-        ) : null}
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/projects/${id}/tasks`}
+            className={buttonVariants({
+              size: "sm",
+              className: "gap-2",
+            })}
+          >
+            <ListChecks className="size-4" />
+            {tTasks("title")}
+          </Link>
+          {canManage ? (
+            <>
+              <Link
+                href={`/projects/${id}/edit`}
+                className={buttonVariants({
+                  variant: "outline",
+                  size: "sm",
+                  className: "gap-2",
+                })}
+              >
+                <Pencil className="size-4" />
+                {tc("edit")}
+              </Link>
+              <ConfirmDelete
+                action={deleteProject}
+                hidden={{ id }}
+                message={t("deleteConfirm")}
+              />
+            </>
+          ) : null}
+        </div>
       </div>
 
       <dl className="grid grid-cols-2 gap-4 rounded-lg border p-4 text-sm">

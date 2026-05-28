@@ -150,6 +150,37 @@
     "member": "عضو",
     "observer": "مراقب"
   },
+  "tasks": {
+    "title": "التاسكات",
+    "create": "تاسك جديد",
+    "createTitle": "إنشاء تاسك",
+    "editTitle": "تعديل التاسك",
+    "titleField": "العنوان",
+    "description": "الوصف",
+    "status": "الحالة",
+    "priority": "الأولوية",
+    "assignee": "المسؤول",
+    "unassigned": "غير مُسنَد",
+    "estimatedHours": "الساعات المتوقعة",
+    "actualHours": "الساعات الفعلية",
+    "startDate": "تاريخ البداية",
+    "dueDate": "تاريخ التسليم",
+    "empty": "لا توجد تاسكات بعد",
+    "deleteConfirm": "متأكد من حذف هذا التاسك؟",
+    "boardView": "Kanban",
+    "listView": "قائمة",
+    "addToColumn": "إضافة",
+    "noTasks": "لا تاسكات",
+    "backToProject": "رجوع للمشروع",
+    "dueOn": "التسليم"
+  },
+  "taskStatus": {
+    "todo": "للعمل",
+    "in_progress": "قيد التنفيذ",
+    "review": "مراجعة",
+    "done": "مكتمل",
+    "cancelled": "ملغي"
+  },
   "roles": {
     "super_admin": "مدير عام",
     "team_leader": "قائد فريق",

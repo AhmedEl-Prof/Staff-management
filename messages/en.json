@@ -150,6 +150,37 @@
     "member": "Member",
     "observer": "Observer"
   },
+  "tasks": {
+    "title": "Tasks",
+    "create": "New task",
+    "createTitle": "Create task",
+    "editTitle": "Edit task",
+    "titleField": "Title",
+    "description": "Description",
+    "status": "Status",
+    "priority": "Priority",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "estimatedHours": "Estimated hours",
+    "actualHours": "Actual hours",
+    "startDate": "Start date",
+    "dueDate": "Due date",
+    "empty": "No tasks yet",
+    "deleteConfirm": "Delete this task?",
+    "boardView": "Kanban",
+    "listView": "List",
+    "addToColumn": "Add",
+    "noTasks": "No tasks",
+    "backToProject": "Back to project",
+    "dueOn": "Due"
+  },
+  "taskStatus": {
+    "todo": "To do",
+    "in_progress": "In progress",
+    "review": "Review",
+    "done": "Done",
+    "cancelled": "Cancelled"
+  },
   "roles": {
     "super_admin": "Super Admin",
     "team_leader": "Team Leader",
