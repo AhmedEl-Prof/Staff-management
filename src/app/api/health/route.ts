@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createClient as createSsrClient } from "@/lib/supabase/server";
 
 // Diagnostic endpoint. Tells us whether the environment variables are wired
 // correctly and whether the Supabase project is reachable. Safe to expose:
@@ -79,6 +80,25 @@ export async function GET() {
     }
   } else {
     result.supabase_auth = { reachable: false, error: "url or anon key missing" };
+  }
+
+  // Probe the SAME @supabase/ssr client the login page uses. If this produces
+  // "Invalid path" while supabase_auth (direct supabase-js) is reachable, the
+  // problem is isolated to the ssr client / its version.
+  try {
+    const ssr = await createSsrClient();
+    const { error } = await ssr.auth.signInWithPassword({
+      email: "no-such-user@diagnostic.local",
+      password: "wrong-password-on-purpose",
+    });
+    result.supabase_ssr_auth = error
+      ? { reachable: true, code: error.code ?? null, message: error.message }
+      : { reachable: true, note: "no error (unexpected)" };
+  } catch (err) {
+    result.supabase_ssr_auth = {
+      reachable: false,
+      error: err instanceof Error ? err.message : String(err),
+    };
   }
 
   return NextResponse.json(result);
