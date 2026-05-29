@@ -26,6 +26,7 @@ export default async function AppLayout({
       : []),
     { href: "/projects", key: "projects" },
     { href: "/standup", key: "standup" },
+    { href: "/peer-review", key: "peerReview" },
     { href: "/evaluations", key: "evaluations" },
     ...(canManageEmployees
       ? [

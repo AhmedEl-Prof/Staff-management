@@ -14,6 +14,7 @@ import {
   ScrollText,
   ClipboardCheck,
   Target,
+  HeartHandshake,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ export interface NavItem {
     | "departments"
     | "projects"
     | "standup"
+    | "peerReview"
     | "evaluations"
     | "kpis"
     | "employees"
@@ -39,6 +41,7 @@ const icons = {
   departments: Building2,
   projects: FolderKanban,
   standup: Sunrise,
+  peerReview: HeartHandshake,
   evaluations: ClipboardCheck,
   kpis: Target,
   employees: Users,
