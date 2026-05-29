@@ -41,10 +41,19 @@ function parseProject(formData: FormData) {
   });
 }
 
-export async function createProject(formData: FormData) {
+// Result returned to the form via useActionState. `error` is a translation key
+// the form maps to a localized message; absent means success (we redirect).
+export interface ProjectFormState {
+  error?: "invalid" | "save_failed";
+}
+
+export async function createProject(
+  _prev: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
   const caller = await requireRole(["super_admin", "team_leader"]);
   const parsed = parseProject(formData);
-  if (!parsed.success) return;
+  if (!parsed.success) return { error: "invalid" };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -64,20 +73,26 @@ export async function createProject(formData: FormData) {
     .select("id")
     .single();
 
-  if (error || !data) return;
+  if (error || !data) {
+    console.error("createProject failed", error);
+    return { error: "save_failed" };
+  }
 
   revalidatePath("/projects");
   redirect(`/projects/${data.id}`);
 }
 
-export async function updateProject(formData: FormData) {
+export async function updateProject(
+  _prev: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
   await requireRole(["super_admin", "team_leader"]);
   const id = String(formData.get("id") ?? "");
   const parsed = parseProject(formData);
-  if (!id || !parsed.success) return;
+  if (!id || !parsed.success) return { error: "invalid" };
 
   const supabase = await createClient();
-  await supabase
+  const { error } = await supabase
     .from("projects")
     .update({
       department_id: parsed.data.department_id,
@@ -91,6 +106,11 @@ export async function updateProject(formData: FormData) {
       end_date: parsed.data.end_date ?? null,
     })
     .eq("id", id);
+
+  if (error) {
+    console.error("updateProject failed", error);
+    return { error: "save_failed" };
+  }
 
   revalidatePath(`/projects/${id}`);
   redirect(`/projects/${id}`);

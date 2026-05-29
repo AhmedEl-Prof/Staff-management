@@ -335,7 +335,9 @@
     "deleteConfirm": "Delete this project? Its tasks will be removed.",
     "selectEmployee": "Select an employee",
     "noMembers": "No members yet",
-    "notAllowed": "You are not allowed to perform this action"
+    "notAllowed": "You are not allowed to perform this action",
+    "saveError": "Couldn't save the project. Please try again; if it persists, make sure you have access to the selected department.",
+    "invalidError": "Some fields are missing or invalid. Please review and try again."
   },
   "projectStatus": {
     "planning": "Planning",

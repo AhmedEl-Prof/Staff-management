@@ -1,5 +1,7 @@
 "use client";
 
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -7,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { ProjectFormState } from "./actions";
 import type {
   ProjectRow,
   ProjectStatus,
@@ -27,12 +30,26 @@ export interface DepartmentOption {
   label: string;
 }
 
+// Submit button that reflects the pending state of the enclosing form so a slow
+// save can't be double-submitted and the user gets immediate feedback.
+function SubmitButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending}>
+      {label}
+    </Button>
+  );
+}
+
 export function ProjectForm({
   action,
   project,
   departments,
 }: {
-  action: (formData: FormData) => void | Promise<void>;
+  action: (
+    prev: ProjectFormState,
+    formData: FormData,
+  ) => Promise<ProjectFormState>;
   project?: ProjectRow;
   departments: DepartmentOption[];
 }) {
@@ -41,8 +58,13 @@ export function ProjectForm({
   const tStatus = useTranslations("projectStatus");
   const tPriority = useTranslations("priority");
 
+  const [state, formAction] = useActionState<ProjectFormState, FormData>(
+    action,
+    {},
+  );
+
   return (
-    <form action={action} className="flex max-w-2xl flex-col gap-4">
+    <form action={formAction} className="flex max-w-2xl flex-col gap-4">
       {project ? <input type="hidden" name="id" value={project.id} /> : null}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -148,8 +170,14 @@ export function ProjectForm({
         </div>
       </div>
 
+      {state.error ? (
+        <p role="alert" className="text-destructive text-sm font-medium">
+          {state.error === "invalid" ? t("invalidError") : t("saveError")}
+        </p>
+      ) : null}
+
       <div className="flex items-center gap-3">
-        <Button type="submit">{tc("save")}</Button>
+        <SubmitButton label={tc("save")} />
         <Link href="/projects" className={buttonVariants({ variant: "ghost" })}>
           {tc("cancel")}
         </Link>
