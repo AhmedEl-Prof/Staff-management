@@ -10,6 +10,8 @@ import {
   Users,
   Bell,
   UserCircle,
+  Sunrise,
+  ScrollText,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,7 +23,9 @@ export interface NavItem {
     | "dashboard"
     | "departments"
     | "projects"
+    | "standup"
     | "employees"
+    | "audit"
     | "notifications"
     | "profile";
 }
@@ -30,7 +34,9 @@ const icons = {
   dashboard: LayoutDashboard,
   departments: Building2,
   projects: FolderKanban,
+  standup: Sunrise,
   employees: Users,
+  audit: ScrollText,
   notifications: Bell,
   profile: UserCircle,
 } as const;
