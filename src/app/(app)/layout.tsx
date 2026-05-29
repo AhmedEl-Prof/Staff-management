@@ -31,6 +31,7 @@ export default async function AppLayout({
     ...(canManageEmployees
       ? [
           { href: "/kpis", key: "kpis" as const },
+          { href: "/analytics", key: "analytics" as const },
           { href: "/employees", key: "employees" as const },
         ]
       : []),
@@ -52,7 +53,7 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-60 shrink-0 border-e bg-card">
+      <aside data-app-chrome className="w-60 shrink-0 border-e bg-card">
         <div className="flex items-center justify-between border-b p-4">
           <div>
             <p className="text-sm font-bold">{t("name")}</p>
@@ -62,7 +63,9 @@ export default async function AppLayout({
         </div>
         <AppNav items={navItems} />
       </aside>
-      <main className="flex-1 p-6 lg:p-8">{children}</main>
+      <main data-app-main className="flex-1 p-6 lg:p-8">
+        {children}
+      </main>
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { canManageUser } from "@/lib/permissions";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -75,9 +75,17 @@ export default async function EvaluationDetailPage({
         </Link>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">{subjectName}</h1>
-          <Badge variant={STATUS_VARIANT[evaluation.status]}>
-            {statusLabel(evaluation.status)}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/evaluations/${id}/report`}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              {t("viewReport")}
+            </Link>
+            <Badge variant={STATUS_VARIANT[evaluation.status]}>
+              {statusLabel(evaluation.status)}
+            </Badge>
+          </div>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           <span dir="ltr">

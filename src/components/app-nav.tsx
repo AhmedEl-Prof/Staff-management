@@ -15,6 +15,7 @@ import {
   ClipboardCheck,
   Target,
   HeartHandshake,
+  BarChart3,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ export interface NavItem {
     | "peerReview"
     | "evaluations"
     | "kpis"
+    | "analytics"
     | "employees"
     | "audit"
     | "notifications"
@@ -44,6 +46,7 @@ const icons = {
   peerReview: HeartHandshake,
   evaluations: ClipboardCheck,
   kpis: Target,
+  analytics: BarChart3,
   employees: Users,
   audit: ScrollText,
   notifications: Bell,
