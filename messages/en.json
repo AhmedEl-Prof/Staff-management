@@ -28,6 +28,7 @@
     "projects": "Projects",
     "standup": "Daily standup",
     "peerReview": "Peer reviews",
+    "leaderboard": "Leaderboard",
     "evaluations": "Evaluations",
     "kpis": "KPIs",
     "analytics": "Analytics",
@@ -36,6 +37,29 @@
     "notifications": "Notifications",
     "profile": "Profile",
     "logout": "Sign out"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "subtitle": "Points ranking for this month",
+    "rank": "Rank",
+    "name": "Name",
+    "points": "Points",
+    "empty": "No points this month yet",
+    "myPoints": "My points",
+    "myBadges": "My badges",
+    "noBadges": "No badges yet",
+    "pointsRules": "Points system",
+    "ruleTaskOnTime": "Task on time",
+    "ruleTaskEarly": "Task before deadline",
+    "rulePeerHigh": "High peer review",
+    "ruleStandup": "Standup completed",
+    "you": "You"
+  },
+  "badges": {
+    "earlyBird": "Early Bird",
+    "standupStreak": "Standup Streak",
+    "topPerformer": "Top Performer",
+    "teamPlayer": "Team Player"
   },
   "analytics": {
     "title": "Analytics",

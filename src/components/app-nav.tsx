@@ -16,6 +16,7 @@ import {
   Target,
   HeartHandshake,
   BarChart3,
+  Trophy,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ export interface NavItem {
     | "projects"
     | "standup"
     | "peerReview"
+    | "leaderboard"
     | "evaluations"
     | "kpis"
     | "analytics"
@@ -44,6 +46,7 @@ const icons = {
   projects: FolderKanban,
   standup: Sunrise,
   peerReview: HeartHandshake,
+  leaderboard: Trophy,
   evaluations: ClipboardCheck,
   kpis: Target,
   analytics: BarChart3,

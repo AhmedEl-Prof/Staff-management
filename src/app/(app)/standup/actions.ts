@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { awardPoints, POINTS } from "@/lib/gamification";
 
 const MOODS = ["great", "good", "okay", "stressed", "blocked"] as const;
 
@@ -36,18 +37,42 @@ export async function submitStandup(
   const supabase = await createClient();
   const today = new Date().toISOString().slice(0, 10);
 
-  await supabase.from("standup_responses").upsert(
-    {
-      user_id: caller.id,
-      date: today,
-      yesterday_work: parsed.data.yesterday_work ?? null,
-      today_plan: parsed.data.today_plan ?? null,
-      blockers: parsed.data.blockers ?? null,
-      mood: parsed.data.mood ?? null,
-      submitted_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id,date" },
-  );
+  // Was today's standup already recorded? Used to award points only once/day.
+  const { data: alreadyToday } = await supabase
+    .from("standup_responses")
+    .select("id")
+    .eq("user_id", caller.id)
+    .eq("date", today)
+    .maybeSingle();
+
+  const { data: saved } = await supabase
+    .from("standup_responses")
+    .upsert(
+      {
+        user_id: caller.id,
+        date: today,
+        yesterday_work: parsed.data.yesterday_work ?? null,
+        today_plan: parsed.data.today_plan ?? null,
+        blockers: parsed.data.blockers ?? null,
+        mood: parsed.data.mood ?? null,
+        submitted_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,date" },
+    )
+    .select("id")
+    .single();
+
+  // Award standup points once per day (only on first submission). The standup
+  // row id is the dedupe source_id, and awardPoints is itself idempotent.
+  if (!alreadyToday && saved) {
+    await awardPoints({
+      userId: caller.id,
+      points: POINTS.STANDUP_COMPLETED,
+      reason: "standup_completed",
+      sourceType: "standup",
+      sourceId: saved.id,
+    });
+  }
 
   revalidatePath("/standup");
   return { submitted: true };

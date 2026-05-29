@@ -8,8 +8,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   buildRatings,
   currentReviewPeriod,
+  ratingsAverage,
   type PeerRatings,
 } from "@/lib/peer-review";
+import { awardPoints, POINTS } from "@/lib/gamification";
 
 const schema = z.object({
   reviewee_id: z.string().uuid(),
@@ -72,6 +74,28 @@ export async function submitPeerReview(
   );
 
   if (error) return { error: "invalid", saved: false };
+
+  // Award the reviewee points for a high review (average >= 4). Deduped per
+  // (reviewer, reviewee, period) via the points_log source.
+  const avg = ratingsAverage(ratings as unknown as Record<string, number>);
+  if (avg >= 4) {
+    const { data: row } = await supabase
+      .from("peer_reviews")
+      .select("id")
+      .eq("reviewer_id", caller.id)
+      .eq("reviewee_id", parsed.data.reviewee_id)
+      .eq("period_start", start)
+      .single();
+    if (row) {
+      await awardPoints({
+        userId: parsed.data.reviewee_id,
+        points: POINTS.PEER_REVIEW_HIGH,
+        reason: "peer_review_high",
+        sourceType: "peer_review",
+        sourceId: row.id,
+      });
+    }
+  }
 
   revalidatePath("/peer-review");
   return { error: null, saved: true };

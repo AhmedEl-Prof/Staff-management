@@ -6,6 +6,7 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { notifyUser } from "@/lib/notifications";
+import { awardTaskCompletion } from "@/lib/gamification";
 
 // Task writes are governed by RLS:
 //   tasks_insert / tasks_delete  -> manages_project (super admin / team leader)
@@ -96,12 +97,16 @@ export async function updateTask(formData: FormData) {
   if (!projectId || !id || !parsed.success) return;
 
   const supabase = await createClient();
-  // Capture the previous assignee so we only notify on actual change.
+  // Capture the previous state so we only notify on assignee change and only
+  // award completion points on the todo→done transition.
   const { data: prev } = await supabase
     .from("tasks")
-    .select("assigned_to")
+    .select("assigned_to, status, due_date")
     .eq("id", id)
     .single();
+
+  const completedAt =
+    parsed.data.status === "done" ? new Date().toISOString() : null;
 
   await supabase
     .from("tasks")
@@ -114,8 +119,7 @@ export async function updateTask(formData: FormData) {
       estimated_hours: parsed.data.estimated_hours ?? null,
       start_date: parsed.data.start_date ?? null,
       due_date: parsed.data.due_date ?? null,
-      completed_at:
-        parsed.data.status === "done" ? new Date().toISOString() : null,
+      completed_at: completedAt,
     })
     .eq("id", id);
 
@@ -131,6 +135,16 @@ export async function updateTask(formData: FormData) {
       title: "تم إسناد تاسك لك",
       message: parsed.data.title,
       link: `/projects/${projectId}/tasks/${id}`,
+    });
+  }
+
+  // Award completion points when a task newly transitions into "done".
+  if (parsed.data.status === "done" && prev?.status !== "done") {
+    await awardTaskCompletion({
+      id,
+      assigned_to: newAssignee,
+      due_date: parsed.data.due_date ?? null,
+      completed_at: completedAt,
     });
   }
 
@@ -167,13 +181,27 @@ export async function updateTaskStatus(formData: FormData) {
   const status = statusValue as (typeof TASK_STATUSES)[number];
 
   const supabase = await createClient();
+  const { data: prev } = await supabase
+    .from("tasks")
+    .select("assigned_to, status, due_date")
+    .eq("id", id)
+    .single();
+
+  const completedAt = status === "done" ? new Date().toISOString() : null;
   await supabase
     .from("tasks")
-    .update({
-      status,
-      completed_at: status === "done" ? new Date().toISOString() : null,
-    })
+    .update({ status, completed_at: completedAt })
     .eq("id", id);
+
+  // Award completion points on the transition into "done".
+  if (status === "done" && prev?.status !== "done") {
+    await awardTaskCompletion({
+      id,
+      assigned_to: prev?.assigned_to ?? null,
+      due_date: prev?.due_date ?? null,
+      completed_at: completedAt,
+    });
+  }
 
   revalidatePath(`/projects/${projectId}/tasks`);
 }

@@ -28,6 +28,7 @@
     "projects": "المشاريع",
     "standup": "الستاندب اليومي",
     "peerReview": "تقييم الزملاء",
+    "leaderboard": "لوحة الصدارة",
     "evaluations": "التقييمات",
     "kpis": "المؤشرات",
     "analytics": "التحليلات",
@@ -36,6 +37,29 @@
     "notifications": "الإشعارات",
     "profile": "الملف الشخصي",
     "logout": "تسجيل الخروج"
+  },
+  "leaderboard": {
+    "title": "لوحة الصدارة",
+    "subtitle": "ترتيب النقاط لهذا الشهر",
+    "rank": "الترتيب",
+    "name": "الاسم",
+    "points": "النقاط",
+    "empty": "لا توجد نقاط هذا الشهر بعد",
+    "myPoints": "نقاطي",
+    "myBadges": "أوسمتي",
+    "noBadges": "لا أوسمة بعد",
+    "pointsRules": "نظام النقاط",
+    "ruleTaskOnTime": "تاسك في الموعد",
+    "ruleTaskEarly": "تاسك قبل الموعد",
+    "rulePeerHigh": "تقييم زميل عالي",
+    "ruleStandup": "ستاندب مكتمل",
+    "you": "أنت"
+  },
+  "badges": {
+    "earlyBird": "الطائر المبكر",
+    "standupStreak": "مواظب الستاندب",
+    "topPerformer": "الأعلى أداءً",
+    "teamPlayer": "روح الفريق"
   },
   "analytics": {
     "title": "التحليلات",
