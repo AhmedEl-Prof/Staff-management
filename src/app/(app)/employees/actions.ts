@@ -181,3 +181,19 @@ export async function setEmployeeActive(formData: FormData) {
 
   revalidatePath("/employees");
 }
+
+// Permanently deletes an employee account — super admins only. Removes the
+// auth user (which cascades to their profile and all owned rows via the
+// schema's ON DELETE CASCADE). Irreversible. A super admin cannot delete
+// themselves (guards against locking everyone out).
+export async function deleteEmployee(formData: FormData) {
+  const caller = await requireRole(["super_admin"]);
+  const userId = String(formData.get("user_id") ?? "");
+  if (!userId || userId === caller.id) return;
+
+  const admin = createAdminClient();
+  // Deleting the auth user cascades to public.profiles (FK on delete cascade).
+  await admin.auth.admin.deleteUser(userId);
+
+  revalidatePath("/employees");
+}
