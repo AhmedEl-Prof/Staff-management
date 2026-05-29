@@ -273,6 +273,9 @@
     "nameAr": "Name (Arabic)",
     "nameEn": "Name (English)",
     "role": "Role",
+    "emailColumn": "Email",
+    "you": "You",
+    "deleteConfirm": "Permanently delete this account? All their data will be removed and this cannot be undone.",
     "emailExists": "This email is already in use",
     "notAllowed": "You are not allowed to perform this action"
   },

@@ -14,7 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { EmployeeStatusToggle } from "./status-toggle";
+import { deleteEmployee } from "./actions";
 import type { ProfileRow } from "@/types/database";
 
 export default async function EmployeesPage() {
@@ -23,6 +25,8 @@ export default async function EmployeesPage() {
   const tRoles = await getTranslations("roles");
   const tc = await getTranslations("common");
   const admin = createAdminClient();
+
+  const isSuperAdmin = caller.profile.role === "super_admin";
 
   // Scope the list: super admins see everyone; team leaders see members of the
   // departments they manage (plus themselves).
@@ -73,7 +77,18 @@ export default async function EmployeesPage() {
     userDepts.set(m.user_id, list);
   });
 
-  const canDeactivate = (target: ProfileRow) => target.id !== caller.id;
+  // Resolve each user's login email from auth.users (profiles doesn't store it).
+  // Listed via the admin Auth API (paginated; 200/page covers the team size).
+  const emailById = new Map<string, string>();
+  const { data: authList } = await admin.auth.admin.listUsers({
+    page: 1,
+    perPage: 200,
+  });
+  (authList?.users ?? []).forEach((u) => {
+    if (u.email) emailById.set(u.id, u.email);
+  });
+
+  const isSelf = (target: ProfileRow) => target.id === caller.id;
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,6 +114,7 @@ export default async function EmployeesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t("name")}</TableHead>
+                <TableHead>{t("emailColumn")}</TableHead>
                 <TableHead>{t("role")}</TableHead>
                 <TableHead>{t("department")}</TableHead>
                 <TableHead>{t("status")}</TableHead>
@@ -112,6 +128,9 @@ export default async function EmployeesPage() {
                     <div className="font-medium">
                       {p.arabic_name || p.full_name || "—"}
                     </div>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground" dir="ltr">
+                    {emailById.get(p.id) ?? "—"}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{tRoles(p.role)}</Badge>
@@ -127,12 +146,25 @@ export default async function EmployeesPage() {
                     )}
                   </TableCell>
                   <TableCell className="text-end">
-                    {canDeactivate(p) ? (
-                      <EmployeeStatusToggle
-                        userId={p.id}
-                        isActive={p.is_active}
-                      />
-                    ) : null}
+                    {isSelf(p) ? (
+                      <span className="text-xs text-muted-foreground">
+                        {t("you")}
+                      </span>
+                    ) : (
+                      <div className="flex items-center justify-end gap-2">
+                        <EmployeeStatusToggle
+                          userId={p.id}
+                          isActive={p.is_active}
+                        />
+                        {isSuperAdmin ? (
+                          <ConfirmDelete
+                            action={deleteEmployee}
+                            hidden={{ user_id: p.id }}
+                            message={t("deleteConfirm")}
+                          />
+                        ) : null}
+                      </div>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
