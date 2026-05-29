@@ -1,10 +1,12 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { canManageUser, getManagedDepartmentIds } from "@/lib/permissions";
+import { sendEmail } from "@/lib/email";
 
 const inviteSchema = z.object({
   email: z.string().email(),
@@ -17,12 +19,37 @@ const inviteSchema = z.object({
   hire_date: z.string().optional(),
 });
 
-export type InviteState = { error: string | null; success: boolean };
+// Credentials surfaced to the admin after creating the account, so they can be
+// shared even when email delivery isn't configured.
+export interface CreatedCredentials {
+  email: string;
+  password: string;
+  loginUrl: string;
+  emailed: boolean;
+}
 
-// Invites a new employee. Super admins may invite into any department with any
-// role; team leaders may only invite team members into departments they manage.
-// The invite email contains a link to /reset-password where the user sets their
-// password (there is no public signup).
+export type InviteState = {
+  error: string | null;
+  success: boolean;
+  credentials?: CreatedCredentials;
+};
+
+// Generates a readable but unguessable temporary password (e.g. "Ev7k2m9q4x").
+// Starts with "Ev" so it's clearly a system-issued password.
+function generateTempPassword(): string {
+  const chars = "abcdefghjkmnpqrstuvwxyz23456789"; // no ambiguous chars
+  const bytes = randomBytes(10);
+  let out = "Ev";
+  for (let i = 0; i < 10; i++) out += chars[bytes[i] % chars.length];
+  return out;
+}
+
+// Creates a new employee account directly with a temporary password (the
+// account is pre-confirmed, so they can sign in immediately). Returns the
+// credentials to the caller AND emails them when Resend is configured.
+//
+// Super admins may create any role in any department; team leaders may only
+// create team members in departments they manage.
 export async function inviteEmployee(
   _prev: InviteState,
   formData: FormData,
@@ -60,29 +87,32 @@ export async function inviteEmployee(
 
   const admin = createAdminClient();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const password = generateTempPassword();
 
-  const { data: invited, error } = await admin.auth.admin.inviteUserByEmail(
-    data.email,
-    {
-      data: {
-        full_name: data.full_name,
-        arabic_name: data.arabic_name,
-        role: data.role,
-        employment_type: data.employment_type,
-      },
-      redirectTo: `${appUrl}/auth/callback?next=/reset-password`,
+  // Create the user pre-confirmed with the temporary password.
+  const { data: created, error } = await admin.auth.admin.createUser({
+    email: data.email,
+    password,
+    email_confirm: true,
+    user_metadata: {
+      full_name: data.full_name,
+      arabic_name: data.arabic_name,
+      role: data.role,
+      employment_type: data.employment_type,
     },
-  );
+  });
 
-  if (error || !invited?.user) {
-    const alreadyExists = error?.message?.toLowerCase().includes("already");
+  if (error || !created?.user) {
+    const alreadyExists =
+      error?.message?.toLowerCase().includes("already") ||
+      error?.message?.toLowerCase().includes("registered");
     return { error: alreadyExists ? "emailExists" : "invalid", success: false };
   }
 
-  const userId = invited.user.id;
+  const userId = created.user.id;
 
-  // The handle_new_user trigger has created the profile from metadata; fill in
-  // the remaining fields here.
+  // The handle_new_user trigger created the profile from metadata; fill the
+  // remaining fields here.
   await admin
     .from("profiles")
     .update({
@@ -92,17 +122,48 @@ export async function inviteEmployee(
     .eq("id", userId);
 
   if (data.department_id) {
-    await admin
-      .from("department_members")
-      .insert({
-        department_id: data.department_id,
-        user_id: userId,
-        role: "member",
-      });
+    await admin.from("department_members").insert({
+      department_id: data.department_id,
+      user_id: userId,
+      role: "member",
+    });
   }
 
+  // Email the credentials (best-effort — only sends if Resend is configured).
+  const loginUrl = `${appUrl}/login`;
+  const displayName = data.arabic_name || data.full_name || data.email;
+  const emailed = await sendEmail({
+    to: data.email,
+    subject: "تم إنشاء حسابك — Everest Ads",
+    bodyHtml: `
+      <p style="margin:0 0 12px 0">أهلاً ${escapeHtml(displayName)} 👋</p>
+      <p style="margin:0 0 12px 0">تم إنشاء حسابك في نظام إدارة موظفين Everest Ads. دي بيانات دخولك:</p>
+      <table style="border-collapse:collapse;font-size:14px">
+        <tr><td style="padding:4px 12px 4px 0;color:#777">البريد الإلكتروني</td>
+            <td style="padding:4px 0"><b dir="ltr">${escapeHtml(data.email)}</b></td></tr>
+        <tr><td style="padding:4px 12px 4px 0;color:#777">كلمة السر المؤقتة</td>
+            <td style="padding:4px 0"><b dir="ltr">${escapeHtml(password)}</b></td></tr>
+      </table>
+      <p style="margin:12px 0 0 0;font-size:13px;color:#777">يُفضّل تغيير كلمة السر بعد أول دخول من خلال "نسيت كلمة السر؟".</p>
+    `,
+    link: loginUrl,
+    linkLabel: "تسجيل الدخول",
+  });
+
   revalidatePath("/employees");
-  return { error: null, success: true };
+  return {
+    error: null,
+    success: true,
+    credentials: { email: data.email, password, loginUrl, emailed },
+  };
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 // Activates or deactivates an employee account. Authorized for super admins
