@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cairo } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { localeDirection, type Locale } from "@/i18n/config";
 import { Providers } from "@/components/providers";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 import "./globals.css";
 
 // Cairo renders Arabic and Latin scripts cleanly and suits an RTL UI.
@@ -15,6 +16,24 @@ const cairo = Cairo({
 export const metadata: Metadata = {
   title: "إدارة الموظفين — Everest Ads",
   description: "نظام إدارة موظفين شركة Everest Ads",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Everest Staff",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+  width: "device-width",
+  initialScale: 1,
+  // Allow zoom for accessibility but keep the app shell stable.
+  maximumScale: 5,
 };
 
 export default async function RootLayout({
@@ -37,6 +56,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

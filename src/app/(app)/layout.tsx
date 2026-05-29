@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav, type NavItem } from "@/components/app-nav";
 import { NotificationBell } from "@/components/notification-bell";
+import { AppShell } from "@/components/app-shell";
 
 // Shared shell for all authenticated pages: sidebar nav + content area.
 // requireUser() redirects to /login if there is somehow no session (the proxy
@@ -52,21 +53,22 @@ export default async function AppLayout({
     .eq("user_id", userId)
     .eq("is_read", false);
 
-  return (
-    <div className="flex min-h-screen">
-      <aside data-app-chrome className="w-60 shrink-0 border-e bg-card">
-        <div className="flex items-center justify-between border-b p-4">
-          <div>
-            <p className="text-sm font-bold">{t("name")}</p>
-            <p className="text-xs text-muted-foreground">{t("company")}</p>
-          </div>
-          <NotificationBell userId={userId} initialUnread={initialUnread ?? 0} />
+  const sidebar = (
+    <>
+      <div className="flex items-center justify-between border-b p-4">
+        <div>
+          <p className="text-sm font-bold">{t("name")}</p>
+          <p className="text-xs text-muted-foreground">{t("company")}</p>
         </div>
-        <AppNav items={navItems} />
-      </aside>
-      <main data-app-main className="flex-1 p-6 lg:p-8">
-        {children}
-      </main>
-    </div>
+        <NotificationBell userId={userId} initialUnread={initialUnread ?? 0} />
+      </div>
+      <AppNav items={navItems} />
+    </>
+  );
+
+  return (
+    <AppShell sidebar={sidebar} appName={t("name")}>
+      {children}
+    </AppShell>
   );
 }
