@@ -470,6 +470,7 @@
     "entityProjects": "مشروع",
     "entityTasks": "تاسك",
     "entityEvaluations": "تقييم",
-    "filterAll": "الكل"
+    "filterAll": "الكل",
+    "showDetails": "تفاصيل التغيير"
   }
 }
