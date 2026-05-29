@@ -5,6 +5,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { localeDirection, type Locale } from "@/i18n/config";
 import { Providers } from "@/components/providers";
 import { ServiceWorkerRegister } from "@/components/sw-register";
+import { InstallPrompt } from "@/components/install-prompt";
 import "./globals.css";
 
 // Cairo renders Arabic and Latin scripts cleanly and suits an RTL UI.
@@ -57,6 +58,7 @@ export default async function RootLayout({
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
         <ServiceWorkerRegister />
+        <InstallPrompt />
       </body>
     </html>
   );
