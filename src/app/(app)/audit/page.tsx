@@ -4,23 +4,24 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { summarizeAudit } from "@/lib/audit-format";
 import type { AuditLogRow } from "@/types/database";
 
+// Entity types surfaced as filter chips (the audit covers more tables, but
+// these are the ones worth filtering by).
 const ENTITIES = [
   "profiles",
   "departments",
   "projects",
+  "project_members",
   "tasks",
+  "task_comments",
+  "time_logs",
+  "peer_reviews",
+  "standup_responses",
   "evaluations",
+  "kpi_logs",
 ] as const;
 
 const ACTION_VARIANT: Record<string, "success" | "secondary" | "destructive"> =
@@ -29,6 +30,61 @@ const ACTION_VARIANT: Record<string, "success" | "secondary" | "destructive"> =
     UPDATE: "secondary",
     DELETE: "destructive",
   };
+
+// Arabic labels for entity types (table names).
+const ENTITY_LABELS: Record<string, string> = {
+  profiles: "موظف",
+  departments: "قسم",
+  department_members: "عضوية قسم",
+  projects: "مشروع",
+  project_members: "عضوية مشروع",
+  tasks: "تاسك",
+  task_comments: "تعليق",
+  task_attachments: "مرفق",
+  task_dependencies: "اعتمادية",
+  time_logs: "تسجيل وقت",
+  peer_reviews: "تقييم زميل",
+  standup_responses: "ستاندب",
+  evaluations: "تقييم",
+  kpi_logs: "مؤشر أداء",
+};
+
+// Arabic labels for common column names in the change diff.
+const FIELD_LABELS: Record<string, string> = {
+  title: "العنوان",
+  description: "الوصف",
+  status: "الحالة",
+  priority: "الأولوية",
+  name: "الاسم",
+  name_ar: "الاسم بالعربية",
+  arabic_name: "الاسم بالعربية",
+  full_name: "الاسم",
+  role: "الدور",
+  is_active: "نشط",
+  assigned_to: "المسؤول",
+  due_date: "تاريخ التسليم",
+  start_date: "تاريخ البداية",
+  end_date: "تاريخ النهاية",
+  content: "المحتوى",
+  client_name: "العميل",
+  weekly_hours: "ساعات أسبوعية",
+  employment_type: "نوع التوظيف",
+  estimated_hours: "ساعات متوقعة",
+  actual_hours: "ساعات فعلية",
+  hours: "ساعات",
+  value: "القيمة",
+  total_score: "الدرجة",
+  notes: "ملاحظات",
+  comments: "ملاحظات",
+  mood: "المزاج",
+  yesterday_work: "شغل أمس",
+  today_plan: "خطة اليوم",
+  blockers: "العوائق",
+  department_id: "القسم",
+  project_id: "المشروع",
+};
+
+const fieldLabel = (f: string) => FIELD_LABELS[f] ?? f;
 
 export default async function AuditLogPage({
   searchParams,
@@ -39,9 +95,7 @@ export default async function AuditLogPage({
   const t = await getTranslations("audit");
   const { entity } = await searchParams;
   const activeEntity =
-    entity && (ENTITIES as readonly string[]).includes(entity)
-      ? entity
-      : null;
+    entity && (ENTITIES as readonly string[]).includes(entity) ? entity : null;
 
   // RLS restricts audit_logs select to super admins only.
   const supabase = await createClient();
@@ -70,10 +124,7 @@ export default async function AuditLogPage({
     );
   }
 
-  const entityLabel = (e: string) => {
-    const key = `entity${e.charAt(0).toUpperCase()}${e.slice(1)}`;
-    return t.has(key) ? t(key) : e;
-  };
+  const entityLabel = (e: string) => ENTITY_LABELS[e] ?? e;
   const actionLabel = (a: string) => {
     const key = `action${a}`;
     return t.has(key) ? t(key) : a;
@@ -102,40 +153,82 @@ export default async function AuditLogPage({
       {logs.length === 0 ? (
         <p className="text-muted-foreground">{t("empty")}</p>
       ) : (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("when")}</TableHead>
-                <TableHead>{t("who")}</TableHead>
-                <TableHead>{t("action")}</TableHead>
-                <TableHead>{t("entity")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {logs.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell className="text-xs text-muted-foreground" dir="ltr">
-                    {new Date(log.created_at).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {log.user_id
-                      ? (nameById.get(log.user_id) ?? log.user_id)
-                      : t("system")}
-                  </TableCell>
-                  <TableCell>
+        <ul className="flex flex-col gap-2">
+          {logs.map((log) => {
+            const who = log.user_id
+              ? (nameById.get(log.user_id) ?? log.user_id)
+              : t("system");
+            const summary = summarizeAudit(log.action, log.changes);
+            return (
+              <li key={log.id} className="rounded-lg border bg-card p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={ACTION_VARIANT[log.action] ?? "secondary"}>
                       {actionLabel(log.action)}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {entityLabel(log.entity_type)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                    <span className="text-sm">
+                      <span className="font-medium">{who}</span>
+                      <span className="text-muted-foreground">
+                        {" "}
+                        — {entityLabel(log.entity_type)}
+                      </span>
+                      {summary.subject ? (
+                        <span className="font-medium"> · {summary.subject}</span>
+                      ) : null}
+                    </span>
+                  </div>
+                  <span
+                    className="shrink-0 text-xs text-muted-foreground"
+                    dir="ltr"
+                  >
+                    {new Date(log.created_at).toLocaleString()}
+                  </span>
+                </div>
+
+                {summary.changes.length > 0 ? (
+                  <details className="group mt-2">
+                    <summary className="cursor-pointer text-xs text-primary hover:underline">
+                      {t("showDetails")} ({summary.changes.length})
+                    </summary>
+                    <ul className="mt-2 flex flex-col gap-1 border-t pt-2 text-sm">
+                      {summary.changes.map((c, i) => (
+                        <li
+                          key={i}
+                          className="flex flex-wrap items-center gap-1"
+                        >
+                          <span className="text-muted-foreground">
+                            {fieldLabel(c.field)}:
+                          </span>
+                          {log.action === "UPDATE" ? (
+                            <>
+                              <span
+                                className="text-destructive line-through"
+                                dir="auto"
+                              >
+                                {c.from ?? "—"}
+                              </span>
+                              <span className="text-muted-foreground">←</span>
+                              <span
+                                className="font-medium text-green-600"
+                                dir="auto"
+                              >
+                                {c.to ?? "—"}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="font-medium" dir="auto">
+                              {c.to ?? "—"}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );

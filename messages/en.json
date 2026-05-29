@@ -470,6 +470,7 @@
     "entityProjects": "Project",
     "entityTasks": "Task",
     "entityEvaluations": "Evaluation",
-    "filterAll": "All"
+    "filterAll": "All",
+    "showDetails": "Change details"
   }
 }
