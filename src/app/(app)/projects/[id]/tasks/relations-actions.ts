@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { notifyMany, notifyUser } from "@/lib/notifications";
 
 // ---------- Subtasks ----------
 // A subtask is just a task row with parent_task_id set. RLS (tasks_insert)
@@ -94,7 +95,7 @@ export async function removeDependency(formData: FormData) {
 
 // ---------- Comments & Mentions ----------
 // `mentions` is an array of profile UUIDs extracted from @-tokens in the
-// comment body. Phase 6 will wire these to notifications.
+// comment body. We notify each mentioned user + the task's current assignee.
 
 const commentSchema = z.object({
   project_id: z.string().uuid(),
@@ -123,9 +124,48 @@ export async function addComment(formData: FormData) {
     mentions: parsed.data.mentions,
   });
 
-  revalidatePath(
-    `/projects/${parsed.data.project_id}/tasks/${parsed.data.task_id}`,
+  // Look up the task title + assignee for the notification body.
+  const { data: task } = await supabase
+    .from("tasks")
+    .select("title, assigned_to")
+    .eq("id", parsed.data.task_id)
+    .single();
+
+  const link = `/projects/${parsed.data.project_id}/tasks/${parsed.data.task_id}`;
+  const snippet =
+    parsed.data.content.length > 140
+      ? parsed.data.content.slice(0, 140) + "…"
+      : parsed.data.content;
+
+  // Mentioned users get a "mention" notification.
+  await notifyMany(
+    parsed.data.mentions,
+    {
+      type: "mention",
+      title: `إشارة في تاسك: ${task?.title ?? ""}`,
+      message: snippet,
+      link,
+    },
+    caller.id,
   );
+
+  // The assignee gets a "task_assigned" notification (commented on your task),
+  // unless they were already covered by the mention list or are the commenter.
+  if (
+    task?.assigned_to &&
+    task.assigned_to !== caller.id &&
+    !parsed.data.mentions.includes(task.assigned_to)
+  ) {
+    await notifyUser({
+      userId: task.assigned_to,
+      type: "task_assigned",
+      title: `تعليق جديد على تاسكك: ${task.title}`,
+      message: snippet,
+      link,
+    });
+  }
+
+  revalidatePath(link);
 }
 
 export async function deleteComment(formData: FormData) {

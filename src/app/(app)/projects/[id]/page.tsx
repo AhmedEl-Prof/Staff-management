@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDelete } from "@/components/confirm-delete";
+import { ProjectDriveSection } from "./drive-section";
 import {
   deleteProject,
   addProjectMember,
@@ -63,6 +64,12 @@ export default async function ProjectDetailPage({
     .select("id, user_id, role")
     .eq("project_id", id);
   const members = memberRows ?? [];
+
+  const { data: driveFolder } = await admin
+    .from("drive_folders")
+    .select("folder_url")
+    .eq("project_id", id)
+    .maybeSingle();
   const employees = await getEmployeeOptions();
   const nameById = new Map(employees.map((e) => [e.id, e.label]));
 
@@ -119,6 +126,13 @@ export default async function ProjectDetailPage({
         <Field label={t("endDate")} value={project.end_date} />
         <Field label={t("description")} value={project.description} full />
       </dl>
+
+      <ProjectDriveSection
+        projectId={id}
+        folderId={project.drive_folder_id}
+        folderUrl={driveFolder?.folder_url ?? null}
+        canManage={canManage}
+      />
 
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold">{t("members")}</h2>

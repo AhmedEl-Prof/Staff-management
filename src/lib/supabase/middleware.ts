@@ -3,7 +3,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 
 // Public routes that an unauthenticated visitor is allowed to reach.
-const PUBLIC_PATHS = ["/login", "/auth", "/forgot-password", "/reset-password"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/auth",
+  "/forgot-password",
+  "/reset-password",
+  "/api/health",
+];
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(

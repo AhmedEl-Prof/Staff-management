@@ -5,6 +5,11 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireRole, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import {
+  revokeMemberFromDrive,
+  sharePendingMemberWithDrive,
+} from "@/lib/drive-projects";
+import { notifyUser } from "@/lib/notifications";
 
 // Project writes rely on RLS (projects_insert/update/delete check
 // manages_department, project_members_manage checks manages_project). The
@@ -104,7 +109,7 @@ export async function deleteProject(formData: FormData) {
 }
 
 export async function addProjectMember(formData: FormData) {
-  await requireUser();
+  const caller = await requireUser();
   const projectId = String(formData.get("project_id") ?? "");
   const userId = String(formData.get("user_id") ?? "");
   const roleValue = String(formData.get("role") ?? "member");
@@ -121,6 +126,25 @@ export async function addProjectMember(formData: FormData) {
       { onConflict: "project_id,user_id" },
     );
 
+  // Best-effort share of the project's Drive folder with the new member.
+  await sharePendingMemberWithDrive(projectId, userId);
+
+  // Notify the added member (unless they added themselves somehow).
+  if (userId !== caller.id) {
+    const { data: project } = await supabase
+      .from("projects")
+      .select("name, name_ar")
+      .eq("id", projectId)
+      .single();
+    await notifyUser({
+      userId,
+      type: "project_member_added",
+      title: "تمت إضافتك إلى مشروع",
+      message: project?.name_ar || project?.name || undefined,
+      link: `/projects/${projectId}`,
+    });
+  }
+
   revalidatePath(`/projects/${projectId}`);
 }
 
@@ -131,7 +155,19 @@ export async function removeProjectMember(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
+  // Capture the user id before deleting the row so the Drive permission
+  // revocation can resolve their email.
+  const { data: memberRow } = await supabase
+    .from("project_members")
+    .select("user_id")
+    .eq("id", id)
+    .single();
+
   await supabase.from("project_members").delete().eq("id", id);
+
+  if (memberRow?.user_id) {
+    await revokeMemberFromDrive(projectId, memberRow.user_id);
+  }
 
   revalidatePath(`/projects/${projectId}`);
 }

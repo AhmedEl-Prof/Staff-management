@@ -17,7 +17,8 @@ supabase/
 │   ├── 0007_functions_and_triggers.sql    updated_at, new-user, audit triggers
 │   ├── 0008_rls_helpers.sql               SECURITY DEFINER helper functions
 │   ├── 0009_rls_policies.sql              RLS policies (the permission matrix)
-│   └── 0010_storage_and_realtime.sql      task-attachments bucket + realtime
+│   ├── 0010_storage_and_realtime.sql      task-attachments bucket + realtime
+│   └── 0011_notifications_realtime.sql    notifications in realtime publication
 └── seed.sql                               departments + KPI catalogue + badges
 ```
 

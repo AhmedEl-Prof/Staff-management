@@ -79,3 +79,14 @@
 body {
   font-family: var(--font-sans);
 }
+
+/* Print: hide the app chrome (sidebar/nav) so reports print clean. The report
+   page marks its container, and the shell is tagged data-app-chrome. */
+@media print {
+  [data-app-chrome] {
+    display: none !important;
+  }
+  [data-app-main] {
+    padding: 0 !important;
+  }
+}

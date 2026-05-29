@@ -8,7 +8,15 @@ import {
   Building2,
   FolderKanban,
   Users,
+  Bell,
   UserCircle,
+  Sunrise,
+  ScrollText,
+  ClipboardCheck,
+  Target,
+  HeartHandshake,
+  BarChart3,
+  Trophy,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,14 +24,35 @@ import { logout } from "@/lib/auth-actions";
 
 export interface NavItem {
   href: string;
-  key: "dashboard" | "departments" | "projects" | "employees" | "profile";
+  key:
+    | "dashboard"
+    | "departments"
+    | "projects"
+    | "standup"
+    | "peerReview"
+    | "leaderboard"
+    | "evaluations"
+    | "kpis"
+    | "analytics"
+    | "employees"
+    | "audit"
+    | "notifications"
+    | "profile";
 }
 
 const icons = {
   dashboard: LayoutDashboard,
   departments: Building2,
   projects: FolderKanban,
+  standup: Sunrise,
+  peerReview: HeartHandshake,
+  leaderboard: Trophy,
+  evaluations: ClipboardCheck,
+  kpis: Target,
+  analytics: BarChart3,
   employees: Users,
+  audit: ScrollText,
+  notifications: Bell,
   profile: UserCircle,
 } as const;
 
