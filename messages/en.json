@@ -299,6 +299,20 @@
     "addMember": "Add member",
     "selectEmployee": "Select an employee"
   },
+  "files": {
+    "title": "Project files",
+    "subtitle": "Store and organize project files in folders",
+    "backToProject": "Back to project",
+    "root": "Home",
+    "upload": "Upload file",
+    "newFolder": "New folder",
+    "folderName": "Folder name",
+    "empty": "This folder is empty",
+    "tooLarge": "File is larger than the 25 MB limit",
+    "uploadFailed": "Upload failed, please try again",
+    "deleteFileConfirm": "Delete this file?",
+    "deleteFolderConfirm": "Delete this folder and everything inside it?"
+  },
   "projects": {
     "title": "Projects",
     "subtitle": "Manage projects and teams",

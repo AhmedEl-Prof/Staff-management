@@ -299,6 +299,20 @@
     "addMember": "إضافة عضو",
     "selectEmployee": "اختر موظفاً"
   },
+  "files": {
+    "title": "ملفات المشروع",
+    "subtitle": "تخزين وتنظيم ملفات المشروع بالفولدرات",
+    "backToProject": "رجوع للمشروع",
+    "root": "الرئيسية",
+    "upload": "رفع ملف",
+    "newFolder": "فولدر جديد",
+    "folderName": "اسم الفولدر",
+    "empty": "الفولدر فاضي",
+    "tooLarge": "حجم الملف أكبر من المسموح (25 ميجا)",
+    "uploadFailed": "فشل الرفع، حاول مرة أخرى",
+    "deleteFileConfirm": "متأكد من حذف الملف؟",
+    "deleteFolderConfirm": "متأكد من حذف الفولدر وكل محتوياته؟"
+  },
   "projects": {
     "title": "المشاريع",
     "subtitle": "إدارة المشاريع وفرق العمل",
