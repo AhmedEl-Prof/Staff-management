@@ -41,10 +41,23 @@ export function InviteForm({
     initialState,
   );
 
-  if (state.success) {
+  if (state.success && state.credentials) {
+    const c = state.credentials;
     return (
       <div className="flex max-w-lg flex-col gap-4 rounded-lg border bg-card p-6">
-        <p className="text-green-600">{t("inviteSent")}</p>
+        <p className="font-medium text-green-600">{t("created")}</p>
+        <p className="text-sm text-muted-foreground">
+          {c.emailed ? t("createdEmailed") : t("createdNoEmail")}
+        </p>
+
+        <div className="flex flex-col gap-2 rounded-md border bg-muted/40 p-4 text-sm">
+          <CredRow label={tAuth("email")} value={c.email} />
+          <CredRow label={tAuth("password")} value={c.password} />
+          <CredRow label={t("loginLink")} value={c.loginUrl} />
+        </div>
+
+        <p className="text-xs text-muted-foreground">{t("shareNote")}</p>
+
         <Link
           href="/employees"
           className={buttonVariants({
@@ -156,5 +169,26 @@ export function InviteForm({
         </Link>
       </div>
     </form>
+  );
+}
+
+// A single credential row with a copy-to-clipboard button.
+function CredRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      <span className="flex items-center gap-2">
+        <code className="rounded bg-background px-2 py-0.5 text-xs" dir="ltr">
+          {value}
+        </code>
+        <button
+          type="button"
+          onClick={() => navigator.clipboard?.writeText(value)}
+          className="text-xs text-primary hover:underline"
+        >
+          نسخ
+        </button>
+      </span>
+    </div>
   );
 }
