@@ -36,13 +36,7 @@ export async function login(
   });
 
   if (error) {
-    // Temporary: surface the raw Supabase error so we can debug login issues
-    // in production. Revert to the generic "invalidCredentials" once login is
-    // confirmed working.
-    const message =
-      `[${error.code ?? "no-code"}] ${error.message}` || "invalidCredentials";
-    console.error("[login] auth error:", error);
-    return { error: message };
+    return { error: "invalidCredentials" };
   }
 
   revalidatePath("/", "layout");
