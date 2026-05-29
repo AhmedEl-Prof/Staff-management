@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/standup-reminder",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/monthly-evaluations",
+      "schedule": "0 6 1 * *"
     }
   ]
 }

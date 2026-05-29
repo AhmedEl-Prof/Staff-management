@@ -26,8 +26,12 @@ export default async function AppLayout({
       : []),
     { href: "/projects", key: "projects" },
     { href: "/standup", key: "standup" },
+    { href: "/evaluations", key: "evaluations" },
     ...(canManageEmployees
-      ? [{ href: "/employees", key: "employees" as const }]
+      ? [
+          { href: "/kpis", key: "kpis" as const },
+          { href: "/employees", key: "employees" as const },
+        ]
       : []),
     ...(isSuperAdmin
       ? [{ href: "/audit", key: "audit" as const }]

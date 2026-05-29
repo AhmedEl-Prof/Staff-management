@@ -12,6 +12,8 @@ import {
   UserCircle,
   Sunrise,
   ScrollText,
+  ClipboardCheck,
+  Target,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,6 +26,8 @@ export interface NavItem {
     | "departments"
     | "projects"
     | "standup"
+    | "evaluations"
+    | "kpis"
     | "employees"
     | "audit"
     | "notifications"
@@ -35,6 +39,8 @@ const icons = {
   departments: Building2,
   projects: FolderKanban,
   standup: Sunrise,
+  evaluations: ClipboardCheck,
+  kpis: Target,
   employees: Users,
   audit: ScrollText,
   notifications: Bell,

@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManagedDepartmentIds } from "@/lib/permissions";
 import { Badge } from "@/components/ui/badge";
 import { StandupForm } from "./standup-form";
 import type { StandupResponseRow, StandupMood } from "@/types/database";
@@ -57,8 +56,6 @@ export default async function StandupPage() {
         nameById.set(p.id, p.arabic_name || p.full_name || p.id),
       );
     }
-    // Keep getManagedDepartmentIds import meaningful for future scoping needs.
-    void getManagedDepartmentIds;
   }
 
   const moodLabel = (m: StandupMood) =>
