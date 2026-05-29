@@ -27,8 +27,24 @@
     "departments": "Departments",
     "projects": "Projects",
     "employees": "Employees",
+    "notifications": "Notifications",
     "profile": "Profile",
     "logout": "Sign out"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Your latest notifications",
+    "empty": "No notifications",
+    "markAllRead": "Mark all as read",
+    "unread": "Unread",
+    "preferences": "Notification preferences",
+    "preferencesSubtitle": "Choose which notifications you want by email",
+    "emailTaskAssigned": "Task assigned to me",
+    "emailTaskDeadline": "Approaching task deadline",
+    "emailMentions": "Mentions (@)",
+    "emailEvaluations": "Evaluations",
+    "inAppNotifications": "In-app notifications",
+    "saved": "Saved"
   },
   "auth": {
     "loginTitle": "Sign in",

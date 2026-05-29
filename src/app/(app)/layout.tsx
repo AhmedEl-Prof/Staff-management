@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { requireUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { AppNav, type NavItem } from "@/components/app-nav";
+import { NotificationBell } from "@/components/notification-bell";
 
 // Shared shell for all authenticated pages: sidebar nav + content area.
 // requireUser() redirects to /login if there is somehow no session (the proxy
@@ -10,7 +12,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { profile } = await requireUser();
+  const { id: userId, profile } = await requireUser();
   const t = await getTranslations("app");
 
   const isSuperAdmin = profile.role === "super_admin";
@@ -26,15 +28,28 @@ export default async function AppLayout({
     ...(canManageEmployees
       ? [{ href: "/employees", key: "employees" as const }]
       : []),
+    { href: "/notifications", key: "notifications" },
     { href: "/profile", key: "profile" },
   ];
+
+  // Initial unread count for the bell badge (the bell then keeps it live via
+  // Supabase Realtime). RLS scopes the query to the caller.
+  const supabase = await createClient();
+  const { count: initialUnread } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("is_read", false);
 
   return (
     <div className="flex min-h-screen">
       <aside className="w-60 shrink-0 border-e bg-card">
-        <div className="border-b p-4">
-          <p className="text-sm font-bold">{t("name")}</p>
-          <p className="text-xs text-muted-foreground">{t("company")}</p>
+        <div className="flex items-center justify-between border-b p-4">
+          <div>
+            <p className="text-sm font-bold">{t("name")}</p>
+            <p className="text-xs text-muted-foreground">{t("company")}</p>
+          </div>
+          <NotificationBell userId={userId} initialUnread={initialUnread ?? 0} />
         </div>
         <AppNav items={navItems} />
       </aside>

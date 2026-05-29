@@ -27,8 +27,24 @@
     "departments": "الأقسام",
     "projects": "المشاريع",
     "employees": "الموظفون",
+    "notifications": "الإشعارات",
     "profile": "الملف الشخصي",
     "logout": "تسجيل الخروج"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "subtitle": "آخر الإشعارات الخاصة بك",
+    "empty": "لا توجد إشعارات",
+    "markAllRead": "تعليم الكل مقروء",
+    "unread": "غير مقروء",
+    "preferences": "تفضيلات الإشعارات",
+    "preferencesSubtitle": "اختر الإشعارات اللي تحب توصلك بالإيميل",
+    "emailTaskAssigned": "إسناد تاسك جديد",
+    "emailTaskDeadline": "اقتراب تاريخ التسليم",
+    "emailMentions": "الإشارات (@)",
+    "emailEvaluations": "التقييمات",
+    "inAppNotifications": "إشعارات داخل التطبيق",
+    "saved": "تم الحفظ"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",

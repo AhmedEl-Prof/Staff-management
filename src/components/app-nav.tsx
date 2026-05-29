@@ -8,6 +8,7 @@ import {
   Building2,
   FolderKanban,
   Users,
+  Bell,
   UserCircle,
   LogOut,
 } from "lucide-react";
@@ -16,7 +17,13 @@ import { logout } from "@/lib/auth-actions";
 
 export interface NavItem {
   href: string;
-  key: "dashboard" | "departments" | "projects" | "employees" | "profile";
+  key:
+    | "dashboard"
+    | "departments"
+    | "projects"
+    | "employees"
+    | "notifications"
+    | "profile";
 }
 
 const icons = {
@@ -24,6 +31,7 @@ const icons = {
   departments: Building2,
   projects: FolderKanban,
   employees: Users,
+  notifications: Bell,
   profile: UserCircle,
 } as const;
 

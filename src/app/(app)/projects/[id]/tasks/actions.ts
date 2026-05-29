@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { notifyUser } from "@/lib/notifications";
 
 // Task writes are governed by RLS:
 //   tasks_insert / tasks_delete  -> manages_project (super admin / team leader)
@@ -51,32 +52,57 @@ export async function createTask(formData: FormData) {
   if (!projectId || !parsed.success) return;
 
   const supabase = await createClient();
-  await supabase.from("tasks").insert({
-    project_id: projectId,
-    title: parsed.data.title,
-    description: parsed.data.description ?? null,
-    status: parsed.data.status,
-    priority: parsed.data.priority,
-    assigned_to: parsed.data.assigned_to ?? null,
-    created_by: caller.id,
-    estimated_hours: parsed.data.estimated_hours ?? null,
-    start_date: parsed.data.start_date ?? null,
-    due_date: parsed.data.due_date ?? null,
-    completed_at: parsed.data.status === "done" ? new Date().toISOString() : null,
-  });
+  const { data: inserted } = await supabase
+    .from("tasks")
+    .insert({
+      project_id: projectId,
+      title: parsed.data.title,
+      description: parsed.data.description ?? null,
+      status: parsed.data.status,
+      priority: parsed.data.priority,
+      assigned_to: parsed.data.assigned_to ?? null,
+      created_by: caller.id,
+      estimated_hours: parsed.data.estimated_hours ?? null,
+      start_date: parsed.data.start_date ?? null,
+      due_date: parsed.data.due_date ?? null,
+      completed_at: parsed.data.status === "done" ? new Date().toISOString() : null,
+    })
+    .select("id")
+    .single();
+
+  if (
+    inserted &&
+    parsed.data.assigned_to &&
+    parsed.data.assigned_to !== caller.id
+  ) {
+    await notifyUser({
+      userId: parsed.data.assigned_to,
+      type: "task_assigned",
+      title: "تم إسناد تاسك جديد لك",
+      message: parsed.data.title,
+      link: `/projects/${projectId}/tasks/${inserted.id}`,
+    });
+  }
 
   revalidatePath(`/projects/${projectId}/tasks`);
   redirect(`/projects/${projectId}/tasks`);
 }
 
 export async function updateTask(formData: FormData) {
-  await requireUser();
+  const caller = await requireUser();
   const projectId = String(formData.get("project_id") ?? "");
   const id = String(formData.get("id") ?? "");
   const parsed = parseTask(formData);
   if (!projectId || !id || !parsed.success) return;
 
   const supabase = await createClient();
+  // Capture the previous assignee so we only notify on actual change.
+  const { data: prev } = await supabase
+    .from("tasks")
+    .select("assigned_to")
+    .eq("id", id)
+    .single();
+
   await supabase
     .from("tasks")
     .update({
@@ -92,6 +118,21 @@ export async function updateTask(formData: FormData) {
         parsed.data.status === "done" ? new Date().toISOString() : null,
     })
     .eq("id", id);
+
+  const newAssignee = parsed.data.assigned_to ?? null;
+  if (
+    newAssignee &&
+    newAssignee !== prev?.assigned_to &&
+    newAssignee !== caller.id
+  ) {
+    await notifyUser({
+      userId: newAssignee,
+      type: "task_assigned",
+      title: "تم إسناد تاسك لك",
+      message: parsed.data.title,
+      link: `/projects/${projectId}/tasks/${id}`,
+    });
+  }
 
   revalidatePath(`/projects/${projectId}/tasks`);
   redirect(`/projects/${projectId}/tasks`);
