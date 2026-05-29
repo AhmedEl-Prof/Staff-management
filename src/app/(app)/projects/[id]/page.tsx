@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Pencil, ListChecks } from "lucide-react";
+import { Pencil, ListChecks, FolderOpen } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -35,6 +35,7 @@ export default async function ProjectDetailPage({
   const tPriority = await getTranslations("priority");
   const tRole = await getTranslations("projectRole");
   const tTasks = await getTranslations("tasks");
+  const tFiles = await getTranslations("files");
 
   // RLS: returns the project only if the caller can access it.
   const supabase = await createClient();
@@ -96,6 +97,17 @@ export default async function ProjectDetailPage({
           >
             <ListChecks className="size-4" />
             {tTasks("title")}
+          </Link>
+          <Link
+            href={`/projects/${id}/files`}
+            className={buttonVariants({
+              variant: "outline",
+              size: "sm",
+              className: "gap-2",
+            })}
+          >
+            <FolderOpen className="size-4" />
+            {tFiles("title")}
           </Link>
           {canManage ? (
             <>
