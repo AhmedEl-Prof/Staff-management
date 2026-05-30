@@ -43,6 +43,7 @@ export default async function AppLayout({
           { href: "/kpis", key: "kpis" as const },
           { href: "/analytics", key: "analytics" as const },
           { href: "/employees", key: "employees" as const },
+          { href: "/checklists", key: "checklists" as const },
         ]
       : []),
     ...(isSuperAdmin

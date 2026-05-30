@@ -113,3 +113,56 @@ export async function deleteChecklistItem(formData: FormData) {
 
   revalidatePath(`/projects/${projectId}`);
 }
+
+// Appends the department template's items to this project's checklist (manager
+// only). Skips labels already present so re-applying doesn't duplicate.
+export async function applyTemplate(formData: FormData) {
+  const caller = await requireUser();
+  const projectId = String(formData.get("project_id") ?? "");
+  if (!projectId || !(await managesProject(caller, projectId))) return;
+
+  const admin = createAdminClient();
+  const { data: project } = await admin
+    .from("projects")
+    .select("department_id")
+    .eq("id", projectId)
+    .single();
+  if (!project) return;
+
+  const [{ data: template }, { data: existing }, { data: last }] =
+    await Promise.all([
+      admin
+        .from("checklist_templates")
+        .select("label, sort_order")
+        .eq("department_id", project.department_id)
+        .order("sort_order"),
+      admin
+        .from("project_checklist_items")
+        .select("label")
+        .eq("project_id", projectId),
+      admin
+        .from("project_checklist_items")
+        .select("sort_order")
+        .eq("project_id", projectId)
+        .order("sort_order", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+  if (!template || template.length === 0) return;
+  const have = new Set((existing ?? []).map((i) => i.label));
+  let sort = (last?.sort_order ?? -1) + 1;
+  const rows = template
+    .filter((item) => !have.has(item.label))
+    .map((item) => ({
+      project_id: projectId,
+      label: item.label,
+      sort_order: sort++,
+      created_by: caller.id,
+    }));
+  if (rows.length > 0) {
+    await admin.from("project_checklist_items").insert(rows);
+  }
+
+  revalidatePath(`/projects/${projectId}`);
+}

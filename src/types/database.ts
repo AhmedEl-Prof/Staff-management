@@ -389,6 +389,16 @@ export type ProjectChecklistItemRow = {
   updated_at: string;
 }
 
+export type ChecklistTemplateRow = {
+  id: string;
+  department_id: string;
+  label: string;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Maps a Row type to a Supabase-style { Row; Insert; Update } table definition.
 type TableDef<Row, InsertOptional extends keyof Row> = {
   Row: Row;
@@ -618,6 +628,10 @@ export interface Database {
         | "created_by"
         | "created_at"
         | "updated_at"
+      >;
+      checklist_templates: TableDef<
+        ChecklistTemplateRow,
+        "id" | "sort_order" | "created_by" | "created_at" | "updated_at"
       >;
     };
     Views: Record<string, never>;
