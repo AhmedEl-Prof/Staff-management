@@ -534,6 +534,13 @@
     "status_approved": "معتمد",
     "status_paid": "مدفوع"
   },
+  "attention": {
+    "title": "محتاج انتباه",
+    "overdueTasks": "تاسكات متأخرة",
+    "leaveToReview": "طلبات أجازة تنتظر مراجعتك",
+    "myChecklist": "بنود تشيك ليست مفتوحة مُسنَدة لك",
+    "bonusDrafts": "بونص لسه مسودة هذا الشهر"
+  },
   "checklist": {
     "title": "تشيك ليست المشروع",
     "item": "البند",
