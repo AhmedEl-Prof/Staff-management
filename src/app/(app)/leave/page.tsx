@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { CsvExportButton } from "@/components/csv-export-button";
 import { cn } from "@/lib/utils";
 import { DEFAULT_QUOTAS, LEAVE_TYPES, currentYear } from "@/lib/leave";
 import { LeaveRequestForm } from "./leave-request-form";
@@ -135,7 +136,20 @@ export default async function LeavePage() {
 
       {/* My requests */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{t("myRequests")}</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">{t("myRequests")}</h2>
+          <CsvExportButton
+            filename={`my-leave-${year}`}
+            headers={[t("type"), t("from"), t("to"), t("daysCol"), t("statusCol")]}
+            rows={(myRequests ?? []).map((r) => [
+              typeLabel(r.type as LeaveType),
+              r.start_date,
+              r.end_date,
+              Number(r.days),
+              statusLabel(r.status as LeaveStatus),
+            ])}
+          />
+        </div>
         {(myRequests ?? []).length === 0 ? (
           <p className="text-muted-foreground text-sm">{t("noRequests")}</p>
         ) : (
