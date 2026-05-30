@@ -20,6 +20,7 @@ import {
   Coins,
   CalendarDays,
   Clock,
+  Timer,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,7 @@ export interface NavItem {
     | "bonus"
     | "leave"
     | "attendance"
+    | "timesheet"
     | "audit"
     | "notifications"
     | "profile";
@@ -60,6 +62,7 @@ const icons = {
   bonus: Coins,
   leave: CalendarDays,
   attendance: Clock,
+  timesheet: Timer,
   audit: ScrollText,
   notifications: Bell,
   profile: UserCircle,
