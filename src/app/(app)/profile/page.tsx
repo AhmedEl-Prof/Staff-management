@@ -4,6 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "./profile-form";
 import { DriveSection } from "./drive-section";
 import { NotificationPrefsForm, type PrefsInitial } from "./notification-prefs-form";
+import { PushToggle } from "./push-toggle";
+
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
 const DEFAULT_PREFS: PrefsInitial = {
   email_task_assigned: true,
@@ -53,6 +56,9 @@ export default async function ProfilePage({
           </p>
         </div>
         <NotificationPrefsForm initialPrefs={initialPrefs} />
+        {VAPID_PUBLIC_KEY ? (
+          <PushToggle vapidPublicKey={VAPID_PUBLIC_KEY} />
+        ) : null}
       </section>
     </div>
   );

@@ -566,6 +566,15 @@
     "managerNote": "These items are copied automatically into every new project in the department. You can also apply them to an existing project from the project page.",
     "readonlyNote": "This template is maintained by your department manager."
   },
+  "push": {
+    "title": "Mobile notifications (Push)",
+    "subtitle": "Receive notifications on this device even when the app is closed.",
+    "enabledHint": "Notifications are enabled on this device.",
+    "enable": "Enable",
+    "disable": "Disable",
+    "denied": "Notifications are blocked in your browser settings — enable them manually.",
+    "unsupported": "This browser does not support push notifications."
+  },
   "ai": {
     "generate": "Summarize with AI",
     "generating": "Generating...",

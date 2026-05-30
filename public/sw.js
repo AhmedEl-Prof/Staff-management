@@ -12,7 +12,7 @@
 // must always hit the network so RLS-protected data is never served stale or
 // to the wrong user.
 
-const CACHE = "everest-staff-v1";
+const CACHE = "everest-staff-v2";
 const OFFLINE_URL = "/offline.html";
 const PRECACHE = [OFFLINE_URL, "/manifest.webmanifest"];
 
@@ -32,6 +32,45 @@ self.addEventListener("activate", (event) => {
       ),
   );
   self.clients.claim();
+});
+
+// Web Push: show a notification from the pushed payload.
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { title: event.data && event.data.text() };
+  }
+  const title = data.title || "إدارة الموظفين";
+  const options = {
+    body: data.body || "",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    dir: "rtl",
+    lang: "ar",
+    data: { url: data.url || "/" },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Focus an existing tab (or open one) at the notification's target URL.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || "/";
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clients) => {
+        for (const client of clients) {
+          if ("focus" in client) {
+            client.navigate(target);
+            return client.focus();
+          }
+        }
+        return self.clients.openWindow(target);
+      }),
+  );
 });
 
 self.addEventListener("fetch", (event) => {
