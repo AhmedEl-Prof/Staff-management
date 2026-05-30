@@ -376,6 +376,19 @@ export type AttendanceRow = {
   updated_at: string;
 }
 
+export type ProjectChecklistItemRow = {
+  id: string;
+  project_id: string;
+  label: string;
+  done: boolean;
+  assigned_to: string | null;
+  notes: string | null;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Maps a Row type to a Supabase-style { Row; Insert; Update } table definition.
 type TableDef<Row, InsertOptional extends keyof Row> = {
   Row: Row;
@@ -594,6 +607,17 @@ export interface Database {
       attendance: TableDef<
         AttendanceRow,
         "id" | "check_in" | "check_out" | "created_at" | "updated_at"
+      >;
+      project_checklist_items: TableDef<
+        ProjectChecklistItemRow,
+        | "id"
+        | "done"
+        | "assigned_to"
+        | "notes"
+        | "sort_order"
+        | "created_by"
+        | "created_at"
+        | "updated_at"
       >;
     };
     Views: Record<string, never>;
