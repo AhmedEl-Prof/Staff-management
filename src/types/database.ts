@@ -308,6 +308,33 @@ export type BonusItemRow = {
   updated_at: string;
 }
 
+export type BonusStatus = "draft" | "approved" | "paid";
+
+export type BonusPeriodRow = {
+  id: string;
+  user_id: string;
+  department_id: string;
+  period: string;
+  status: BonusStatus;
+  note: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type BonusAwardRow = {
+  id: string;
+  user_id: string;
+  department_id: string;
+  period: string;
+  bonus_item_id: string;
+  achievement_percent: number;
+  amount: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // Maps a Row type to a Supabase-style { Row; Insert; Update } table definition.
 type TableDef<Row, InsertOptional extends keyof Row> = {
   Row: Row;
@@ -483,6 +510,24 @@ export interface Database {
         | "created_at"
         | "updated_at"
       >;
+      bonus_periods: TableDef<
+        BonusPeriodRow,
+        | "id"
+        | "status"
+        | "note"
+        | "approved_by"
+        | "approved_at"
+        | "created_at"
+        | "updated_at"
+      >;
+      bonus_awards: TableDef<
+        BonusAwardRow,
+        | "id"
+        | "achievement_percent"
+        | "amount"
+        | "created_at"
+        | "updated_at"
+      >;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -498,6 +543,7 @@ export interface Database {
       evaluation_period_type: EvaluationPeriodType;
       evaluation_status: EvaluationStatus;
       standup_mood: StandupMood;
+      bonus_status: BonusStatus;
     };
     CompositeTypes: Record<string, never>;
   };
