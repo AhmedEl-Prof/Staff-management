@@ -8,8 +8,11 @@ import { zoneFor, type WorkloadZone } from "@/lib/workload";
 import { weekStart, weekEnd, weekDays, addDays } from "@/lib/timesheet";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { AiPanel } from "@/components/ai-panel";
+import { aiConfigured } from "@/lib/ai";
 import { TimeLogForm } from "./time-log-form";
 import { deleteTimeLog } from "./actions";
+import { weeklyDigest } from "./ai-actions";
 
 const DEFAULT_CAPACITY = 40;
 
@@ -33,6 +36,7 @@ export default async function TimesheetPage({
 }) {
   const { id: userId, profile } = await requireUser();
   const t = await getTranslations("timesheet");
+  const tAi = await getTranslations("ai");
   const locale = await getLocale();
   const admin = createAdminClient();
 
@@ -202,6 +206,15 @@ export default async function TimesheetPage({
           />
         </div>
       </section>
+
+      {/* AI weekly digest */}
+      {aiConfigured() ? (
+        <AiPanel
+          action={weeklyDigest}
+          title={t("aiDigestTitle")}
+          cta={tAi("generate")}
+        />
+      ) : null}
 
       {/* Log time */}
       <section className="flex flex-col gap-3">
