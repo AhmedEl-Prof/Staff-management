@@ -3,15 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManagedDepartmentIds } from "@/lib/permissions";
+import { getManagedDepartmentIds, isCompanyWide } from "@/lib/permissions";
 import type { SessionUser } from "@/lib/auth";
 
-// Bonus rows are department-scoped. We authorize the caller here (super admin,
-// or a manager of the department) and then write with the admin client — a
-// server action's Supabase client doesn't reliably carry the caller's JWT to
-// PostgREST, so relying on RLS for the write would reject it as anonymous.
+// Bonus rows are department-scoped. We authorize the caller here (super admin /
+// HR company-wide, or a manager of the department) and then write with the
+// admin client — a server action's Supabase client doesn't reliably carry the
+// caller's JWT to PostgREST, so relying on RLS for the write would reject it.
 async function canManage(caller: SessionUser, departmentId: string) {
-  if (caller.profile.role === "super_admin") return true;
+  if (isCompanyWide(caller.profile.role)) return true;
   const managed = await getManagedDepartmentIds(caller.id);
   return managed.includes(departmentId);
 }

@@ -24,7 +24,7 @@ const generateSchema = z.object({
 // only (RLS: evaluations_manage -> manages_user), with an explicit
 // canManageUser check for team-leader scoping.
 export async function generateEvaluation(formData: FormData) {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const parsed = generateSchema.safeParse({
     user_id: formData.get("user_id"),
     period_type: formData.get("period_type"),
@@ -72,7 +72,7 @@ const statusSchema = z.object({
 // Transitions an evaluation's status. When set to "sent", notifies the
 // employee that their evaluation is available.
 export async function setEvaluationStatus(formData: FormData) {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const parsed = statusSchema.safeParse({
     id: formData.get("id"),
     status: formData.get("status"),

@@ -422,7 +422,8 @@
   "roles": {
     "super_admin": "مدير عام",
     "team_leader": "قائد فريق",
-    "team_member": "عضو فريق"
+    "team_member": "عضو فريق",
+    "hr": "موارد بشرية"
   },
   "employment": {
     "full_time": "دوام كامل",

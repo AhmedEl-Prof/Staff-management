@@ -1,5 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManageableEmployees, getManagedDepartmentIds } from "@/lib/permissions";
+import {
+  getManageableEmployees,
+  getManagedDepartmentIds,
+  canManagePeople,
+  isCompanyWide,
+} from "@/lib/permissions";
 import type { ProfileRow, TaskStatus } from "@/types/database";
 
 export interface AttentionItem {
@@ -26,8 +31,7 @@ export async function getAttentionItems(
 ): Promise<AttentionItem[]> {
   const admin = createAdminClient();
   const today = new Date().toISOString().slice(0, 10);
-  const isManager =
-    profile.role === "super_admin" || profile.role === "team_leader";
+  const isManager = canManagePeople(profile.role);
 
   const items: AttentionItem[] = [];
 
@@ -87,11 +91,9 @@ export async function getAttentionItems(
     }
 
     // -- Manager: bonus sheets still in draft (this month) -------------------
-    const managedDeptIds =
-      profile.role === "super_admin"
-        ? (await admin.from("departments").select("id")).data?.map((d) => d.id) ??
-          []
-        : await getManagedDepartmentIds(userId);
+    const managedDeptIds = isCompanyWide(profile.role)
+      ? (await admin.from("departments").select("id")).data?.map((d) => d.id) ?? []
+      : await getManagedDepartmentIds(userId);
     if (managedDeptIds.length > 0) {
       const period = `${today.slice(0, 7)}-01`;
       const { data: drafts } = await admin

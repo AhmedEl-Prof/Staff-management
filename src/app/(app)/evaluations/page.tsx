@@ -3,7 +3,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManageableEmployees } from "@/lib/permissions";
+import { getManageableEmployees, canManagePeople } from "@/lib/permissions";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -27,8 +27,7 @@ const STATUS_VARIANT: Record<EvaluationStatus, "muted" | "secondary" | "success"
 export default async function EvaluationsPage() {
   const { profile } = await requireUser();
   const t = await getTranslations("evaluations");
-  const isManager =
-    profile.role === "super_admin" || profile.role === "team_leader";
+  const isManager = canManagePeople(profile.role);
 
   // RLS scopes evaluations to self + managed users.
   const supabase = await createClient();

@@ -2,7 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManageableEmployees, getManagedDepartmentIds } from "@/lib/permissions";
+import {
+  getManageableEmployees,
+  getManagedDepartmentIds,
+  isCompanyWide,
+} from "@/lib/permissions";
 import { periodRange } from "@/lib/evaluations";
 import {
   Table,
@@ -15,7 +19,7 @@ import {
 import { KpiLogForm, type Option } from "./kpi-log-form";
 
 export default async function KpisPage() {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const t = await getTranslations("kpis");
   const admin = createAdminClient();
 
@@ -30,7 +34,7 @@ export default async function KpisPage() {
     .order("name_ar");
 
   let kpis: Option[];
-  if (caller.profile.role === "super_admin") {
+  if (isCompanyWide(caller.profile.role)) {
     kpis = (allKpis ?? []).map((k) => ({
       id: k.id,
       label: `${k.name_ar || k.name}${k.unit ? ` (${k.unit})` : ""}`,

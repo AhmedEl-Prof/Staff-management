@@ -1,5 +1,22 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { ProfileRow } from "@/types/database";
+import type { AppRole, ProfileRow } from "@/types/database";
+
+// HR sees and manages every employee's people-data (employees, leave,
+// attendance, evaluations, KPIs, bonus) across all departments — company-wide,
+// like a super admin but scoped to HR concerns (no audit log / structure).
+export function isHr(role: AppRole): boolean {
+  return role === "hr";
+}
+
+// Roles with company-wide reach over employee/people data.
+export function isCompanyWide(role: AppRole): boolean {
+  return role === "super_admin" || role === "hr";
+}
+
+// Roles that can manage employees in some capacity (drives nav + page guards).
+export function canManagePeople(role: AppRole): boolean {
+  return role === "super_admin" || role === "hr" || role === "team_leader";
+}
 
 // Returns the ids of departments the given user manages: either as the named
 // department manager, or via a department_members row with role = 'manager'.
@@ -36,7 +53,8 @@ export async function getManageableEmployees(
 ): Promise<ManageableEmployee[]> {
   const admin = createAdminClient();
 
-  if (caller.role === "super_admin") {
+  // Super admins and HR see every active employee.
+  if (isCompanyWide(caller.role)) {
     const { data } = await admin
       .from("profiles")
       .select("id, arabic_name, full_name")
@@ -79,7 +97,7 @@ export async function canManageUser(
   caller: ProfileRow,
   targetUserId: string,
 ): Promise<boolean> {
-  if (caller.role === "super_admin") return true;
+  if (isCompanyWide(caller.role)) return true;
   if (caller.role !== "team_leader") return false;
   if (caller.id === targetUserId) return true;
 

@@ -422,7 +422,8 @@
   "roles": {
     "super_admin": "Super Admin",
     "team_leader": "Team Leader",
-    "team_member": "Team Member"
+    "team_member": "Team Member",
+    "hr": "HR"
   },
   "employment": {
     "full_time": "Full-time",

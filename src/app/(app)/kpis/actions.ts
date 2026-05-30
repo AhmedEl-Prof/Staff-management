@@ -23,7 +23,7 @@ export async function logKpiValue(
   _prev: LogKpiState,
   formData: FormData,
 ): Promise<LogKpiState> {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const parsed = logSchema.safeParse({
     user_id: formData.get("user_id"),
     kpi_id: formData.get("kpi_id"),
