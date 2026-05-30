@@ -49,6 +49,9 @@ export type ProfileRow = {
   arabic_name: string | null;
   avatar_url: string | null;
   phone: string | null;
+  whatsapp: string | null;
+  website_url: string | null;
+  cv_url: string | null;
   role: AppRole;
   employment_type: EmploymentType;
   weekly_hours: number;
@@ -426,6 +429,9 @@ export interface Database {
         | "arabic_name"
         | "avatar_url"
         | "phone"
+        | "whatsapp"
+        | "website_url"
+        | "cv_url"
         | "role"
         | "employment_type"
         | "weekly_hours"
