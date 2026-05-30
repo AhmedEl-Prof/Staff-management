@@ -465,6 +465,7 @@
     "alreadyToday": "You've logged today's standup",
     "edit": "Edit today's update",
     "teamToday": "Team standup today",
+    "aiSummaryTitle": "Standup summary (AI)",
     "noTeamUpdates": "No updates today yet",
     "blockersLabel": "Blockers",
     "moodGreat": "Great",
@@ -530,6 +531,13 @@
     "status_approved": "Approved",
     "status_paid": "Paid"
   },
+  "ai": {
+    "generate": "Summarize with AI",
+    "generating": "Generating...",
+    "notConfigured": "AI features are not enabled (needs ANTHROPIC_API_KEY).",
+    "noData": "Not enough data to summarize.",
+    "failed": "Couldn't generate, please try again."
+  },
   "leave": {
     "title": "Leave",
     "subtitle": "Request time off and track your balance and requests.",
@@ -571,6 +579,7 @@
     "prevWeek": "Previous week",
     "nextWeek": "Next week",
     "utilization": "Utilization",
+    "aiDigestTitle": "Your week (AI digest)",
     "hoursShort": "h",
     "logTime": "Log time",
     "task": "Task",

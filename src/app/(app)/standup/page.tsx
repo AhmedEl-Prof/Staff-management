@@ -3,7 +3,10 @@ import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Badge } from "@/components/ui/badge";
+import { AiPanel } from "@/components/ai-panel";
+import { aiConfigured } from "@/lib/ai";
 import { StandupForm } from "./standup-form";
+import { summarizeStandup } from "./ai-actions";
 import type { StandupResponseRow, StandupMood } from "@/types/database";
 
 const MOOD_VARIANT: Record<
@@ -20,6 +23,7 @@ const MOOD_VARIANT: Record<
 export default async function StandupPage() {
   const { id: userId, profile } = await requireUser();
   const t = await getTranslations("standup");
+  const tAi = await getTranslations("ai");
   const today = new Date().toISOString().slice(0, 10);
 
   const supabase = await createClient();
@@ -73,6 +77,13 @@ export default async function StandupPage() {
       {isManager ? (
         <section className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold">{t("teamToday")}</h2>
+          {aiConfigured() && teamRows.length > 0 ? (
+            <AiPanel
+              action={summarizeStandup}
+              title={t("aiSummaryTitle")}
+              cta={tAi("generate")}
+            />
+          ) : null}
           {teamRows.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               {t("noTeamUpdates")}
