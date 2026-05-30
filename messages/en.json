@@ -230,6 +230,15 @@
     "weeklyHours": "Weekly hours",
     "hireDate": "Hire date",
     "role": "Role",
+    "whatsapp": "WhatsApp number",
+    "website": "Website / Portfolio",
+    "cv": "CV / Résumé",
+    "cvHint": "PDF or Word — up to 10 MB.",
+    "currentCv": "View current CV",
+    "cvTooLarge": "File is larger than 10 MB.",
+    "cvType": "Unsupported file type (PDF or Word only).",
+    "cvUploadFailed": "CV upload failed, please try again.",
+    "saveFailed": "Couldn't save, please try again.",
     "saved": "Changes saved"
   },
   "drive": {
