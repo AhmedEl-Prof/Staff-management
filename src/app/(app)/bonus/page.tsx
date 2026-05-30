@@ -72,9 +72,17 @@ export default async function BonusPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
+        </div>
+        <Link
+          href="/bonus/awards"
+          className="text-primary text-sm font-medium hover:underline"
+        >
+          {t("openAwards")} ←
+        </Link>
       </div>
 
       {departments.length > 1 ? (
