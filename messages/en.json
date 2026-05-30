@@ -666,7 +666,10 @@
     "employee": "Employee",
     "statusCol": "Status",
     "present": "Present",
-    "absent": "Not logged"
+    "absent": "Not logged",
+    "monthSummary": "This month's total hours",
+    "daysPresent": "Days present",
+    "totalHours": "Total hours"
   },
   "pwa": {
     "installTitle": "Install the app on your device",

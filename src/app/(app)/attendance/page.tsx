@@ -191,6 +191,53 @@ export default async function AttendancePage() {
           </div>
         </section>
       ) : null}
+
+      {/* Manager: this month's worked-hours summary */}
+      {isManager ? (
+        <section className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold">
+              {t("monthSummary")} · <span dir="ltr">{todayStr.slice(0, 7)}</span>
+            </h2>
+            <CsvExportButton
+              filename={`attendance-hours-${todayStr.slice(0, 7)}`}
+              headers={[t("employee"), t("daysPresent"), t("totalHours")]}
+              rows={manageable.map((m) => [
+                m.label,
+                monthDays.get(m.id) ?? 0,
+                ((monthMinutes.get(m.id) ?? 0) / 60).toFixed(1),
+              ])}
+            />
+          </div>
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted/60">
+                  <th className="px-3 py-2.5 text-start font-medium">{t("employee")}</th>
+                  <th className="px-3 py-2.5 text-start font-medium">{t("daysPresent")}</th>
+                  <th className="px-3 py-2.5 text-start font-medium">{t("totalHours")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...manageable]
+                  .sort(
+                    (a, b) =>
+                      (monthMinutes.get(b.id) ?? 0) - (monthMinutes.get(a.id) ?? 0),
+                  )
+                  .map((m) => (
+                    <tr key={m.id} className="border-t">
+                      <td className="px-3 py-2 font-medium">{m.label}</td>
+                      <td className="px-3 py-2">{monthDays.get(m.id) ?? 0}</td>
+                      <td className="px-3 py-2 font-semibold">
+                        {fmtHours(monthMinutes.get(m.id) ?? 0)}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
