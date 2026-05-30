@@ -399,6 +399,16 @@ export type ChecklistTemplateRow = {
   updated_at: string;
 }
 
+export type PushSubscriptionRow = {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+  user_agent: string | null;
+  created_at: string;
+}
+
 // Maps a Row type to a Supabase-style { Row; Insert; Update } table definition.
 type TableDef<Row, InsertOptional extends keyof Row> = {
   Row: Row;
@@ -632,6 +642,10 @@ export interface Database {
       checklist_templates: TableDef<
         ChecklistTemplateRow,
         "id" | "sort_order" | "created_by" | "created_at" | "updated_at"
+      >;
+      push_subscriptions: TableDef<
+        PushSubscriptionRow,
+        "id" | "user_agent" | "created_at"
       >;
     };
     Views: Record<string, never>;

@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import { sendPushToUser } from "@/lib/push";
 
 // Notification "type" — drives which preference flag gates the email.
 export type NotificationType =
@@ -56,6 +57,18 @@ export async function notifyUser(args: NotifyArgs): Promise<void> {
     });
   } catch (err) {
     console.error("[notify] insert failed", err);
+  }
+
+  // Web push — best-effort, independent of the email preference. Reaches the
+  // user's device even when the app is closed (no-op if VAPID isn't set up).
+  try {
+    await sendPushToUser(args.userId, {
+      title: args.title,
+      body: args.message,
+      url: args.link,
+    });
+  } catch (err) {
+    console.error("[notify] push path failed", err);
   }
 
   if (args.inAppOnly) return;
