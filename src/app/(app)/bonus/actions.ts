@@ -2,13 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getManagedDepartmentIds } from "@/lib/permissions";
 import type { SessionUser } from "@/lib/auth";
 
-// Bonus rows are department-scoped. RLS already restricts writes to managers /
-// super admins (manages_department), but we also verify here so a non-manager
-// request is rejected early without touching the database.
+// Bonus rows are department-scoped. We authorize the caller here (super admin,
+// or a manager of the department) and then write with the admin client — a
+// server action's Supabase client doesn't reliably carry the caller's JWT to
+// PostgREST, so relying on RLS for the write would reject it as anonymous.
 async function canManage(caller: SessionUser, departmentId: string) {
   if (caller.profile.role === "super_admin") return true;
   const managed = await getManagedDepartmentIds(caller.id);
@@ -32,7 +33,7 @@ export async function addBonusItem(formData: FormData) {
   const item = String(formData.get("item") ?? "").trim();
   if (!item) return;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Append new rows after the existing ones.
   const { data: last } = await supabase
@@ -67,7 +68,7 @@ export async function updateBonusItem(formData: FormData) {
   const item = String(formData.get("item") ?? "").trim();
   if (!item) return;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from("bonus_items")
     .update({
@@ -88,7 +89,7 @@ export async function deleteBonusItem(formData: FormData) {
   const departmentId = String(formData.get("department_id") ?? "");
   if (!id || !departmentId || !(await canManage(caller, departmentId))) return;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("bonus_items").delete().eq("id", id);
   if (error) console.error("deleteBonusItem failed", error);
 
