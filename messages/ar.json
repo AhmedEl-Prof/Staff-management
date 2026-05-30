@@ -20,7 +20,9 @@
     "add": "إضافة",
     "remove": "إزالة",
     "none": "لا شيء",
-    "details": "تفاصيل"
+    "details": "تفاصيل",
+    "toggleTheme": "تبديل المظهر (فاتح/داكن)",
+    "toggleLanguage": "تغيير اللغة"
   },
   "nav": {
     "dashboard": "لوحة التحكم",

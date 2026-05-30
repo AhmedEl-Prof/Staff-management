@@ -20,7 +20,9 @@
     "add": "Add",
     "remove": "Remove",
     "none": "None",
-    "details": "Details"
+    "details": "Details",
+    "toggleTheme": "Toggle theme (light/dark)",
+    "toggleLanguage": "Switch language"
   },
   "nav": {
     "dashboard": "Dashboard",

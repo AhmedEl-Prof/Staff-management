@@ -2,7 +2,10 @@
 
 import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import type { Locale } from "@/i18n/config";
 
 // Responsive app shell. On desktop the sidebar is always visible; on mobile it
 // becomes an off-canvas drawer toggled by a top bar button. The sidebar +
@@ -11,10 +14,12 @@ import { Menu, X } from "lucide-react";
 export function AppShell({
   sidebar,
   appName,
+  locale,
   children,
 }: {
   sidebar: ReactNode;
   appName: string;
+  locale: Locale;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -42,6 +47,10 @@ export function AppShell({
           <Menu className="size-5" />
         </button>
         <span className="text-sm font-bold">{appName}</span>
+        <div className="ms-auto flex items-center gap-1">
+          <LocaleSwitcher locale={locale} />
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Backdrop (mobile, when open) */}

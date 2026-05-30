@@ -1,9 +1,12 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav, type NavItem } from "@/components/app-nav";
 import { NotificationBell } from "@/components/notification-bell";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { AppShell } from "@/components/app-shell";
+import type { Locale } from "@/i18n/config";
 
 // Shared shell for all authenticated pages: sidebar nav + content area.
 // requireUser() redirects to /login if there is somehow no session (the proxy
@@ -15,6 +18,7 @@ export default async function AppLayout({
 }) {
   const { id: userId, profile } = await requireUser();
   const t = await getTranslations("app");
+  const locale = (await getLocale()) as Locale;
 
   const isSuperAdmin = profile.role === "super_admin";
   const canManageEmployees =
@@ -62,16 +66,20 @@ export default async function AppLayout({
       <div className="flex items-center justify-between border-b p-4">
         <div>
           <p className="text-sm font-bold">{t("name")}</p>
-          <p className="text-xs text-muted-foreground">{t("company")}</p>
+          <p className="text-muted-foreground text-xs">{t("company")}</p>
         </div>
-        <NotificationBell userId={userId} initialUnread={initialUnread ?? 0} />
+        <div className="flex items-center gap-1">
+          <LocaleSwitcher locale={locale} />
+          <ThemeToggle />
+          <NotificationBell userId={userId} initialUnread={initialUnread ?? 0} />
+        </div>
       </div>
       <AppNav items={navItems} />
     </>
   );
 
   return (
-    <AppShell sidebar={sidebar} appName={t("name")}>
+    <AppShell sidebar={sidebar} appName={t("name")} locale={locale}>
       {children}
     </AppShell>
   );
