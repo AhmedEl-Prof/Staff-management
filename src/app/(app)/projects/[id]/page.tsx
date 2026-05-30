@@ -14,11 +14,13 @@ import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { ProjectDriveSection } from "./drive-section";
+import { ProjectChecklist } from "./checklist";
 import {
   deleteProject,
   addProjectMember,
   removeProjectMember,
 } from "../actions";
+import type { ProjectChecklistItemRow } from "@/types/database";
 
 const PROJECT_ROLES = ["lead", "member", "observer"] as const;
 
@@ -73,6 +75,14 @@ export default async function ProjectDetailPage({
     .maybeSingle();
   const employees = await getEmployeeOptions();
   const nameById = new Map(employees.map((e) => [e.id, e.label]));
+
+  const { data: checklistRows } = await supabase
+    .from("project_checklist_items")
+    .select("*")
+    .eq("project_id", id)
+    .order("sort_order")
+    .order("created_at");
+  const checklistItems = (checklistRows ?? []) as ProjectChecklistItemRow[];
 
   return (
     <div className="flex max-w-3xl flex-col gap-8">
@@ -143,6 +153,13 @@ export default async function ProjectDetailPage({
         projectId={id}
         folderId={project.drive_folder_id}
         folderUrl={driveFolder?.folder_url ?? null}
+        canManage={canManage}
+      />
+
+      <ProjectChecklist
+        projectId={id}
+        items={checklistItems}
+        employees={employees}
         canManage={canManage}
       />
 

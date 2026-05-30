@@ -533,6 +533,18 @@
     "status_approved": "معتمد",
     "status_paid": "مدفوع"
   },
+  "checklist": {
+    "title": "تشيك ليست المشروع",
+    "item": "البند",
+    "assignee": "المسؤول",
+    "unassigned": "غير مُسنَد",
+    "notes": "ملاحظات",
+    "add": "إضافة بند",
+    "done": "تم",
+    "toggle": "تبديل الحالة",
+    "empty": "لا توجد بنود بعد.",
+    "deleteConfirm": "متأكد من حذف هذا البند؟"
+  },
   "ai": {
     "generate": "تلخيص بالذكاء الاصطناعي",
     "generating": "جاري التوليد...",

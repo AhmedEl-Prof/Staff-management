@@ -533,6 +533,18 @@
     "status_approved": "Approved",
     "status_paid": "Paid"
   },
+  "checklist": {
+    "title": "Project checklist",
+    "item": "Item",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "notes": "Notes",
+    "add": "Add item",
+    "done": "done",
+    "toggle": "Toggle status",
+    "empty": "No items yet.",
+    "deleteConfirm": "Delete this item?"
+  },
   "ai": {
     "generate": "Summarize with AI",
     "generating": "Generating...",
