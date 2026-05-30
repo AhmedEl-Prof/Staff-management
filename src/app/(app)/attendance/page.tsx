@@ -25,11 +25,24 @@ function duration(row: Pick<AttendanceRow, "check_in" | "check_out">): string {
   return `${Math.floor(mins / 60)}س ${mins % 60}د`;
 }
 
+function workedMinutes(
+  row: Pick<AttendanceRow, "check_in" | "check_out">,
+): number {
+  if (!row.check_in || !row.check_out) return 0;
+  const ms = new Date(row.check_out).getTime() - new Date(row.check_in).getTime();
+  return ms > 0 ? Math.round(ms / 60000) : 0;
+}
+
+function fmtHours(mins: number): string {
+  return `${Math.floor(mins / 60)}س ${mins % 60}د`;
+}
+
 export default async function AttendancePage() {
   const { id: userId, profile } = await requireUser();
   const t = await getTranslations("attendance");
   const admin = createAdminClient();
   const todayStr = new Date().toISOString().slice(0, 10);
+  const monthStart = `${todayStr.slice(0, 7)}-01`;
 
   const [{ data: todayRow }, { data: recent }] = await Promise.all([
     admin
@@ -49,19 +62,35 @@ export default async function AttendancePage() {
   const checkedIn = !!todayRow?.check_in;
   const checkedOut = !!todayRow?.check_out;
 
-  // Manager: today's attendance for the team.
+  // Manager: team attendance (today + this month's hours summary).
   const manageable = await getManageableEmployees(profile);
   const isManager = manageable.length > 0;
   const nameById = new Map(manageable.map((m) => [m.id, m.label]));
   let teamToday: AttendanceRow[] = [];
+  const monthMinutes = new Map<string, number>();
+  const monthDays = new Map<string, number>();
   if (isManager) {
     const ids = manageable.map((m) => m.id);
-    const { data } = await admin
-      .from("attendance")
-      .select("*")
-      .in("user_id", ids)
-      .eq("date", todayStr);
-    teamToday = (data ?? []) as AttendanceRow[];
+    const [{ data: todayData }, { data: monthData }] = await Promise.all([
+      admin.from("attendance").select("*").in("user_id", ids).eq("date", todayStr),
+      admin
+        .from("attendance")
+        .select("user_id, check_in, check_out")
+        .in("user_id", ids)
+        .gte("date", monthStart)
+        .lte("date", todayStr),
+    ]);
+    teamToday = (todayData ?? []) as AttendanceRow[];
+    for (const row of monthData ?? []) {
+      if (!row.user_id) continue;
+      if (row.check_in) {
+        monthDays.set(row.user_id, (monthDays.get(row.user_id) ?? 0) + 1);
+      }
+      const mins = workedMinutes(row);
+      if (mins > 0) {
+        monthMinutes.set(row.user_id, (monthMinutes.get(row.user_id) ?? 0) + mins);
+      }
+    }
   }
   const teamByUser = new Map(teamToday.map((r) => [r.user_id, r]));
 
