@@ -36,6 +36,7 @@
     "leave": "Leave",
     "attendance": "Attendance",
     "timesheet": "Timesheet",
+    "checklists": "Checklist templates",
     "evaluations": "Evaluations",
     "kpis": "KPIs",
     "analytics": "Analytics",
@@ -551,7 +552,19 @@
     "done": "done",
     "toggle": "Toggle status",
     "empty": "No items yet.",
-    "deleteConfirm": "Delete this item?"
+    "deleteConfirm": "Delete this item?",
+    "applyTemplate": "Apply department template"
+  },
+  "checklistTemplates": {
+    "title": "Checklist templates",
+    "subtitle": "A standard checklist per department — auto-applied to every new project in that department.",
+    "item": "Item",
+    "add": "Add item",
+    "empty": "No template items yet.",
+    "deleteConfirm": "Delete this template item?",
+    "noDepartment": "You're not a member of any department yet.",
+    "managerNote": "These items are copied automatically into every new project in the department. You can also apply them to an existing project from the project page.",
+    "readonlyNote": "This template is maintained by your department manager."
   },
   "ai": {
     "generate": "Summarize with AI",

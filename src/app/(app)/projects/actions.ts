@@ -105,6 +105,23 @@ export async function createProject(
     return { error: "save_failed" };
   }
 
+  // Seed the project's checklist from the department's template, if any.
+  const { data: template } = await admin
+    .from("checklist_templates")
+    .select("label, sort_order")
+    .eq("department_id", parsed.data.department_id)
+    .order("sort_order");
+  if (template && template.length > 0) {
+    await admin.from("project_checklist_items").insert(
+      template.map((item) => ({
+        project_id: data.id,
+        label: item.label,
+        sort_order: item.sort_order,
+        created_by: caller.id,
+      })),
+    );
+  }
+
   revalidatePath("/projects");
   redirect(`/projects/${data.id}`);
 }

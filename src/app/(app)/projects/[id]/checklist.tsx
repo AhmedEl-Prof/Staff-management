@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Plus } from "lucide-react";
+import { Plus, ListPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -12,6 +12,7 @@ import {
   updateChecklistItem,
   toggleChecklistItem,
   deleteChecklistItem,
+  applyTemplate,
 } from "./checklist-actions";
 
 // Per-project checklist. Every project member sees the list and can tick an
@@ -37,11 +38,22 @@ export function ProjectChecklist({
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold">{t("title")}</h2>
-        {items.length > 0 ? (
-          <span className="text-muted-foreground text-sm">
-            {doneCount}/{items.length} {t("done")}
-          </span>
-        ) : null}
+        <div className="flex items-center gap-3">
+          {items.length > 0 ? (
+            <span className="text-muted-foreground text-sm">
+              {doneCount}/{items.length} {t("done")}
+            </span>
+          ) : null}
+          {canManage ? (
+            <form action={applyTemplate}>
+              <input type="hidden" name="project_id" value={projectId} />
+              <Button type="submit" size="sm" variant="outline" className="gap-2">
+                <ListPlus className="size-4" />
+                {t("applyTemplate")}
+              </Button>
+            </form>
+          ) : null}
+        </div>
       </div>
 
       {items.length === 0 ? (

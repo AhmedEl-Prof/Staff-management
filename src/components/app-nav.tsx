@@ -21,6 +21,7 @@ import {
   CalendarDays,
   Clock,
   Timer,
+  ListTodo,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,7 @@ export interface NavItem {
     | "leave"
     | "attendance"
     | "timesheet"
+    | "checklists"
     | "audit"
     | "notifications"
     | "profile";
@@ -63,6 +65,7 @@ const icons = {
   leave: CalendarDays,
   attendance: Clock,
   timesheet: Timer,
+  checklists: ListTodo,
   audit: ScrollText,
   notifications: Bell,
   profile: UserCircle,
