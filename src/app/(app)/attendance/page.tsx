@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getManageableEmployees } from "@/lib/permissions";
 import { Button } from "@/components/ui/button";
+import { CsvExportButton } from "@/components/csv-export-button";
 import { checkIn, checkOut } from "./actions";
 import type { AttendanceRow } from "@/types/database";
 
@@ -116,7 +117,19 @@ export default async function AttendancePage() {
 
       {/* My recent */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{t("recent")}</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">{t("recent")}</h2>
+          <CsvExportButton
+            filename={`attendance-${todayStr}`}
+            headers={[t("date"), t("checkIn"), t("checkOut"), t("worked")]}
+            rows={(recent ?? []).map((r) => [
+              r.date,
+              fmtTime(r.check_in),
+              fmtTime(r.check_out),
+              duration(r),
+            ])}
+          />
+        </div>
         {(recent ?? []).length === 0 ? (
           <p className="text-muted-foreground text-sm">{t("noRecords")}</p>
         ) : (

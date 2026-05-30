@@ -22,7 +22,8 @@
     "none": "None",
     "details": "Details",
     "toggleTheme": "Toggle theme (light/dark)",
-    "toggleLanguage": "Switch language"
+    "toggleLanguage": "Switch language",
+    "exportCsv": "Export CSV"
   },
   "nav": {
     "dashboard": "Dashboard",

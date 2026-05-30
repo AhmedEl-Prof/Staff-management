@@ -22,7 +22,8 @@
     "none": "لا شيء",
     "details": "تفاصيل",
     "toggleTheme": "تبديل المظهر (فاتح/داكن)",
-    "toggleLanguage": "تغيير اللغة"
+    "toggleLanguage": "تغيير اللغة",
+    "exportCsv": "تصدير CSV"
   },
   "nav": {
     "dashboard": "لوحة التحكم",

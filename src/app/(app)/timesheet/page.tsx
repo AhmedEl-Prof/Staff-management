@@ -9,6 +9,7 @@ import { weekStart, weekEnd, weekDays, addDays } from "@/lib/timesheet";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AiPanel } from "@/components/ai-panel";
+import { CsvExportButton } from "@/components/csv-export-button";
 import { aiConfigured } from "@/lib/ai";
 import { TimeLogForm } from "./time-log-form";
 import { deleteTimeLog } from "./actions";
@@ -229,7 +230,19 @@ export default async function TimesheetPage({
 
       {/* Week entries */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{t("entries")}</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">{t("entries")}</h2>
+          <CsvExportButton
+            filename={`timesheet-${start}`}
+            headers={[t("date"), t("task"), t("note"), t("hours")]}
+            rows={myLogs.map((l) => [
+              l.logged_date,
+              taskMap.get(l.task_id)?.title ?? "",
+              l.description ?? "",
+              Number(l.hours),
+            ])}
+          />
+        </div>
         <div className="flex flex-col gap-3">
           {days.map((d) => {
             const dayLogs = logsByDay.get(d) ?? [];
