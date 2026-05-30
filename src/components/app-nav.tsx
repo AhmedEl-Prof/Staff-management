@@ -18,6 +18,8 @@ import {
   BarChart3,
   Trophy,
   Coins,
+  CalendarDays,
+  Clock,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,6 +39,8 @@ export interface NavItem {
     | "analytics"
     | "employees"
     | "bonus"
+    | "leave"
+    | "attendance"
     | "audit"
     | "notifications"
     | "profile";
@@ -54,6 +58,8 @@ const icons = {
   analytics: BarChart3,
   employees: Users,
   bonus: Coins,
+  leave: CalendarDays,
+  attendance: Clock,
   audit: ScrollText,
   notifications: Bell,
   profile: UserCircle,

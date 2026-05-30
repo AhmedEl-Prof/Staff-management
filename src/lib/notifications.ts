@@ -8,7 +8,8 @@ export type NotificationType =
   | "mention"
   | "evaluation"
   | "project_member_added"
-  | "bonus_status";
+  | "bonus_status"
+  | "leave_update";
 
 // Maps a notification type to the column in notification_preferences that
 // gates email delivery for it.
@@ -19,6 +20,7 @@ const EMAIL_PREF_COLUMN: Record<NotificationType, string> = {
   evaluation: "email_evaluations",
   project_member_added: "email_task_assigned",
   bonus_status: "email_evaluations",
+  leave_update: "email_evaluations",
 };
 
 export interface NotifyArgs {
