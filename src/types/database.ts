@@ -335,6 +335,47 @@ export type BonusAwardRow = {
   updated_at: string;
 }
 
+export type LeaveType = "annual" | "sick" | "casual";
+export type LeaveStatus = "pending" | "approved" | "rejected" | "cancelled";
+
+export type LeaveBalanceRow = {
+  id: string;
+  user_id: string;
+  year: number;
+  annual_quota: number;
+  sick_quota: number;
+  casual_quota: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type LeaveRequestRow = {
+  id: string;
+  user_id: string;
+  department_id: string | null;
+  type: LeaveType;
+  start_date: string;
+  end_date: string;
+  days: number;
+  reason: string | null;
+  status: LeaveStatus;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_note: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type AttendanceRow = {
+  id: string;
+  user_id: string;
+  date: string;
+  check_in: string | null;
+  check_out: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Maps a Row type to a Supabase-style { Row; Insert; Update } table definition.
 type TableDef<Row, InsertOptional extends keyof Row> = {
   Row: Row;
@@ -528,6 +569,32 @@ export interface Database {
         | "created_at"
         | "updated_at"
       >;
+      leave_balances: TableDef<
+        LeaveBalanceRow,
+        | "id"
+        | "annual_quota"
+        | "sick_quota"
+        | "casual_quota"
+        | "created_at"
+        | "updated_at"
+      >;
+      leave_requests: TableDef<
+        LeaveRequestRow,
+        | "id"
+        | "department_id"
+        | "days"
+        | "reason"
+        | "status"
+        | "reviewed_by"
+        | "reviewed_at"
+        | "review_note"
+        | "created_at"
+        | "updated_at"
+      >;
+      attendance: TableDef<
+        AttendanceRow,
+        "id" | "check_in" | "check_out" | "created_at" | "updated_at"
+      >;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -544,6 +611,8 @@ export interface Database {
       evaluation_status: EvaluationStatus;
       standup_mood: StandupMood;
       bonus_status: BonusStatus;
+      leave_type: LeaveType;
+      leave_status: LeaveStatus;
     };
     CompositeTypes: Record<string, never>;
   };
