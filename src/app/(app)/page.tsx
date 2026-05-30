@@ -6,11 +6,13 @@ import {
   Users,
   Bell,
   TrendingUp,
+  AlertCircle,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeVisibleWorkloads } from "@/lib/workload";
+import { getAttentionItems } from "@/lib/attention";
 import { WorkloadWidget } from "@/components/workload-widget";
 import { Badge } from "@/components/ui/badge";
 import type { TaskRow, TaskStatus } from "@/types/database";
@@ -23,6 +25,7 @@ export default async function DashboardPage() {
   const tRoles = await getTranslations("roles");
   const tPriority = await getTranslations("priority");
   const tStatus = await getTranslations("taskStatus");
+  const tAttention = await getTranslations("attention");
 
   const displayName = profile.arabic_name || profile.full_name || email;
   const isManager =
@@ -61,6 +64,7 @@ export default async function DashboardPage() {
   ]);
 
   const myTasks = (myTasksData ?? []) as TaskRow[];
+  const attention = await getAttentionItems(userId, profile);
 
   // Team member count (managers only — uses admin client for cross-user count).
   let teamCount = 0;
@@ -142,6 +146,32 @@ export default async function DashboardPage() {
           );
         })}
       </div>
+
+      {/* Needs attention */}
+      {attention.length > 0 ? (
+        <div className="rounded-xl border bg-card p-5">
+          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold">
+            <AlertCircle className="size-4 text-amber-500" />
+            {tAttention("title")}
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {attention.map((item) => (
+              <Link
+                key={item.key}
+                href={item.href}
+                className="hover:bg-muted/60 flex items-center gap-3 rounded-lg border px-4 py-3 transition-colors"
+              >
+                <span className="bg-amber-100 text-amber-700 flex size-8 shrink-0 items-center justify-center rounded-md text-sm font-bold dark:bg-amber-500/15 dark:text-amber-400">
+                  {item.count}
+                </span>
+                <span className="text-sm font-medium">
+                  {tAttention(item.labelKey)}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* My tasks */}

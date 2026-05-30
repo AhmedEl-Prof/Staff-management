@@ -534,6 +534,13 @@
     "status_approved": "Approved",
     "status_paid": "Paid"
   },
+  "attention": {
+    "title": "Needs attention",
+    "overdueTasks": "Overdue tasks",
+    "leaveToReview": "Leave requests awaiting your review",
+    "myChecklist": "Open checklist items assigned to you",
+    "bonusDrafts": "Bonus still in draft this month"
+  },
   "checklist": {
     "title": "Project checklist",
     "item": "Item",
