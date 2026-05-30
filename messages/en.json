@@ -29,6 +29,7 @@
     "standup": "Daily standup",
     "peerReview": "Peer reviews",
     "leaderboard": "Leaderboard",
+    "bonus": "Bonus structure",
     "evaluations": "Evaluations",
     "kpis": "KPIs",
     "analytics": "Analytics",
@@ -335,7 +336,9 @@
     "deleteConfirm": "Delete this project? Its tasks will be removed.",
     "selectEmployee": "Select an employee",
     "noMembers": "No members yet",
-    "notAllowed": "You are not allowed to perform this action"
+    "notAllowed": "You are not allowed to perform this action",
+    "saveError": "Couldn't save the project. Please try again; if it persists, make sure you have access to the selected department.",
+    "invalidError": "Some fields are missing or invalid. Please review and try again."
   },
   "projectStatus": {
     "planning": "Planning",
@@ -486,5 +489,28 @@
     "entityEvaluations": "Evaluation",
     "filterAll": "All",
     "showDetails": "Change details"
+  },
+  "bonus": {
+    "title": "Bonus structure",
+    "subtitle": "Bonus items, their weight, cap and how each is calculated — per department.",
+    "item": "Item",
+    "weight": "Weight",
+    "max": "Max",
+    "method": "Calculation method",
+    "actions": "Actions",
+    "add": "Add item",
+    "empty": "No items yet.",
+    "egp": "EGP",
+    "noDepartment": "You're not a member of any department yet, so there's no bonus table to show.",
+    "readonlyNote": "This table is maintained by your department manager.",
+    "deleteConfirm": "Delete this item?"
+  },
+  "pwa": {
+    "installTitle": "Install the app on your device",
+    "installBody": "Get faster access — add the app to your home screen and open it like any native app.",
+    "install": "Install",
+    "dismiss": "Not now",
+    "iosTitle": "Install on iPhone",
+    "iosBody": "Tap the Share button in Safari, then choose \"Add to Home Screen\"."
   }
 }
