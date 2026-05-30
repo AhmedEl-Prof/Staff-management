@@ -295,6 +295,19 @@ export type AuditLogRow = {
   created_at: string;
 }
 
+export type BonusItemRow = {
+  id: string;
+  department_id: string;
+  item: string;
+  weight_percent: number | null;
+  max_amount: number | null;
+  method: string | null;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Maps a Row type to a Supabase-style { Row; Insert; Update } table definition.
 type TableDef<Row, InsertOptional extends keyof Row> = {
   Row: Row;
@@ -458,6 +471,17 @@ export interface Database {
         | "ip_address"
         | "user_agent"
         | "created_at"
+      >;
+      bonus_items: TableDef<
+        BonusItemRow,
+        | "id"
+        | "weight_percent"
+        | "max_amount"
+        | "method"
+        | "sort_order"
+        | "created_by"
+        | "created_at"
+        | "updated_at"
       >;
     };
     Views: Record<string, never>;

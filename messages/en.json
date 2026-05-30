@@ -29,6 +29,7 @@
     "standup": "Daily standup",
     "peerReview": "Peer reviews",
     "leaderboard": "Leaderboard",
+    "bonus": "Bonus structure",
     "evaluations": "Evaluations",
     "kpis": "KPIs",
     "analytics": "Analytics",
@@ -488,6 +489,21 @@
     "entityEvaluations": "Evaluation",
     "filterAll": "All",
     "showDetails": "Change details"
+  },
+  "bonus": {
+    "title": "Bonus structure",
+    "subtitle": "Bonus items, their weight, cap and how each is calculated — per department.",
+    "item": "Item",
+    "weight": "Weight",
+    "max": "Max",
+    "method": "Calculation method",
+    "actions": "Actions",
+    "add": "Add item",
+    "empty": "No items yet.",
+    "egp": "EGP",
+    "noDepartment": "You're not a member of any department yet, so there's no bonus table to show.",
+    "readonlyNote": "This table is maintained by your department manager.",
+    "deleteConfirm": "Delete this item?"
   },
   "pwa": {
     "installTitle": "Install the app on your device",

@@ -17,6 +17,7 @@ import {
   HeartHandshake,
   BarChart3,
   Trophy,
+  Coins,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ export interface NavItem {
     | "kpis"
     | "analytics"
     | "employees"
+    | "bonus"
     | "audit"
     | "notifications"
     | "profile";
@@ -51,6 +53,7 @@ const icons = {
   kpis: Target,
   analytics: BarChart3,
   employees: Users,
+  bonus: Coins,
   audit: ScrollText,
   notifications: Bell,
   profile: UserCircle,
