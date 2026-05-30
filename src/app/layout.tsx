@@ -56,9 +56,9 @@ export default async function RootLayout({
       <body className="bg-background text-foreground min-h-full">
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>
+          <ServiceWorkerRegister />
+          <InstallPrompt />
         </NextIntlClientProvider>
-        <ServiceWorkerRegister />
-        <InstallPrompt />
       </body>
     </html>
   );
