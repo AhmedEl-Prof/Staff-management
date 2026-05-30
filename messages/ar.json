@@ -666,7 +666,10 @@
     "employee": "الموظف",
     "statusCol": "الحالة",
     "present": "حاضر",
-    "absent": "لم يسجّل"
+    "absent": "لم يسجّل",
+    "monthSummary": "إجمالي ساعات الشهر",
+    "daysPresent": "أيام الحضور",
+    "totalHours": "إجمالي الساعات"
   },
   "pwa": {
     "installTitle": "ثبّت السيستم على جهازك",
