@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cairo } from "next/font/google";
+import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { localeDirection, type Locale } from "@/i18n/config";
@@ -45,12 +46,16 @@ export default async function RootLayout({
   const locale = (await getLocale()) as Locale;
   const messages = await getMessages();
   const dir = localeDirection[locale] ?? "rtl";
+  const theme = (await cookies()).get("theme")?.value;
+  const htmlClass = `${cairo.variable} h-full antialiased${
+    theme === "dark" ? " dark" : ""
+  }`;
 
   return (
     <html
       lang={locale}
       dir={dir}
-      className={`${cairo.variable} h-full antialiased`}
+      className={htmlClass}
       suppressHydrationWarning
     >
       <body className="bg-background text-foreground min-h-full">
