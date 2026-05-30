@@ -20,7 +20,7 @@ import { deleteEmployee } from "./actions";
 import type { ProfileRow } from "@/types/database";
 
 export default async function EmployeesPage() {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const t = await getTranslations("employees");
   const tRoles = await getTranslations("roles");
   const tc = await getTranslations("common");

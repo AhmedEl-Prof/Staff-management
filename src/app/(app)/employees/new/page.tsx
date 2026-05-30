@@ -1,25 +1,28 @@
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
-import { getManagedDepartmentIds } from "@/lib/permissions";
+import { getManagedDepartmentIds, isCompanyWide } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { InviteForm, type DepartmentOption } from "./invite-form";
 import type { AppRole } from "@/types/database";
 
 export default async function NewEmployeePage() {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const t = await getTranslations("employees");
   const admin = createAdminClient();
 
   const isSuperAdmin = caller.profile.role === "super_admin";
+  // Super admins and HR pick from all departments; HR can assign any role
+  // except super_admin; team leaders only add team members in their depts.
+  const companyWide = isCompanyWide(caller.profile.role);
 
-  // Super admins may assign any role and any department; team leaders may only
-  // invite team members into departments they manage.
   const roleOptions: AppRole[] = isSuperAdmin
-    ? ["super_admin", "team_leader", "team_member"]
-    : ["team_member"];
+    ? ["super_admin", "team_leader", "team_member", "hr"]
+    : caller.profile.role === "hr"
+      ? ["team_leader", "team_member", "hr"]
+      : ["team_member"];
 
   let departments: DepartmentOption[] = [];
-  if (isSuperAdmin) {
+  if (companyWide) {
     const { data } = await admin
       .from("departments")
       .select("id, name_ar, name")

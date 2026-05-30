@@ -15,7 +15,7 @@ export type Json =
   | Json[];
 
 // -- Enums --------------------------------------------------------------------
-export type AppRole = "super_admin" | "team_leader" | "team_member";
+export type AppRole = "super_admin" | "team_leader" | "team_member" | "hr";
 export type EmploymentType = "full_time" | "part_time" | "freelance";
 export type DepartmentMemberRole = "manager" | "member";
 export type ProjectStatus =

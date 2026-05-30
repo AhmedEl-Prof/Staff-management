@@ -3,17 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManagedDepartmentIds } from "@/lib/permissions";
+import { getManagedDepartmentIds, isCompanyWide } from "@/lib/permissions";
 import { computeAmount, monthStart } from "@/lib/bonus-awards";
 import { notifyUser } from "@/lib/notifications";
 import type { SessionUser } from "@/lib/auth";
 import type { BonusStatus } from "@/types/database";
 
-// Awards are written by a department manager (or super admin). Authorize here
-// and write with the admin client (a server action's user client doesn't carry
-// the JWT to PostgREST reliably).
+// Awards are written by a department manager (or super admin / HR company-wide).
+// Authorize here and write with the admin client (a server action's user client
+// doesn't carry the JWT to PostgREST reliably).
 async function canManage(caller: SessionUser, departmentId: string) {
-  if (caller.profile.role === "super_admin") return true;
+  if (isCompanyWide(caller.profile.role)) return true;
   const managed = await getManagedDepartmentIds(caller.id);
   return managed.includes(departmentId);
 }

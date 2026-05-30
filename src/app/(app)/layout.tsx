@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { requireUser } from "@/lib/auth";
+import { canManagePeople } from "@/lib/permissions";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav, type NavItem } from "@/components/app-nav";
 import { NotificationBell } from "@/components/notification-bell";
@@ -21,8 +22,7 @@ export default async function AppLayout({
   const locale = (await getLocale()) as Locale;
 
   const isSuperAdmin = profile.role === "super_admin";
-  const canManageEmployees =
-    profile.role === "super_admin" || profile.role === "team_leader";
+  const canManageEmployees = canManagePeople(profile.role);
 
   const navItems: NavItem[] = [
     { href: "/", key: "dashboard" },
@@ -43,8 +43,11 @@ export default async function AppLayout({
           { href: "/kpis", key: "kpis" as const },
           { href: "/analytics", key: "analytics" as const },
           { href: "/employees", key: "employees" as const },
-          { href: "/checklists", key: "checklists" as const },
         ]
+      : []),
+    // Checklist templates is a project-management tool — not for HR.
+    ...(isSuperAdmin || profile.role === "team_leader"
+      ? [{ href: "/checklists", key: "checklists" as const }]
       : []),
     ...(isSuperAdmin
       ? [{ href: "/audit", key: "audit" as const }]

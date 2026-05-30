@@ -12,7 +12,7 @@ const inviteSchema = z.object({
   email: z.string().email(),
   full_name: z.string().trim().max(120).optional(),
   arabic_name: z.string().trim().max(120).optional(),
-  role: z.enum(["super_admin", "team_leader", "team_member"]),
+  role: z.enum(["super_admin", "team_leader", "team_member", "hr"]),
   employment_type: z.enum(["full_time", "part_time", "freelance"]),
   weekly_hours: z.coerce.number().int().min(0).max(168).default(40),
   department_id: z.string().uuid().optional(),
@@ -54,7 +54,7 @@ export async function inviteEmployee(
   _prev: InviteState,
   formData: FormData,
 ): Promise<InviteState> {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
 
   const parsed = inviteSchema.safeParse({
     email: formData.get("email"),
@@ -83,6 +83,11 @@ export async function inviteEmployee(
     if (!data.department_id || !managed.includes(data.department_id)) {
       return { error: "notAllowed", success: false };
     }
+  }
+
+  // HR may create employees company-wide, but not another super admin.
+  if (caller.profile.role === "hr" && data.role === "super_admin") {
+    return { error: "notAllowed", success: false };
   }
 
   const admin = createAdminClient();
@@ -169,7 +174,7 @@ function escapeHtml(s: string): string {
 // Activates or deactivates an employee account. Authorized for super admins
 // (anyone) and team leaders (members of departments they manage).
 export async function setEmployeeActive(formData: FormData) {
-  const caller = await requireRole(["super_admin", "team_leader"]);
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const userId = String(formData.get("user_id") ?? "");
   const isActive = String(formData.get("is_active")) === "true";
 

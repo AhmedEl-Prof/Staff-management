@@ -3,7 +3,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManagedDepartmentIds } from "@/lib/permissions";
+import { getManagedDepartmentIds, isCompanyWide } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 import { BonusTable } from "./bonus-table";
 import type { BonusItemRow } from "@/types/database";
@@ -22,8 +22,9 @@ export default async function BonusPage({
 
   // Which departments can this user see a table for?
   const managedIds = await getManagedDepartmentIds(userId);
+  const companyWide = isCompanyWide(profile.role);
   let visibleIds: string[];
-  if (profile.role === "super_admin") {
+  if (companyWide) {
     const { data } = await admin.from("departments").select("id");
     visibleIds = (data ?? []).map((d) => d.id);
   } else {
@@ -57,8 +58,7 @@ export default async function BonusPage({
 
   const { dept } = await searchParams;
   const selected = departments.find((d) => d.id === dept) ?? departments[0];
-  const canManage =
-    profile.role === "super_admin" || managedIds.includes(selected.id);
+  const canManage = companyWide || managedIds.includes(selected.id);
 
   // Read rows through the user client so RLS confirms department access.
   const supabase = await createClient();

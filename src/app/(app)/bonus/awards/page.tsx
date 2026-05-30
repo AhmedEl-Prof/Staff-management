@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getManagedDepartmentIds } from "@/lib/permissions";
+import { getManagedDepartmentIds, isCompanyWide } from "@/lib/permissions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -52,10 +52,10 @@ export default async function BonusAwardsPage({
         ? t("status_paid")
         : t("status_draft");
 
-  // -- Departments this user manages (super admins manage all) ----------------
+  // -- Departments this user manages (super admins / HR manage all) -----------
   const managedIds = await getManagedDepartmentIds(userId);
   let managerDeptIds: string[];
-  if (profile.role === "super_admin") {
+  if (isCompanyWide(profile.role)) {
     const { data } = await admin.from("departments").select("id");
     managerDeptIds = (data ?? []).map((d) => d.id);
   } else {
