@@ -15,7 +15,7 @@ export default async function LoginPage() {
   const tApp = await getTranslations("app");
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle>{tApp("name")}</CardTitle>
@@ -32,6 +32,18 @@ export default async function LoginPage() {
           </p>
         </CardFooter>
       </Card>
+
+      <p className="text-muted-foreground text-center text-xs">
+        {t("developedBy")}{" "}
+        <a
+          href="https://deepentry.net"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary font-medium hover:underline"
+        >
+          Deep Entry | ديب انتري
+        </a>
+      </p>
     </main>
   );
 }
