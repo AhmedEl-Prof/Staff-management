@@ -14,11 +14,13 @@ import {
 // Protected by CRON_SECRET (Vercel Cron sends it as a Bearer token).
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
+  // Fail closed: if the secret isn't configured, the endpoint is disabled
+  // rather than left publicly callable.
+  if (!secret) {
+    return NextResponse.json({ error: "not configured" }, { status: 503 });
+  }
+  if (request.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const admin = createAdminClient();
