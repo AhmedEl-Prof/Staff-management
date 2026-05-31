@@ -17,6 +17,7 @@ export type Json =
 // -- Enums --------------------------------------------------------------------
 export type AppRole = "super_admin" | "team_leader" | "team_member" | "hr";
 export type EmploymentType = "full_time" | "part_time" | "freelance";
+export type SeniorityLevel = "senior" | "junior" | "trainee";
 export type DepartmentMemberRole = "manager" | "member";
 export type ProjectStatus =
   | "planning"
@@ -54,6 +55,7 @@ export type ProfileRow = {
   cv_url: string | null;
   role: AppRole;
   employment_type: EmploymentType;
+  seniority: SeniorityLevel | null;
   weekly_hours: number;
   hire_date: string | null;
   is_active: boolean;
@@ -448,6 +450,7 @@ export interface Database {
         | "cv_url"
         | "role"
         | "employment_type"
+        | "seniority"
         | "weekly_hours"
         | "hire_date"
         | "is_active"
@@ -685,6 +688,7 @@ export interface Database {
     Enums: {
       app_role: AppRole;
       employment_type: EmploymentType;
+      seniority_level: SeniorityLevel;
       department_member_role: DepartmentMemberRole;
       project_status: ProjectStatus;
       priority_level: PriorityLevel;

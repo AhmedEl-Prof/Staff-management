@@ -14,6 +14,7 @@ const inviteSchema = z.object({
   arabic_name: z.string().trim().max(120).optional(),
   role: z.enum(["super_admin", "team_leader", "team_member", "hr"]),
   employment_type: z.enum(["full_time", "part_time", "freelance"]),
+  seniority: z.enum(["senior", "junior", "trainee"]).optional(),
   weekly_hours: z.coerce.number().int().min(0).max(168).default(40),
   department_id: z.string().uuid().optional(),
   hire_date: z.string().optional(),
@@ -62,6 +63,7 @@ export async function inviteEmployee(
     arabic_name: formData.get("arabic_name") || undefined,
     role: formData.get("role"),
     employment_type: formData.get("employment_type"),
+    seniority: formData.get("seniority") || undefined,
     weekly_hours: formData.get("weekly_hours") ?? 40,
     department_id: formData.get("department_id") || undefined,
     hire_date: formData.get("hire_date") || undefined,
@@ -123,6 +125,7 @@ export async function inviteEmployee(
     .update({
       weekly_hours: data.weekly_hours,
       hire_date: data.hire_date ?? null,
+      seniority: data.seniority ?? null,
     })
     .eq("id", userId);
 
@@ -183,6 +186,25 @@ export async function setEmployeeActive(formData: FormData) {
 
   const admin = createAdminClient();
   await admin.from("profiles").update({ is_active: isActive }).eq("id", userId);
+
+  revalidatePath("/employees");
+}
+
+// Sets an employee's seniority (senior / junior / trainee, or unset). Same
+// authorization as the activate toggle.
+export async function setEmployeeSeniority(formData: FormData) {
+  const caller = await requireRole(["super_admin", "team_leader", "hr"]);
+  const userId = String(formData.get("user_id") ?? "");
+  const value = String(formData.get("seniority") ?? "");
+  const seniority = ["senior", "junior", "trainee"].includes(value)
+    ? (value as "senior" | "junior" | "trainee")
+    : null;
+
+  if (!userId) return;
+  if (!(await canManageUser(caller.profile, userId))) return;
+
+  const admin = createAdminClient();
+  await admin.from("profiles").update({ seniority }).eq("id", userId);
 
   revalidatePath("/employees");
 }

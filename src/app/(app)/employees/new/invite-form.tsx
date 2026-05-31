@@ -8,7 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import type { AppRole, EmploymentType } from "@/types/database";
+import type { AppRole, EmploymentType, SeniorityLevel } from "@/types/database";
 
 const initialState: InviteState = { error: null, success: false };
 
@@ -17,6 +17,8 @@ const EMPLOYMENT_TYPES: EmploymentType[] = [
   "part_time",
   "freelance",
 ];
+
+const SENIORITY_LEVELS: SeniorityLevel[] = ["senior", "junior", "trainee"];
 
 export interface DepartmentOption {
   id: string;
@@ -34,6 +36,7 @@ export function InviteForm({
   const tc = useTranslations("common");
   const tRoles = useTranslations("roles");
   const tEmp = useTranslations("employment");
+  const tSen = useTranslations("seniority");
   const tp = useTranslations("profile");
   const tAuth = useTranslations("auth");
   const [state, formAction, pending] = useActionState(
@@ -145,6 +148,18 @@ export function InviteForm({
             dir="ltr"
           />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="seniority">{tp("seniority")}</Label>
+        <Select id="seniority" name="seniority" defaultValue="">
+          <option value="">{tc("none")}</option>
+          {SENIORITY_LEVELS.map((s) => (
+            <option key={s} value={s}>
+              {tSen(s)}
+            </option>
+          ))}
+        </Select>
       </div>
 
       {state.error ? (

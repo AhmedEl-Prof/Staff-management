@@ -241,7 +241,8 @@
     "cvType": "نوع الملف غير مدعوم (PDF أو Word فقط).",
     "cvUploadFailed": "فشل رفع الـ CV، حاول مرة أخرى.",
     "saveFailed": "تعذّر الحفظ، حاول مرة أخرى.",
-    "saved": "تم حفظ التغييرات"
+    "saved": "تم حفظ التغييرات",
+    "seniority": "التصنيف"
   },
   "drive": {
     "title": "Google Drive",
@@ -296,7 +297,8 @@
     "you": "أنت",
     "deleteConfirm": "متأكد من حذف هذا الحساب نهائياً؟ هيتم حذف كل بياناته ولا يمكن التراجع.",
     "emailExists": "هذا البريد مستخدم بالفعل",
-    "notAllowed": "غير مصرّح لك بهذا الإجراء"
+    "notAllowed": "غير مصرّح لك بهذا الإجراء",
+    "seniorityCol": "التصنيف"
   },
   "departments": {
     "title": "الأقسام",
@@ -435,6 +437,11 @@
     "team_leader": "قائد فريق",
     "team_member": "عضو فريق",
     "hr": "موارد بشرية"
+  },
+  "seniority": {
+    "senior": "سنيور",
+    "junior": "جونيور",
+    "trainee": "متدرّب"
   },
   "employment": {
     "full_time": "دوام كامل",
