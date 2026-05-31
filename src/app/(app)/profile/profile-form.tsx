@@ -26,6 +26,7 @@ export function ProfileForm({ profile }: { profile: ProfileRow }) {
   const t = useTranslations("profile");
   const tc = useTranslations("common");
   const tEmp = useTranslations("employment");
+  const tSen = useTranslations("seniority");
   const tRoles = useTranslations("roles");
   const [state, formAction, pending] = useActionState(
     updateProfile,
@@ -123,6 +124,12 @@ export function ProfileForm({ profile }: { profile: ProfileRow }) {
         <div>
           <p className="text-muted-foreground">{t("hireDate")}</p>
           <p className="font-medium">{profile.hire_date ?? "—"}</p>
+        </div>
+        <div>
+          <p className="text-muted-foreground">{t("seniority")}</p>
+          <p className="font-medium">
+            {profile.seniority ? tSen(profile.seniority) : "—"}
+          </p>
         </div>
       </div>
 

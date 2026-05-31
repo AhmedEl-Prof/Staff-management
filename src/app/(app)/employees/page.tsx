@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { EmployeeStatusToggle } from "./status-toggle";
+import { SenioritySelect } from "./seniority-select";
 import { deleteEmployee } from "./actions";
 import type { ProfileRow } from "@/types/database";
 
@@ -23,6 +24,7 @@ export default async function EmployeesPage() {
   const caller = await requireRole(["super_admin", "team_leader", "hr"]);
   const t = await getTranslations("employees");
   const tRoles = await getTranslations("roles");
+  const tSen = await getTranslations("seniority");
   const tc = await getTranslations("common");
   const admin = createAdminClient();
 
@@ -116,6 +118,7 @@ export default async function EmployeesPage() {
                 <TableHead>{t("name")}</TableHead>
                 <TableHead>{t("emailColumn")}</TableHead>
                 <TableHead>{t("role")}</TableHead>
+                <TableHead>{t("seniorityCol")}</TableHead>
                 <TableHead>{t("department")}</TableHead>
                 <TableHead>{t("status")}</TableHead>
                 <TableHead className="text-end">{tc("actions")}</TableHead>
@@ -134,6 +137,17 @@ export default async function EmployeesPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{tRoles(p.role)}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    {isSelf(p) ? (
+                      p.seniority ? (
+                        <Badge variant="outline">{tSen(p.seniority)}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )
+                    ) : (
+                      <SenioritySelect userId={p.id} value={p.seniority} />
+                    )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {userDepts.get(p.id)?.join("، ") || t("noDepartment")}
