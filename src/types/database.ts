@@ -402,6 +402,20 @@ export type ChecklistTemplateRow = {
   updated_at: string;
 }
 
+export type DepartmentToolRow = {
+  id: string;
+  department_id: string;
+  name: string;
+  url: string | null;
+  username: string | null;
+  password: string | null;
+  notes: string | null;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type PushSubscriptionRow = {
   id: string;
   user_id: string;
@@ -648,6 +662,18 @@ export interface Database {
       checklist_templates: TableDef<
         ChecklistTemplateRow,
         "id" | "sort_order" | "created_by" | "created_at" | "updated_at"
+      >;
+      department_tools: TableDef<
+        DepartmentToolRow,
+        | "id"
+        | "url"
+        | "username"
+        | "password"
+        | "notes"
+        | "sort_order"
+        | "created_by"
+        | "created_at"
+        | "updated_at"
       >;
       push_subscriptions: TableDef<
         PushSubscriptionRow,
