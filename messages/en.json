@@ -37,6 +37,7 @@
     "attendance": "Attendance",
     "timesheet": "Timesheet",
     "checklists": "Checklist templates",
+    "tools": "Department tools",
     "evaluations": "Evaluations",
     "kpis": "KPIs",
     "analytics": "Analytics",
@@ -565,6 +566,21 @@
     "empty": "No items yet.",
     "deleteConfirm": "Delete this item?",
     "applyTemplate": "Apply department template"
+  },
+  "tools": {
+    "title": "Department tools",
+    "subtitle": "The department's tools and their login credentials — visible to department members.",
+    "name": "Tool name",
+    "url": "Login URL",
+    "username": "Username",
+    "password": "Password",
+    "notes": "Notes",
+    "open": "Open",
+    "add": "Add tool",
+    "empty": "No tools yet.",
+    "deleteConfirm": "Delete this tool?",
+    "noDepartment": "You're not a member of any department yet.",
+    "readonlyNote": "This table is maintained by your department manager."
   },
   "checklistTemplates": {
     "title": "Checklist templates",

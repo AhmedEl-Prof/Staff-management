@@ -22,6 +22,7 @@ import {
   Clock,
   Timer,
   ListTodo,
+  Wrench,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -45,6 +46,7 @@ export interface NavItem {
     | "attendance"
     | "timesheet"
     | "checklists"
+    | "tools"
     | "audit"
     | "notifications"
     | "profile";
@@ -66,6 +68,7 @@ const icons = {
   attendance: Clock,
   timesheet: Timer,
   checklists: ListTodo,
+  tools: Wrench,
   audit: ScrollText,
   notifications: Bell,
   profile: UserCircle,
