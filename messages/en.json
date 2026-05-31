@@ -207,6 +207,7 @@
     "forgotPassword": "Forgot password?",
     "invalidCredentials": "Invalid email or password",
     "noSignupNote": "No public signup — accounts are created by an administrator",
+    "developedBy": "Developed by",
     "forgotTitle": "Reset your password",
     "forgotSubtitle": "We'll send you a link to reset your password",
     "sendResetLink": "Send reset link",
