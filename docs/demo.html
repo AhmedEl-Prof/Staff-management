@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>إدارة الموظفين — Everest Ads · ديمو</title>
+<title>إدارة الموظفين — Deep Entry · ديمو</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -75,7 +75,7 @@
     <div class="border-default border-b p-4 flex items-center justify-between">
       <div>
         <div class="text-sm font-bold">إدارة الموظفين</div>
-        <div class="text-xs text-muted">Everest Ads</div>
+        <div class="text-xs text-muted">Deep Entry</div>
       </div>
       <button onclick="go('notifications')" class="relative inline-flex size-9 items-center justify-center rounded-md text-muted hover:bg-[var(--muted)]" aria-label="notifications">
         <i data-lucide="bell" class="size-5"></i>
@@ -109,7 +109,7 @@
           <span class="avatar av-1 size-9">أج</span>
           <div class="hidden sm:block leading-tight">
             <div class="text-sm font-semibold">أحمد الجمل</div>
-            <div class="text-[11px] text-muted">ahmed@everestads.com</div>
+            <div class="text-[11px] text-muted">ahmed@deepentry.com</div>
           </div>
         </div>
       </div>
@@ -120,7 +120,7 @@
     </div>
 
     <p class="text-center text-xs text-muted pb-6">
-      💡 ده ديمو تفاعلي للعرض — البيانات تجريبية. السيستم الفعلي Next.js + Supabase مع صلاحيات RLS كاملة.
+      💡 ده ديمو تفاعلي للعرض — البيانات تجريبية. السيستم الفعلي Next.js + Supabase مع صلاحيات RLS كاملة · تطوير <span class="font-semibold text-foreground">Deep Entry</span>
     </p>
   </main>
 </div>
@@ -346,12 +346,12 @@ const kanCard = (title, pbadge, prio, due, avc, avi, dept, comments=null, files=
 // ---- Employees ----
 VIEWS.employees = () => {
   const rows = [
-    ["av-1","أج","أحمد الجمل","ahmed@everestads.com","مدير عام","badge-purple","الإدارة","Senior","نشط"],
-    ["av-2","نع","نهى عمرو","noha@everestads.com","قائد فريق","badge-info","الإعلانات","Senior","نشط"],
-    ["av-3","مس","محمد سامح","m.sameh@everestads.com","قائد فريق","badge-info","SEO","Senior","نشط"],
-    ["av-4","سم","سارة محمود","sara@everestads.com","عضو فريق","badge-muted","المحتوى","Junior","نشط"],
-    ["av-5","كح","كريم حسن","karim@everestads.com","قائد فريق","badge-info","البرمجة","Senior","نشط"],
-    ["av-3","يا","ياسمين علي","yasmin@everestads.com","عضو فريق","badge-muted","الإعلانات","Trainee","فريلانس"],
+    ["av-1","أج","أحمد الجمل","ahmed@deepentry.com","مدير عام","badge-purple","الإدارة","Senior","نشط"],
+    ["av-2","نع","نهى عمرو","noha@deepentry.com","قائد فريق","badge-info","الإعلانات","Senior","نشط"],
+    ["av-3","مس","محمد سامح","m.sameh@deepentry.com","قائد فريق","badge-info","SEO","Senior","نشط"],
+    ["av-4","سم","سارة محمود","sara@deepentry.com","عضو فريق","badge-muted","المحتوى","Junior","نشط"],
+    ["av-5","كح","كريم حسن","karim@deepentry.com","قائد فريق","badge-info","البرمجة","Senior","نشط"],
+    ["av-3","يا","ياسمين علي","yasmin@deepentry.com","عضو فريق","badge-muted","الإعلانات","Trainee","فريلانس"],
   ];
   return `
   <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
