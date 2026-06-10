@@ -25,7 +25,10 @@ export default async function BonusPage({
   const companyWide = isCompanyWide(profile.role);
   let visibleIds: string[];
   if (companyWide) {
-    const { data } = await admin.from("departments").select("id");
+    const { data } = await admin
+      .from("departments")
+      .select("id")
+      .eq("org_id", profile.org_id);
     visibleIds = (data ?? []).map((d) => d.id);
   } else {
     const { data: memberships } = await admin

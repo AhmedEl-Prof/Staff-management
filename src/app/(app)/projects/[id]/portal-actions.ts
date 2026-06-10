@@ -12,8 +12,6 @@ import { getManagedDepartmentIds } from "@/lib/permissions";
 // the admin client, consistent with the other project write actions.
 
 async function managesProject(caller: SessionUser, projectId: string) {
-  if (caller.profile.role === "super_admin") return true;
-  if (caller.profile.role !== "team_leader") return false;
   const admin = createAdminClient();
   const { data } = await admin
     .from("projects")
@@ -21,6 +19,14 @@ async function managesProject(caller: SessionUser, projectId: string) {
     .eq("id", projectId)
     .single();
   if (!data) return false;
+  const { data: dept } = await admin
+    .from("departments")
+    .select("org_id")
+    .eq("id", data.department_id)
+    .maybeSingle();
+  if (dept?.org_id !== caller.profile.org_id) return false;
+  if (caller.profile.role === "super_admin") return true;
+  if (caller.profile.role !== "team_leader") return false;
   const managed = await getManagedDepartmentIds(caller.id);
   return managed.includes(data.department_id);
 }

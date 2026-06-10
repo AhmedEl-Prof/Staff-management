@@ -56,7 +56,10 @@ export default async function BonusAwardsPage({
   const managedIds = await getManagedDepartmentIds(userId);
   let managerDeptIds: string[];
   if (isCompanyWide(profile.role)) {
-    const { data } = await admin.from("departments").select("id");
+    const { data } = await admin
+      .from("departments")
+      .select("id")
+      .eq("org_id", profile.org_id);
     managerDeptIds = (data ?? []).map((d) => d.id);
   } else {
     managerDeptIds = managedIds;

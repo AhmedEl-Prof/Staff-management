@@ -16,7 +16,7 @@ export default async function EvaluationReportPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  await requireUser();
+  const { profile } = await requireUser();
   const t = await getTranslations("report");
   const tEval = await getTranslations("evaluations");
 
@@ -30,6 +30,12 @@ export default async function EvaluationReportPage({
   const evaluation = row as EvaluationRow;
 
   const admin = createAdminClient();
+  // The report header carries the caller's own company name (white-label).
+  const { data: org } = await admin
+    .from("organizations")
+    .select("name")
+    .eq("id", profile.org_id)
+    .maybeSingle();
   const [{ data: subject }, { data: evaluator }] = await Promise.all([
     admin
       .from("profiles")
@@ -56,7 +62,7 @@ export default async function EvaluationReportPage({
     <div className="mx-auto max-w-3xl bg-white p-8 text-black print:p-0">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs text-gray-500">{t("company")}</p>
+          <p className="text-xs text-gray-500">{org?.name ?? ""}</p>
           <h1 className="mt-1 text-2xl font-bold">{t("evaluationReport")}</h1>
         </div>
         <PrintButton />

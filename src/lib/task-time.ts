@@ -17,7 +17,23 @@ export async function canLogTask(
     .maybeSingle();
   if (!task) return false;
   if (task.assigned_to === caller.id) return true;
-  if (caller.profile.role === "super_admin") return true;
+
+  const { data: proj } = await admin
+    .from("projects")
+    .select("department_id")
+    .eq("id", task.project_id)
+    .maybeSingle();
+
+  // Super admins: any task inside their own organization.
+  if (caller.profile.role === "super_admin") {
+    if (!proj) return false;
+    const { data: dept } = await admin
+      .from("departments")
+      .select("org_id")
+      .eq("id", proj.department_id)
+      .maybeSingle();
+    return dept?.org_id === caller.profile.org_id;
+  }
 
   const { data: pm } = await admin
     .from("project_members")
@@ -27,11 +43,6 @@ export async function canLogTask(
     .limit(1);
   if ((pm?.length ?? 0) > 0) return true;
 
-  const { data: proj } = await admin
-    .from("projects")
-    .select("department_id")
-    .eq("id", task.project_id)
-    .maybeSingle();
   if (proj) {
     const managed = await getManagedDepartmentIds(caller.id);
     if (managed.includes(proj.department_id)) return true;
