@@ -196,6 +196,7 @@
     "emailMentions": "Mentions (@)",
     "emailEvaluations": "Evaluations",
     "inAppNotifications": "In-app notifications",
+    "whatsappNotifications": "WhatsApp notifications",
     "saved": "Saved"
   },
   "auth": {
@@ -390,6 +391,12 @@
     "recentDeliverables": "Recent deliverables",
     "footer": "This page is read-only and updates automatically."
   },
+  "recurrence": {
+    "none": "No recurrence",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
+  },
   "projectStatus": {
     "planning": "Planning",
     "active": "Active",
@@ -427,6 +434,9 @@
     "deleteConfirm": "Delete this task?",
     "boardView": "Kanban",
     "listView": "List",
+    "calendarView": "Calendar",
+    "recurrence": "Recurrence",
+    "recurrenceHint": "When a recurring task is completed, the system automatically creates the next occurrence with the same details and an advanced due date.",
     "addToColumn": "Add",
     "noTasks": "No tasks",
     "backToProject": "Back to project",

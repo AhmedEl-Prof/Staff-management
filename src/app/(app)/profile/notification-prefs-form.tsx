@@ -16,6 +16,7 @@ export interface PrefsInitial {
   email_mentions: boolean;
   email_evaluations: boolean;
   in_app_notifications: boolean;
+  whatsapp_notifications: boolean;
 }
 
 const FIELDS: Array<{ name: keyof PrefsInitial; labelKey: string }> = [
@@ -24,6 +25,7 @@ const FIELDS: Array<{ name: keyof PrefsInitial; labelKey: string }> = [
   { name: "email_mentions", labelKey: "emailMentions" },
   { name: "email_evaluations", labelKey: "emailEvaluations" },
   { name: "in_app_notifications", labelKey: "inAppNotifications" },
+  { name: "whatsapp_notifications", labelKey: "whatsappNotifications" },
 ];
 
 export function NotificationPrefsForm({ initialPrefs }: { initialPrefs: PrefsInitial }) {

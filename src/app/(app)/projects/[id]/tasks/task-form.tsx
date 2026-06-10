@@ -7,7 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { TaskRow, TaskStatus, PriorityLevel } from "@/types/database";
+import type {
+  TaskRow,
+  TaskStatus,
+  PriorityLevel,
+  TaskRecurrence,
+} from "@/types/database";
 
 const STATUSES: TaskStatus[] = [
   "todo",
@@ -17,6 +22,7 @@ const STATUSES: TaskStatus[] = [
   "cancelled",
 ];
 const PRIORITIES: PriorityLevel[] = ["low", "medium", "high", "urgent"];
+const RECURRENCES: TaskRecurrence[] = ["daily", "weekly", "monthly"];
 
 export interface AssigneeOption {
   id: string;
@@ -38,6 +44,7 @@ export function TaskForm({
   const tc = useTranslations("common");
   const tStatus = useTranslations("taskStatus");
   const tPriority = useTranslations("priority");
+  const tRecurrence = useTranslations("recurrence");
 
   return (
     <form action={action} className="flex max-w-2xl flex-col gap-4">
@@ -134,6 +141,25 @@ export function TaskForm({
             defaultValue={task?.due_date ?? ""}
           />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="recurrence">{t("recurrence")}</Label>
+        <Select
+          id="recurrence"
+          name="recurrence"
+          defaultValue={task?.recurrence ?? ""}
+        >
+          <option value="">{tRecurrence("none")}</option>
+          {RECURRENCES.map((r) => (
+            <option key={r} value={r}>
+              {tRecurrence(r)}
+            </option>
+          ))}
+        </Select>
+        <span className="text-muted-foreground text-xs">
+          {t("recurrenceHint")}
+        </span>
       </div>
 
       <div className="flex items-center gap-3">

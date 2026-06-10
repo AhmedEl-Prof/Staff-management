@@ -41,6 +41,7 @@ const prefsSchema = z.object({
   email_mentions: z.coerce.boolean(),
   email_evaluations: z.coerce.boolean(),
   in_app_notifications: z.coerce.boolean(),
+  whatsapp_notifications: z.coerce.boolean(),
 });
 
 export type PrefsState = { saved: boolean };
@@ -61,6 +62,7 @@ export async function updateNotificationPrefs(
     email_mentions: formData.get("email_mentions") === "on",
     email_evaluations: formData.get("email_evaluations") === "on",
     in_app_notifications: formData.get("in_app_notifications") === "on",
+    whatsapp_notifications: formData.get("whatsapp_notifications") === "on",
   });
   if (!parsed.success) return { saved: false };
 

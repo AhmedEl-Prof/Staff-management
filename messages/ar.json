@@ -196,6 +196,7 @@
     "emailMentions": "الإشارات (@)",
     "emailEvaluations": "التقييمات",
     "inAppNotifications": "إشعارات داخل التطبيق",
+    "whatsappNotifications": "إشعارات WhatsApp",
     "saved": "تم الحفظ"
   },
   "auth": {
@@ -390,6 +391,12 @@
     "recentDeliverables": "أحدث التسليمات",
     "footer": "هذه الصفحة للقراءة فقط ويتم تحديثها تلقائياً."
   },
+  "recurrence": {
+    "none": "بدون تكرار",
+    "daily": "يومي",
+    "weekly": "أسبوعي",
+    "monthly": "شهري"
+  },
   "projectStatus": {
     "planning": "تخطيط",
     "active": "نشط",
@@ -427,6 +434,9 @@
     "deleteConfirm": "متأكد من حذف هذا التاسك؟",
     "boardView": "Kanban",
     "listView": "قائمة",
+    "calendarView": "تقويم",
+    "recurrence": "التكرار",
+    "recurrenceHint": "عند إكمال تاسك متكررة، السيستم ينشئ النسخة التالية تلقائياً بنفس البيانات وموعد جديد.",
     "addToColumn": "إضافة",
     "noTasks": "لا تاسكات",
     "backToProject": "رجوع للمشروع",

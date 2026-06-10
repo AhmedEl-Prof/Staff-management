@@ -33,6 +33,7 @@ export type TaskStatus =
   | "review"
   | "done"
   | "cancelled";
+export type TaskRecurrence = "daily" | "weekly" | "monthly";
 export type KpiPeriod = "weekly" | "monthly";
 export type EvaluationPeriodType = "weekly" | "monthly";
 export type EvaluationStatus = "draft" | "finalized" | "sent";
@@ -134,6 +135,7 @@ export type TaskRow = {
   start_date: string | null;
   due_date: string | null;
   completed_at: string | null;
+  recurrence: TaskRecurrence | null;
   created_at: string;
   updated_at: string;
 }
@@ -217,6 +219,7 @@ export type NotificationPreferenceRow = {
   email_mentions: boolean;
   email_evaluations: boolean;
   in_app_notifications: boolean;
+  whatsapp_notifications: boolean;
 }
 
 export type KpiDefinitionRow = {
@@ -530,6 +533,7 @@ export interface Database {
         | "start_date"
         | "due_date"
         | "completed_at"
+        | "recurrence"
         | "created_at"
         | "updated_at"
       >;
@@ -567,6 +571,7 @@ export interface Database {
         | "email_mentions"
         | "email_evaluations"
         | "in_app_notifications"
+        | "whatsapp_notifications"
       >;
       kpi_definitions: TableDef<
         KpiDefinitionRow,

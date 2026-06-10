@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Plus, ArrowRight } from "lucide-react";
@@ -18,6 +18,8 @@ import {
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { cn } from "@/lib/utils";
 import { KanbanBoard } from "./kanban-board";
+import { CalendarView } from "./calendar-view";
+import { cairoToday } from "@/lib/task-time";
 import { ProjectTasksRealtime } from "./realtime";
 import { deleteTask } from "./actions";
 import type { TaskRow } from "@/types/database";
@@ -27,10 +29,10 @@ export default async function TasksPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ view?: string }>;
+  searchParams: Promise<{ view?: string; month?: string }>;
 }) {
   const { id } = await params;
-  const { view } = await searchParams;
+  const { view, month } = await searchParams;
   const { profile } = await requireUser();
   const t = await getTranslations("tasks");
   const tc = await getTranslations("common");
@@ -52,7 +54,12 @@ export default async function TasksPage({
     ctx.assignees.map((a) => [a.id, a.label]),
   );
 
-  const activeView = view === "list" ? "list" : "board";
+  const activeView =
+    view === "list" ? "list" : view === "calendar" ? "calendar" : "board";
+  const locale = await getLocale();
+  const today = cairoToday();
+  const activeMonth =
+    month && /^\d{4}-\d{2}$/.test(month) ? month : today.slice(0, 7);
 
   return (
     <div className="flex flex-col gap-6">
@@ -94,6 +101,17 @@ export default async function TasksPage({
             >
               {t("listView")}
             </Link>
+            <Link
+              href={`/projects/${id}/tasks?view=calendar`}
+              className={cn(
+                "rounded px-3 py-1 text-sm",
+                activeView === "calendar"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground",
+              )}
+            >
+              {t("calendarView")}
+            </Link>
           </div>
 
           {ctx.canManage ? (
@@ -116,6 +134,14 @@ export default async function TasksPage({
           projectId={id}
           assigneeNames={assigneeNames}
           canEdit={ctx.canManage}
+        />
+      ) : activeView === "calendar" ? (
+        <CalendarView
+          tasks={tasks}
+          projectId={id}
+          month={activeMonth}
+          today={today}
+          locale={locale}
         />
       ) : (
         <div className="rounded-lg border">
