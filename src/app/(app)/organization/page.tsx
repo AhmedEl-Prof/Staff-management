@@ -2,10 +2,12 @@ import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { orgWhatsAppConnected } from "@/lib/whatsapp";
+import { orgMetaAdsConnected } from "@/lib/meta-ads";
 import { employeeLimitFor } from "@/lib/org";
 import { Badge } from "@/components/ui/badge";
 import { OrgForm } from "./org-form";
 import { WhatsAppForm } from "./whatsapp-form";
+import { MetaAdsForm } from "./meta-ads-form";
 
 // Organization settings (super admin): company identity + plan overview.
 export default async function OrganizationPage() {
@@ -26,13 +28,14 @@ export default async function OrganizationPage() {
   const planLabel = KNOWN_PLANS.includes(org.plan)
     ? t(`plans.${org.plan}`)
     : org.plan;
-  const [memberCount, waConnected] = await Promise.all([
+  const [memberCount, waConnected, adsConnected] = await Promise.all([
     admin
       .from("profiles")
       .select("id", { count: "exact", head: true })
       .eq("org_id", org.id)
       .eq("is_active", true),
     orgWhatsAppConnected(org.id),
+    orgMetaAdsConnected(org.id),
   ]);
   const limit = employeeLimitFor(org.plan);
   const limitLabel = Number.isFinite(limit) ? ` / ${limit}` : "";
@@ -70,10 +73,16 @@ export default async function OrganizationPage() {
 
       <section className="flex flex-col gap-4 rounded-lg border p-4">
         <h2 className="text-lg font-semibold">{t("identity")}</h2>
-        <OrgForm name={org.name} logoUrl={org.logo_url} />
+        <OrgForm
+          name={org.name}
+          logoUrl={org.logo_url}
+          slug={org.slug}
+          rootDomain={process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? null}
+        />
       </section>
 
       <WhatsAppForm connected={waConnected} />
+      <MetaAdsForm connected={adsConnected} />
     </div>
   );
 }

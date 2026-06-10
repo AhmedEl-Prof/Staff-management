@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "./profile-form";
 import { DriveSection } from "./drive-section";
 import { NotificationPrefsForm, type PrefsInitial } from "./notification-prefs-form";
+import { MfaSettings } from "./mfa-settings";
 import { PushToggle } from "./push-toggle";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -61,6 +62,9 @@ export default async function ProfilePage({
           <PushToggle vapidPublicKey={VAPID_PUBLIC_KEY} />
         ) : null}
       </section>
+      <div className="max-w-lg">
+        <MfaSettings />
+      </div>
     </div>
   );
 }

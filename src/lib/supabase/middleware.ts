@@ -69,6 +69,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // 2FA: a session at aal1 that can reach aal2 (verified TOTP factor) must
+  // complete the second step before touching protected pages.
+  if (user && !isPublicPath(pathname)) {
+    const { data: aal } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login/mfa";
+      url.search = `redirectTo=${encodeURIComponent(pathname)}`;
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Authenticated users should not see the login/signup pages.
   if (user && (pathname === "/login" || pathname === "/signup")) {
     const url = request.nextUrl.clone();

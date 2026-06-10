@@ -12,9 +12,13 @@ const initialState: OrgState = { error: null, success: false };
 export function OrgForm({
   name,
   logoUrl,
+  slug,
+  rootDomain,
 }: {
   name: string;
   logoUrl: string | null;
+  slug: string | null;
+  rootDomain: string | null;
 }) {
   const t = useTranslations("organization");
   const tc = useTranslations("common");
@@ -42,8 +46,32 @@ export function OrgForm({
         />
       </div>
 
+      {rootDomain ? (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="slug">{t("slug")}</Label>
+          <div className="flex items-center gap-2" dir="ltr">
+            <Input
+              id="slug"
+              name="slug"
+              dir="ltr"
+              pattern="[a-z0-9][a-z0-9-]{1,38}[a-z0-9]"
+              defaultValue={slug ?? ""}
+              className="max-w-44"
+            />
+            <span className="text-muted-foreground text-sm">.{rootDomain}</span>
+          </div>
+          <span className="text-muted-foreground text-xs">{t("slugHint")}</span>
+        </div>
+      ) : null}
+
       {state.error ? (
-        <p className="text-sm text-destructive">{t("saveError")}</p>
+        <p className="text-sm text-destructive">
+          {state.error === "invalidSlug"
+            ? t("invalidSlug")
+            : state.error === "slugTaken"
+              ? t("slugTaken")
+              : t("saveError")}
+        </p>
       ) : null}
       {state.success ? (
         <p className="text-sm text-green-600">{t("saved")}</p>

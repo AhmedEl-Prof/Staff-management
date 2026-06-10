@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Globe,
+  Sparkles,
   LayoutDashboard,
   Landmark,
   Building2,
@@ -34,6 +35,7 @@ export interface NavItem {
   href: string;
   key:
     | "dashboard"
+    | "assistant"
     | "platform"
     | "organization"
     | "departments"
@@ -58,6 +60,7 @@ export interface NavItem {
 
 const icons = {
   dashboard: LayoutDashboard,
+  assistant: Sparkles,
   platform: Globe,
   organization: Landmark,
   departments: Building2,
