@@ -111,9 +111,12 @@ export default async function AppLayout({
   const sidebar = (
     <>
       <div className="flex items-center justify-between border-b p-4">
-        <div>
+        <div className="min-w-0">
           <p className="text-sm font-bold">{t("name")}</p>
-          <p className="text-muted-foreground text-xs">{t("company")}</p>
+          {/* The signed-in user's actual company, not a hardcoded brand. */}
+          <p className="text-muted-foreground truncate text-xs">
+            {access.org?.name ?? ""}
+          </p>
         </div>
         <div className="flex items-center gap-1">
           <GlobalSearch withHotkey />

@@ -45,16 +45,23 @@ function parseProject(formData: FormData) {
 }
 
 // True if the caller may manage projects in the given department: super admins
-// anywhere, team leaders in departments they lead.
+// anywhere IN THEIR ORGANIZATION, team leaders in departments they lead.
 async function managesDepartment(caller: SessionUser, departmentId: string) {
-  if (caller.profile.role === "super_admin") return true;
+  if (caller.profile.role === "super_admin") {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("departments")
+      .select("org_id")
+      .eq("id", departmentId)
+      .maybeSingle();
+    return data?.org_id === caller.profile.org_id;
+  }
   const managed = await getManagedDepartmentIds(caller.id);
   return managed.includes(departmentId);
 }
 
 // True if the caller may manage the given project (i.e. manages its department).
 async function managesProject(caller: SessionUser, projectId: string) {
-  if (caller.profile.role === "super_admin") return true;
   const admin = createAdminClient();
   const { data } = await admin
     .from("projects")
