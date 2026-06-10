@@ -92,7 +92,12 @@ export async function getAttentionItems(
 
     // -- Manager: bonus sheets still in draft (this month) -------------------
     const managedDeptIds = isCompanyWide(profile.role)
-      ? (await admin.from("departments").select("id")).data?.map((d) => d.id) ?? []
+      ? (
+          await admin
+            .from("departments")
+            .select("id")
+            .eq("org_id", profile.org_id)
+        ).data?.map((d) => d.id) ?? []
       : await getManagedDepartmentIds(userId);
     if (managedDeptIds.length > 0) {
       const period = `${today.slice(0, 7)}-01`;
