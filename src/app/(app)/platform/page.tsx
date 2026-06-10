@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { extendTrial, setOrgPlan, toggleOrgActive } from "./actions";
+import { NewOrgForm } from "./new-org-form";
 import type { OrganizationRow } from "@/types/database";
 
 const PLANS = ["trial", "starter", "business", "enterprise", "internal"] as const;
@@ -67,6 +68,8 @@ export default async function PlatformPage() {
           </p>
         </div>
       </div>
+
+      <NewOrgForm />
 
       <div className="rounded-lg border">
         <Table>
