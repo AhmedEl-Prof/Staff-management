@@ -86,7 +86,7 @@ export default async function ProjectDetailPage({
 
   return (
     <div className="flex max-w-3xl flex-col gap-8">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">{project.name_ar || project.name}</h1>
           <div className="flex flex-wrap items-center gap-2">
@@ -97,7 +97,7 @@ export default async function ProjectDetailPage({
             <Badge variant="outline">{tPriority(project.priority)}</Badge>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/projects/${id}/tasks`}
             className={buttonVariants({
@@ -142,7 +142,7 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-4 rounded-lg border p-4 text-sm">
+      <dl className="grid grid-cols-1 gap-4 rounded-lg border p-4 text-sm sm:grid-cols-2">
         <Field label={t("client")} value={project.client_name} />
         <Field label={t("startDate")} value={project.start_date} />
         <Field label={t("endDate")} value={project.end_date} />

@@ -21,7 +21,11 @@ export interface ProjectFolderListing {
 // Sanitizes a single path segment: no slashes, no "..", trimmed. Returns null
 // if the result is empty/invalid.
 export function sanitizeSegment(seg: string): string | null {
-  const clean = seg.replace(/[/\\]/g, "").replace(/\.\.+/g, "").trim();
+  const clean = seg
+    .replace(/[/\\]/g, "")
+    .replace(/\.\.+/g, "")
+    .replace(/[\x00-\x1f\x7f]/g, "")
+    .trim();
   return clean.length ? clean.slice(0, 120) : null;
 }
 

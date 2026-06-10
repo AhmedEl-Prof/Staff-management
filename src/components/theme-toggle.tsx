@@ -21,7 +21,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={t("toggleTheme")}
       title={t("toggleTheme")}
-      className="hover:bg-muted inline-flex size-9 items-center justify-center rounded-md"
+      className="hover:bg-muted inline-flex size-10 items-center justify-center rounded-md sm:size-9"
     >
       <Sun className="hidden size-5 dark:block" />
       <Moon className="size-5 dark:hidden" />

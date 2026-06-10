@@ -91,7 +91,7 @@ export function InviteForm({
         <Input id="email" name="email" type="email" dir="ltr" required />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="role">{t("role")}</Label>
           <Select
@@ -123,7 +123,7 @@ export function InviteForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="department_id">{t("department")}</Label>
           <Select id="department_id" name="department_id" defaultValue="">

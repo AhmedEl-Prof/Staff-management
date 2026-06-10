@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { safeCompare } from "@/lib/safe-compare";
 import {
   computeEvaluation,
   kpiScoresToJson,
@@ -19,7 +20,8 @@ export async function GET(request: Request) {
   if (!secret) {
     return NextResponse.json({ error: "not configured" }, { status: 503 });
   }
-  if (request.headers.get("authorization") !== `Bearer ${secret}`) {
+  const auth = request.headers.get("authorization") ?? "";
+  if (!safeCompare(auth, `Bearer ${secret}`)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

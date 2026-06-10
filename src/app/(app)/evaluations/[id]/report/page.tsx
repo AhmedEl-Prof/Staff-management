@@ -62,7 +62,7 @@ export default async function EvaluationReportPage({
         <PrintButton />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 rounded-lg border p-4 text-sm">
+      <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 text-sm sm:grid-cols-2">
         <Field label={t("employee")} value={subjectName} />
         <Field
           label={t("period")}

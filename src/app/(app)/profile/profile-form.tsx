@@ -108,7 +108,7 @@ export function ProfileForm({ profile }: { profile: ProfileRow }) {
       </div>
 
       {/* Read-only fields managed by an administrator */}
-      <div className="grid grid-cols-2 gap-4 rounded-md border bg-muted/40 p-4 text-sm">
+      <div className="grid grid-cols-1 gap-4 rounded-md border bg-muted/40 p-4 text-sm sm:grid-cols-2">
         <div>
           <p className="text-muted-foreground">{t("role")}</p>
           <p className="font-medium">{tRoles(profile.role)}</p>

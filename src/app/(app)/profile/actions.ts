@@ -64,7 +64,11 @@ export async function updateProfile(
     if (!CV_TYPES.includes(cv.type)) {
       return { error: "cv_type", success: false };
     }
-    const ext = cv.name.includes(".") ? cv.name.split(".").pop() : "pdf";
+    // Allowlist the stored extension so the object key can't carry an
+    // unexpected suffix regardless of the uploaded filename.
+    const CV_EXTS = new Set(["pdf", "doc", "docx"]);
+    const rawExt = cv.name.match(/\.(\w+)$/)?.[1]?.toLowerCase() ?? "pdf";
+    const ext = CV_EXTS.has(rawExt) ? rawExt : "pdf";
     const path = `${user.id}/cv-${Date.now()}.${ext}`;
     const { error: upErr } = await supabase.storage
       .from(CVS_BUCKET)

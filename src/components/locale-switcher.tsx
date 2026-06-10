@@ -22,7 +22,7 @@ export function LocaleSwitcher({ locale }: { locale: Locale }) {
       onClick={switchTo}
       aria-label={t("toggleLanguage")}
       title={t("toggleLanguage")}
-      className="hover:bg-muted inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm font-medium"
+      className="hover:bg-muted inline-flex h-10 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium sm:h-9 sm:px-2"
     >
       <Languages className="size-4" />
       {next === "en" ? "EN" : "ع"}

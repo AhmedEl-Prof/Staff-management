@@ -162,7 +162,7 @@ export default async function TaskDetailPage({
 
   return (
     <div className="flex max-w-3xl flex-col gap-8">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-2">
           <Link
             href={`/projects/${id}/tasks`}
