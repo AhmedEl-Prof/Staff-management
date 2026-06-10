@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { GlobalSearch } from "@/components/global-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import type { Locale } from "@/i18n/config";
@@ -48,6 +49,7 @@ export function AppShell({
         </button>
         <span className="text-sm font-bold">{appName}</span>
         <div className="ms-auto flex items-center gap-1">
+          <GlobalSearch />
           <LocaleSwitcher locale={locale} />
           <ThemeToggle />
         </div>

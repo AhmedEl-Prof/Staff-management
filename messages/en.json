@@ -360,6 +360,36 @@
     "saveError": "Couldn't save the project. Please try again; if it persists, make sure you have access to the selected department.",
     "invalidError": "Some fields are missing or invalid. Please review and try again."
   },
+  "search": {
+    "open": "Search",
+    "closeLabel": "Close",
+    "placeholder": "Search projects, tasks, employees…",
+    "hint": "Type at least two characters to search",
+    "noResults": "No results",
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "employees": "Employees"
+  },
+  "portal": {
+    "title": "Client portal",
+    "subtitle": "Generate a secret link that shares a read-only project status page with your client — no login, no internal details exposed.",
+    "create": "Create client link",
+    "regenerate": "Regenerate link",
+    "revoke": "Disable link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "hint": "Anyone with the link can view the project status. Regenerating or disabling invalidates the old link immediately.",
+    "pageTagline": "Project status report",
+    "progress": "Progress",
+    "done": "Done",
+    "inProgress": "In progress",
+    "totalTasks": "Total tasks",
+    "startDate": "Start date",
+    "endDate": "Expected delivery",
+    "milestones": "Milestones",
+    "recentDeliverables": "Recent deliverables",
+    "footer": "This page is read-only and updates automatically."
+  },
   "projectStatus": {
     "planning": "Planning",
     "active": "Active",

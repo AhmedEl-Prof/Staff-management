@@ -14,6 +14,7 @@ import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { ProjectDriveSection } from "./drive-section";
+import { ProjectPortalSection } from "./portal-section";
 import { ProjectChecklist } from "./checklist";
 import {
   deleteProject,
@@ -73,6 +74,18 @@ export default async function ProjectDetailPage({
     .select("folder_url")
     .eq("project_id", id)
     .maybeSingle();
+
+  // Active client-portal link (managers only see the section).
+  const { data: portalLink } = canManage
+    ? await admin
+        .from("project_portal_links")
+        .select("token")
+        .eq("project_id", id)
+        .eq("is_active", true)
+        .maybeSingle()
+    : { data: null };
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const portalUrl = portalLink ? `${appUrl}/portal/${portalLink.token}` : null;
   const employees = await getEmployeeOptions();
   const nameById = new Map(employees.map((e) => [e.id, e.label]));
 
@@ -155,6 +168,10 @@ export default async function ProjectDetailPage({
         folderUrl={driveFolder?.folder_url ?? null}
         canManage={canManage}
       />
+
+      {canManage ? (
+        <ProjectPortalSection projectId={id} portalUrl={portalUrl} />
+      ) : null}
 
       <ProjectChecklist
         projectId={id}

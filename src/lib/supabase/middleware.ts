@@ -13,6 +13,8 @@ const PUBLIC_PATHS = [
   "/forgot-password",
   "/reset-password",
   "/api/cron",
+  // Client portal: public read-only project status, gated by its URL token.
+  "/portal",
   "/manifest.webmanifest",
   "/sw.js",
   "/offline.html",

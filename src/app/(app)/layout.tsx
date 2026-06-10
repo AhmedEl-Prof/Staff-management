@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { canManagePeople } from "@/lib/permissions";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav, type NavItem } from "@/components/app-nav";
+import { GlobalSearch } from "@/components/global-search";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -74,6 +75,7 @@ export default async function AppLayout({
           <p className="text-muted-foreground text-xs">{t("company")}</p>
         </div>
         <div className="flex items-center gap-1">
+          <GlobalSearch withHotkey />
           <LocaleSwitcher locale={locale} />
           <ThemeToggle />
           <NotificationBell userId={userId} initialUnread={initialUnread ?? 0} />
