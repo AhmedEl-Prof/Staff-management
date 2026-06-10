@@ -36,6 +36,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   // Allow zoom for accessibility but keep the app shell stable.
   maximumScale: 5,
+  // Draw under the notch/home indicator; the shell pads with safe-area insets.
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({

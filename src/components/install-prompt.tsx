@@ -99,7 +99,7 @@ export function InstallPrompt() {
     <div
       role="dialog"
       aria-label={showIos ? t("iosTitle") : t("installTitle")}
-      className="fixed inset-x-0 bottom-0 z-[60] p-4 print:hidden"
+      className="fixed inset-x-0 bottom-0 z-[60] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] print:hidden"
     >
       <div className="mx-auto flex max-w-md items-start gap-3 rounded-lg border bg-card p-4 shadow-lg">
         <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-md">

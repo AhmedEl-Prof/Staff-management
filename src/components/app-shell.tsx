@@ -36,13 +36,13 @@ export function AppShell({
       {/* Mobile top bar */}
       <div
         data-app-chrome
-        className="fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 border-b bg-card px-4 lg:hidden"
+        className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b bg-card px-4 pt-[env(safe-area-inset-top)] lg:hidden"
       >
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="menu"
-          className="inline-flex size-9 items-center justify-center rounded-md hover:bg-muted"
+          className="inline-flex size-10 items-center justify-center rounded-md hover:bg-muted"
         >
           <Menu className="size-5" />
         </button>
@@ -66,18 +66,20 @@ export function AppShell({
       <aside
         data-app-chrome
         className={[
-          "fixed inset-y-0 z-50 w-64 shrink-0 border-e bg-card transition-transform lg:static lg:z-auto lg:w-60 lg:translate-x-0",
-          // RTL: the drawer slides in from the right (end). Off-screen uses a
-          // positive translate because the start edge is on the right.
-          open ? "translate-x-0" : "translate-x-full lg:translate-x-0",
-          "end-0",
+          "fixed inset-y-0 start-0 z-50 w-64 shrink-0 overflow-y-auto border-e bg-card pt-[env(safe-area-inset-top)] transition-transform lg:static lg:z-auto lg:w-60 lg:translate-x-0 lg:pt-0",
+          // The drawer lives on the start edge (right in RTL, left in LTR), so
+          // off-screen means translating toward that same edge. translate-x is
+          // physical, hence the per-direction variants scoped below lg.
+          open
+            ? "translate-x-0"
+            : "max-lg:rtl:translate-x-full max-lg:ltr:-translate-x-full",
         ].join(" ")}
       >
         <button
           type="button"
           onClick={() => setOpen(false)}
           aria-label="close"
-          className="absolute end-3 top-3 inline-flex size-8 items-center justify-center rounded-md hover:bg-muted lg:hidden"
+          className="absolute end-2 top-2 inline-flex size-10 items-center justify-center rounded-md hover:bg-muted lg:hidden"
         >
           <X className="size-4" />
         </button>
@@ -87,7 +89,7 @@ export function AppShell({
       {/* Main content (pushed below the mobile top bar) */}
       <main
         data-app-main
-        className="flex-1 p-4 pt-18 sm:p-6 lg:p-8 lg:pt-8"
+        className="min-w-0 flex-1 p-4 pt-[calc(4.5rem+env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-6 sm:pt-[calc(4.5rem+env(safe-area-inset-top))] lg:p-8 lg:pt-8"
       >
         {children}
       </main>

@@ -3,7 +3,21 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 
 // Public routes that an unauthenticated visitor is allowed to reach.
-const PUBLIC_PATHS = ["/login", "/auth", "/forgot-password", "/reset-password"];
+// - /api/cron/* authenticates itself via CRON_SECRET (and fails closed), so it
+//   must not be redirected to /login — Vercel Cron has no Supabase session.
+// - PWA assets (service worker, manifest, offline page, icons) must be
+//   fetchable without a session or installation/offline support breaks.
+const PUBLIC_PATHS = [
+  "/login",
+  "/auth",
+  "/forgot-password",
+  "/reset-password",
+  "/api/cron",
+  "/manifest.webmanifest",
+  "/sw.js",
+  "/offline.html",
+  "/icons",
+];
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(
