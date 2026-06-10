@@ -6,12 +6,14 @@ import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getProjectContext } from "@/lib/project-context";
+import { canLogTask } from "@/lib/task-time";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { CommentForm, type Mentionable } from "./comment-form";
+import { TaskTimer } from "./task-timer";
 import { DependencyPicker, type TaskOption } from "./dependency-picker";
 import { AttachmentUpload } from "./attachment-upload";
 import { AttachmentDownload } from "./attachment-download";
@@ -52,7 +54,8 @@ export default async function TaskDetailPage({
   params: Promise<{ id: string; taskId: string }>;
 }) {
   const { id, taskId } = await params;
-  const { profile } = await requireUser();
+  const sessionUser = await requireUser();
+  const { profile } = sessionUser;
   const t = await getTranslations("tasks");
   const tc = await getTranslations("common");
   const tStatus = await getTranslations("taskStatus");
@@ -160,6 +163,17 @@ export default async function TaskDetailPage({
   const canEdit = ctx.canManage || task.assigned_to === profile.id;
   const canDelete = ctx.canManage;
 
+  // Live timer: the caller's running timer (own row via RLS) + whether they
+  // may log time on this task at all.
+  const [{ data: timer }, canLog] = await Promise.all([
+    supabase
+      .from("task_timers")
+      .select("task_id, started_at")
+      .eq("user_id", profile.id)
+      .maybeSingle(),
+    canLogTask(sessionUser, taskId),
+  ]);
+
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -188,8 +202,16 @@ export default async function TaskDetailPage({
           </div>
         </div>
 
-        {canEdit ? (
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {canLog ? (
+            <TaskTimer
+              taskId={taskId}
+              startedAt={timer?.task_id === taskId ? timer.started_at : null}
+              otherRunning={Boolean(timer) && timer?.task_id !== taskId}
+            />
+          ) : null}
+          {canEdit ? (
+            <>
             <Link
               href={`/projects/${id}/tasks/${taskId}/edit`}
               className={buttonVariants({
@@ -206,8 +228,9 @@ export default async function TaskDetailPage({
                 {/* Inline quick-action lives in the edit form; kept simple here. */}
               </form>
             ) : null}
-          </div>
-        ) : null}
+            </>
+          ) : null}
+        </div>
       </div>
 
       {task.description ? (

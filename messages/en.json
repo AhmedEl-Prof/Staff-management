@@ -684,6 +684,9 @@
   "timesheet": {
     "title": "Timesheet",
     "subtitle": "Log hours against tasks and track your weekly utilization.",
+    "timerStart": "Start timer",
+    "timerStop": "Stop & log",
+    "timerOtherRunning": "A timer is running on another task — starting here stops it and logs its time automatically.",
     "prevWeek": "Previous week",
     "nextWeek": "Next week",
     "utilization": "Utilization",

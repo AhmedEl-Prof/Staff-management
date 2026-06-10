@@ -163,6 +163,12 @@ export type TaskDependencyRow = {
   depends_on_task_id: string;
 }
 
+export type TaskTimerRow = {
+  user_id: string;
+  task_id: string;
+  started_at: string;
+}
+
 export type TimeLogRow = {
   id: string;
   task_id: string;
@@ -536,6 +542,7 @@ export interface Database {
         "id" | "file_size" | "uploaded_by" | "created_at"
       >;
       task_dependencies: TableDef<TaskDependencyRow, "id">;
+      task_timers: TableDef<TaskTimerRow, "started_at">;
       time_logs: TableDef<
         TimeLogRow,
         "id" | "user_id" | "description" | "logged_date" | "created_at"
