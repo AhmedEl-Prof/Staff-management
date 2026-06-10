@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import {
   Card,
@@ -28,7 +29,10 @@ export default async function LoginPage() {
         </CardContent>
         <CardFooter className="justify-center">
           <p className="text-center text-xs text-muted-foreground">
-            {t("noSignupNote")}
+            {t("newCompany")}{" "}
+            <Link href="/signup" className="text-primary hover:underline">
+              {t("signupLink")}
+            </Link>
           </p>
         </CardFooter>
       </Card>

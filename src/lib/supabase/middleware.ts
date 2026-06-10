@@ -9,6 +9,7 @@ import type { Database } from "@/types/database";
 //   fetchable without a session or installation/offline support breaks.
 const PUBLIC_PATHS = [
   "/login",
+  "/signup",
   "/auth",
   "/forgot-password",
   "/reset-password",
@@ -68,8 +69,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Authenticated users should not see the login page.
-  if (user && pathname === "/login") {
+  // Authenticated users should not see the login/signup pages.
+  if (user && (pathname === "/login" || pathname === "/signup")) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     url.search = "";

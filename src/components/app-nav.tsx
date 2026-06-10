@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   LayoutDashboard,
+  Landmark,
   Building2,
   FolderKanban,
   Users,
@@ -32,6 +33,7 @@ export interface NavItem {
   href: string;
   key:
     | "dashboard"
+    | "organization"
     | "departments"
     | "projects"
     | "standup"
@@ -54,6 +56,7 @@ export interface NavItem {
 
 const icons = {
   dashboard: LayoutDashboard,
+  organization: Landmark,
   departments: Building2,
   projects: FolderKanban,
   standup: Sunrise,

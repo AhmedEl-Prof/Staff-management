@@ -27,6 +27,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "organization": "Organization",
     "departments": "Departments",
     "projects": "Projects",
     "standup": "Daily standup",
@@ -209,6 +210,8 @@
     "forgotPassword": "Forgot password?",
     "invalidCredentials": "Invalid email or password",
     "noSignupNote": "No public signup — accounts are created by an administrator",
+    "newCompany": "New company?",
+    "signupLink": "Create your company account for free",
     "developedBy": "Developed by",
     "forgotTitle": "Reset your password",
     "forgotSubtitle": "We'll send you a link to reset your password",
@@ -360,6 +363,41 @@
     "notAllowed": "You are not allowed to perform this action",
     "saveError": "Couldn't save the project. Please try again; if it persists, make sure you have access to the selected department.",
     "invalidError": "Some fields are missing or invalid. Please review and try again."
+  },
+  "signup": {
+    "title": "Create your company account",
+    "subtitle": "Start a free 14-day trial — no credit card required",
+    "companyName": "Company name",
+    "yourName": "Your full name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters",
+    "create": "Create account",
+    "creating": "Creating…",
+    "invalid": "Some fields are missing or invalid. Please review and try again.",
+    "emailTaken": "This email is already registered. Try signing in.",
+    "failed": "Couldn't create the account. Please try again.",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Sign in"
+  },
+  "organization": {
+    "title": "Organization",
+    "subtitle": "Your company settings and subscription plan",
+    "plan": "Plan",
+    "plans": {
+      "internal": "Internal",
+      "trial": "Free trial",
+      "starter": "Starter",
+      "business": "Business",
+      "enterprise": "Enterprise"
+    },
+    "trialEnds": "Trial ends",
+    "activeMembers": "Active members",
+    "identity": "Company identity",
+    "name": "Company name",
+    "logoUrl": "Logo URL",
+    "saved": "Saved",
+    "saveError": "Couldn't save. Please try again."
   },
   "search": {
     "open": "Search",

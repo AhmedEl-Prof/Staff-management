@@ -52,7 +52,10 @@ export default async function AppLayout({
       ? [{ href: "/checklists", key: "checklists" as const }]
       : []),
     ...(isSuperAdmin
-      ? [{ href: "/audit", key: "audit" as const }]
+      ? [
+          { href: "/audit", key: "audit" as const },
+          { href: "/organization", key: "organization" as const },
+        ]
       : []),
     { href: "/notifications", key: "notifications" },
     { href: "/profile", key: "profile" },
