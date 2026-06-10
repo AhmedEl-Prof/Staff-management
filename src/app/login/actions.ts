@@ -43,5 +43,14 @@ export async function login(
   const target = parsed.data.redirectTo?.startsWith("/")
     ? parsed.data.redirectTo
     : "/";
+
+  // 2FA: a user with a verified TOTP factor signs in at aal1 and must present
+  // a code to reach aal2 before touching the app.
+  const { data: aal } =
+    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
+    redirect(`/login/mfa?redirectTo=${encodeURIComponent(target)}`);
+  }
+
   redirect(target);
 }

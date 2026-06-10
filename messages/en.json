@@ -27,6 +27,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "assistant": "Ask the system",
     "platform": "Platform",
     "organization": "Organization",
     "departments": "Departments",
@@ -75,6 +76,11 @@
   "analytics": {
     "title": "Analytics",
     "subtitle": "Overview of team and project performance",
+    "adsTitle": "Meta Ads performance (last 30 days)",
+    "adsSpend": "Spend",
+    "adsImpressions": "Impressions",
+    "adsClicks": "Clicks",
+    "adsHint": "Live numbers from the connected ad account (refreshes hourly). Connect it from the Organization page.",
     "totalTasks": "Total tasks",
     "completed": "Completed",
     "completionRate": "Completion rate",
@@ -382,6 +388,37 @@
     "haveAccount": "Already have an account?",
     "loginLink": "Sign in"
   },
+  "mfa": {
+    "title": "Two-factor verification",
+    "subtitle": "Enter the code from your authenticator app (Google Authenticator or similar)",
+    "codeLabel": "Verification code",
+    "invalidCode": "Invalid code. Please try again.",
+    "verify": "Verify",
+    "verifying": "Verifying…",
+    "settingsTitle": "Two-factor authentication (2FA)",
+    "settingsSubtitle": "An extra layer of protection: signing in will require a code from the authenticator app on your phone.",
+    "enabled": "Enabled ✓",
+    "enable": "Enable 2FA",
+    "scanQr": "Scan the code with your authenticator app (Google Authenticator, Authy…) then enter the shown code:",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "disable": "Disable 2FA"
+  },
+  "assistant": {
+    "title": "Ask the system 🤖",
+    "subtitle": "Ask anything about your company's work — answers come from your live data, scoped to your role.",
+    "assistantName": "Assistant",
+    "placeholder": "e.g. Who has the heaviest workload this week?",
+    "send": "Send",
+    "thinking": "Thinking…",
+    "failed": "Couldn't get an answer. Please try again.",
+    "notConfigured": "AI features are disabled — set ANTHROPIC_API_KEY in the environment.",
+    "suggestionsTitle": "Try asking:",
+    "suggestion1": "What's the status of overdue tasks?",
+    "suggestion2": "Who is the busiest on the team right now?",
+    "suggestion3": "Summarize the state of our projects",
+    "suggestion4": "What needs my attention today?"
+  },
   "platform": {
     "title": "Platform",
     "subtitle": "Every organization on the platform — plans, trials and suspension",
@@ -430,7 +467,14 @@
     "whatsappConnected": "Connected",
     "whatsappConnect": "Connect number",
     "whatsappReplace": "Update credentials",
-    "whatsappDisconnect": "Disconnect"
+    "whatsappDisconnect": "Disconnect",
+    "slug": "Subdomain",
+    "slugHint": "Lowercase letters, digits and dashes only (3-40 chars). Share the URL with your team to sign in from your company's domain.",
+    "invalidSlug": "This subdomain is invalid or reserved.",
+    "slugTaken": "This subdomain is already taken.",
+    "metaAdsTitle": "Meta Ads connection",
+    "metaAdsSubtitle": "Connect your ad account so real performance numbers (spend, clicks, CTR…) appear automatically on the Analytics page — from Meta for Developers with the ads_read permission.",
+    "metaAdsAccountId": "Ad Account ID"
   },
   "search": {
     "open": "Search",

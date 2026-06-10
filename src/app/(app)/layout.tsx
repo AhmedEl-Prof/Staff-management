@@ -1,5 +1,8 @@
 import { getTranslations, getLocale } from "next-intl/server";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { slugFromHost, orgUrl } from "@/lib/tenant";
 import { canManagePeople } from "@/lib/permissions";
 import { getOrgAccess } from "@/lib/org";
 import { createClient } from "@/lib/supabase/server";
@@ -36,11 +39,19 @@ export default async function AppLayout({
     );
   }
 
+  // Subdomain tenancy: a member browsing another org's subdomain is bounced
+  // to their own organization's home.
+  const hostSlug = slugFromHost((await headers()).get("host"));
+  if (hostSlug && access.org?.slug && hostSlug !== access.org.slug) {
+    redirect(orgUrl(access.org.slug));
+  }
+
   const isSuperAdmin = profile.role === "super_admin";
   const canManageEmployees = canManagePeople(profile.role);
 
   const navItems: NavItem[] = [
     { href: "/", key: "dashboard" },
+    { href: "/assistant", key: "assistant" },
     ...(isSuperAdmin
       ? [{ href: "/departments", key: "departments" as const }]
       : []),

@@ -128,6 +128,8 @@ export type OrgIntegrationRow = {
   org_id: string;
   whatsapp_phone_id: string | null;
   whatsapp_token_enc: string | null;
+  meta_ad_account_id: string | null;
+  meta_ads_token_enc: string | null;
   updated_at: string;
 }
 
@@ -550,7 +552,11 @@ export interface Database {
       >;
       org_integrations: TableDef<
         OrgIntegrationRow,
-        "whatsapp_phone_id" | "whatsapp_token_enc" | "updated_at"
+        | "whatsapp_phone_id"
+        | "whatsapp_token_enc"
+        | "meta_ad_account_id"
+        | "meta_ads_token_enc"
+        | "updated_at"
       >;
       project_portal_links: TableDef<
         ProjectPortalLinkRow,

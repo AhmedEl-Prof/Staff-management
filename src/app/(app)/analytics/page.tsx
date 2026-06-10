@@ -1,7 +1,14 @@
 import { getTranslations } from "next-intl/server";
-import { CheckCircle2, ListTodo, AlertTriangle, Users } from "lucide-react";
+import {
+  CheckCircle2,
+  ListTodo,
+  AlertTriangle,
+  Users,
+  Megaphone,
+} from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { computeAnalytics } from "@/lib/analytics";
+import { fetchOrgAdsInsights, type AdsInsights } from "@/lib/meta-ads";
 import { BarChart, type BarDatum } from "@/components/bar-chart";
 
 const TASK_COLORS: Record<string, string> = {
@@ -25,7 +32,15 @@ export default async function AnalyticsPage() {
   const tStatus = await getTranslations("taskStatus");
   const tProj = await getTranslations("projectStatus");
 
-  const summary = await computeAnalytics(profile);
+  // Live Meta Ads account KPIs (managers; null when not connected).
+  const isManager =
+    profile.role === "super_admin" || profile.role === "team_leader";
+  const [summary, ads] = await Promise.all([
+    computeAnalytics(profile),
+    isManager
+      ? fetchOrgAdsInsights(profile.org_id)
+      : Promise.resolve<AdsInsights | null>(null),
+  ]);
 
   const cards = [
     {
@@ -96,6 +111,38 @@ export default async function AnalyticsPage() {
           );
         })}
       </div>
+
+      {/* Live Meta Ads KPIs (last 30 days) */}
+      {ads ? (
+        <section className="flex flex-col gap-3 rounded-lg border p-4">
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            <Megaphone className="size-5" />
+            {t("adsTitle")}
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+            {(
+              [
+                {
+                  label: t("adsSpend"),
+                  value: `${ads.spend.toLocaleString()}${ads.currency ? ` ${ads.currency}` : ""}`,
+                },
+                { label: t("adsImpressions"), value: ads.impressions.toLocaleString() },
+                { label: t("adsClicks"), value: ads.clicks.toLocaleString() },
+                { label: "CTR", value: `${ads.ctr.toFixed(2)}%` },
+                { label: "CPC", value: ads.cpc.toFixed(2) },
+              ] as const
+            ).map((c) => (
+              <div key={c.label} className="rounded-md bg-muted/40 p-3">
+                <p className="text-xs text-muted-foreground">{c.label}</p>
+                <p className="mt-1 text-lg font-bold" dir="ltr">
+                  {c.value}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">{t("adsHint")}</p>
+        </section>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl border bg-card p-5">
