@@ -108,6 +108,17 @@ export type ProjectMemberRow = {
   assigned_at: string;
 }
 
+export type ProjectPortalLinkRow = {
+  id: string;
+  project_id: string;
+  token: string;
+  client_label: string | null;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+  revoked_at: string | null;
+}
+
 export type TaskRow = {
   id: string;
   project_id: string;
@@ -489,6 +500,15 @@ export interface Database {
       project_members: TableDef<
         ProjectMemberRow,
         "id" | "role" | "assigned_at"
+      >;
+      project_portal_links: TableDef<
+        ProjectPortalLinkRow,
+        | "id"
+        | "client_label"
+        | "is_active"
+        | "created_by"
+        | "created_at"
+        | "revoked_at"
       >;
       tasks: TableDef<
         TaskRow,
