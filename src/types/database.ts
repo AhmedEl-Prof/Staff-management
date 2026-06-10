@@ -73,6 +73,7 @@ export type ProfileRow = {
   weekly_hours: number;
   hire_date: string | null;
   is_active: boolean;
+  is_platform_admin: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -502,6 +503,7 @@ export interface Database {
         | "weekly_hours"
         | "hire_date"
         | "is_active"
+        | "is_platform_admin"
         | "created_at"
         | "updated_at"
       >;

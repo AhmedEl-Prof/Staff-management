@@ -1,7 +1,9 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { requireUser } from "@/lib/auth";
 import { canManagePeople } from "@/lib/permissions";
+import { getOrgAccess } from "@/lib/org";
 import { createClient } from "@/lib/supabase/server";
+import { OrgLocked } from "@/components/org-locked";
 import { AppNav, type NavItem } from "@/components/app-nav";
 import { GlobalSearch } from "@/components/global-search";
 import { NotificationBell } from "@/components/notification-bell";
@@ -21,6 +23,18 @@ export default async function AppLayout({
   const { id: userId, profile } = await requireUser();
   const t = await getTranslations("app");
   const locale = (await getLocale()) as Locale;
+
+  // Soft lock: expired trials / suspended orgs see a contact screen instead
+  // of the app (data stays intact). Platform admins are never locked out.
+  const access = await getOrgAccess(profile.org_id);
+  if (!access.allowed && !profile.is_platform_admin) {
+    return (
+      <OrgLocked
+        orgName={access.org?.name ?? ""}
+        reason={access.reason ?? "suspended"}
+      />
+    );
+  }
 
   const isSuperAdmin = profile.role === "super_admin";
   const canManageEmployees = canManagePeople(profile.role);
@@ -56,6 +70,9 @@ export default async function AppLayout({
           { href: "/audit", key: "audit" as const },
           { href: "/organization", key: "organization" as const },
         ]
+      : []),
+    ...(profile.is_platform_admin
+      ? [{ href: "/platform", key: "platform" as const }]
       : []),
     { href: "/notifications", key: "notifications" },
     { href: "/profile", key: "profile" },

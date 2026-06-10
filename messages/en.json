@@ -27,6 +27,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "platform": "Platform",
     "organization": "Organization",
     "departments": "Departments",
     "projects": "Projects",
@@ -379,6 +380,28 @@
     "failed": "Couldn't create the account. Please try again.",
     "haveAccount": "Already have an account?",
     "loginLink": "Sign in"
+  },
+  "platform": {
+    "title": "Platform",
+    "subtitle": "Every organization on the platform — plans, trials and suspension",
+    "totalOrgs": "Total organizations",
+    "activeOrgs": "Active organizations",
+    "trialOrgs": "On trial",
+    "org": "Organization",
+    "members": "Members",
+    "createdAt": "Registered",
+    "suspended": "Suspended",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "extendTrial": "Extend trial 14 days"
+  },
+  "orgLocked": {
+    "trialTitle": "Your free trial has ended",
+    "trialBody": "The free trial for {org} has ended. All your data is safe — contact us to upgrade and your account will be activated immediately.",
+    "suspendedTitle": "Account temporarily suspended",
+    "suspendedBody": "The account for {org} is currently suspended. All data is intact — contact us to reactivate.",
+    "contact": "Contact us to upgrade",
+    "logout": "Sign out"
   },
   "organization": {
     "title": "Organization",
