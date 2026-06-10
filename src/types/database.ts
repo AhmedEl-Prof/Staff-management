@@ -49,6 +49,7 @@ export type OrganizationRow = {
   id: string;
   name: string;
   slug: string | null;
+  custom_domain: string | null;
   logo_url: string | null;
   plan: string;
   is_active: boolean;
@@ -489,6 +490,7 @@ export interface Database {
         OrganizationRow,
         | "id"
         | "slug"
+        | "custom_domain"
         | "logo_url"
         | "plan"
         | "is_active"
