@@ -13,7 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { extendTrial, setOrgPlan, toggleOrgActive } from "./actions";
+import {
+  deleteOrganization,
+  extendTrial,
+  setOrgPlan,
+  toggleOrgActive,
+} from "./actions";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { NewOrgForm } from "./new-org-form";
 import type { OrganizationRow } from "@/types/database";
 
@@ -155,6 +161,14 @@ export default async function PlatformPage() {
                             {org.is_active ? t("suspend") : t("reactivate")}
                           </Button>
                         </form>
+                      ) : null}
+                      {!isSelf && !org.is_active ? (
+                        <ConfirmDelete
+                          action={deleteOrganization}
+                          hidden={{ org_id: org.id }}
+                          message={t("deleteConfirm", { org: org.name })}
+                          label={t("deleteOrg")}
+                        />
                       ) : null}
                     </div>
                   </TableCell>

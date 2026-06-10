@@ -442,7 +442,9 @@
     "newOrgCredsHint": "Hand these credentials to the client (also emailed). The password won't be shown again.",
     "copyCreds": "Copy credentials",
     "newOrgEmailTaken": "This email is already registered on the platform.",
-    "newOrgFailed": "Couldn't create the company. Please try again."
+    "newOrgFailed": "Couldn't create the company. Please try again.",
+    "deleteOrg": "Delete permanently",
+    "deleteConfirm": "⚠️ Permanently delete {org}!\n\nEverything will be deleted with no way back: employees and their accounts, projects, tasks, evaluations, and all data.\n\nAre you absolutely sure?"
   },
   "orgLocked": {
     "trialTitle": "Your free trial has ended",

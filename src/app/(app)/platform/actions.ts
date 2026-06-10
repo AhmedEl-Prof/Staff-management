@@ -213,3 +213,52 @@ export async function toggleOrgActive(formData: FormData) {
     .eq("id", orgId);
   revalidatePath("/platform");
 }
+
+// Permanently deletes an organization and everything it owns. Guard rails:
+// platform admins only, never one's own org, and the org must already be
+// SUSPENDED (a deliberate two-step: suspend first, then delete).
+//
+// Deletion order respects the FK rules:
+//   departments  -> cascades projects -> tasks/comments/attachments/portal
+//                   links, bonus, checklists, dept tools, dept KPI defs
+//   org KPI defs + audit trail (NO ACTION on org_id, removed explicitly)
+//   profiles     -> cascades all user-scoped rows (notifications, points,
+//                   leave, attendance, standups, timers, …)
+//   auth users   -> the accounts themselves
+//   organization -> org_integrations cascades with it
+// Storage objects under deleted project ids become unreachable orphans
+// (bucket-level cleanup can be done from the Supabase dashboard if needed).
+export async function deleteOrganization(formData: FormData) {
+  const caller = await requirePlatformAdmin();
+  if (!caller) return;
+  const orgId = idSchema.parse(formData.get("org_id"));
+  if (orgId === caller.profile.org_id) return;
+
+  const admin = createAdminClient();
+  const { data: org } = await admin
+    .from("organizations")
+    .select("id, is_active")
+    .eq("id", orgId)
+    .maybeSingle();
+  if (!org || org.is_active) return;
+
+  const { data: members } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("org_id", orgId);
+  const memberIds = (members ?? []).map((m) => m.id);
+
+  await admin.from("departments").delete().eq("org_id", orgId);
+  await admin.from("kpi_definitions").delete().eq("org_id", orgId);
+  await admin.from("audit_logs").delete().eq("org_id", orgId);
+  if (memberIds.length) {
+    await admin.from("profiles").delete().in("id", memberIds);
+    for (const id of memberIds) {
+      const { error } = await admin.auth.admin.deleteUser(id);
+      if (error) console.error("[platform] auth user delete failed", id, error);
+    }
+  }
+  await admin.from("organizations").delete().eq("id", orgId);
+
+  revalidatePath("/platform");
+}
