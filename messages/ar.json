@@ -432,6 +432,9 @@
     "suspend": "إيقاف",
     "reactivate": "إعادة تفعيل",
     "extendTrial": "تمديد التجربة 14 يوم",
+    "renewMonth": "تجديد شهر",
+    "renewYear": "تجديد سنة",
+    "periodEnd": "ينتهي في",
     "newOrgTitle": "إضافة شركة يدوياً",
     "newOrgCompany": "اسم الشركة",
     "newOrgAdminName": "اسم مدير الشركة",
@@ -449,6 +452,8 @@
   "orgLocked": {
     "trialTitle": "انتهت فترة التجربة المجانية",
     "trialBody": "انتهت تجربة شركة {org} المجانية. كل بياناتكم محفوظة وسليمة — للترقية ومتابعة العمل تواصل معنا وسيتم تفعيل الحساب فوراً.",
+    "subscriptionTitle": "انتهى اشتراك شركتك",
+    "subscriptionBody": "انتهى اشتراك شركة {org}. كل بياناتكم محفوظة وسليمة — جدّد الاشتراك بالتواصل معنا وسيعود كل شيء فوراً.",
     "suspendedTitle": "الحساب موقوف مؤقتاً",
     "suspendedBody": "حساب شركة {org} موقوف حالياً. كل البيانات محفوظة — تواصل معنا لإعادة التفعيل.",
     "contact": "تواصل معنا للترقية",
@@ -460,12 +465,12 @@
     "plan": "الخطة",
     "plans": {
       "internal": "داخلية",
-      "trial": "تجربة مجانية",
-      "starter": "Starter",
-      "business": "Business",
-      "enterprise": "Enterprise"
+      "trial": "تجربة مجانية 14 يوم",
+      "monthly": "باقة شهرية",
+      "yearly": "باقة سنوية"
     },
     "trialEnds": "نهاية التجربة",
+    "subscriptionEnds": "نهاية الاشتراك",
     "activeMembers": "الموظفون النشطون",
     "identity": "هوية الشركة",
     "name": "اسم الشركة",

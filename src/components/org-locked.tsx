@@ -11,9 +11,22 @@ export async function OrgLocked({
   reason,
 }: {
   orgName: string;
-  reason: "suspended" | "trial_expired";
+  reason: "suspended" | "trial_expired" | "subscription_expired";
 }) {
   const t = await getTranslations("orgLocked");
+
+  const title =
+    reason === "trial_expired"
+      ? t("trialTitle")
+      : reason === "subscription_expired"
+        ? t("subscriptionTitle")
+        : t("suspendedTitle");
+  const body =
+    reason === "trial_expired"
+      ? t("trialBody", { org: orgName })
+      : reason === "subscription_expired"
+        ? t("subscriptionBody", { org: orgName })
+        : t("suspendedBody", { org: orgName });
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-4 text-center">
@@ -21,14 +34,8 @@ export async function OrgLocked({
         <Lock className="size-8 text-muted-foreground" />
       </div>
       <div className="max-w-md">
-        <h1 className="text-2xl font-bold">
-          {reason === "trial_expired" ? t("trialTitle") : t("suspendedTitle")}
-        </h1>
-        <p className="text-muted-foreground mt-2 text-sm">
-          {reason === "trial_expired"
-            ? t("trialBody", { org: orgName })
-            : t("suspendedBody", { org: orgName })}
-        </p>
+        <h1 className="text-2xl font-bold">{title}</h1>
+        <p className="text-muted-foreground mt-2 text-sm">{body}</p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <a

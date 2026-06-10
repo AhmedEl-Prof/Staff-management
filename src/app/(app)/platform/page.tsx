@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import {
   deleteOrganization,
-  extendTrial,
+  extendPlanPeriod,
   setOrgPlan,
   toggleOrgActive,
 } from "./actions";
@@ -23,7 +23,7 @@ import { ConfirmDelete } from "@/components/confirm-delete";
 import { NewOrgForm } from "./new-org-form";
 import type { OrganizationRow } from "@/types/database";
 
-const PLANS = ["trial", "starter", "business", "enterprise", "internal"] as const;
+const PLANS = ["trial", "monthly", "yearly", "internal"] as const;
 
 // Platform dashboard: every registered organization, its plan and status.
 // Visible only to platform admins (the people running the SaaS).
@@ -84,7 +84,7 @@ export default async function PlatformPage() {
               <TableHead>{t("org")}</TableHead>
               <TableHead>{tOrg("plan")}</TableHead>
               <TableHead>{t("members")}</TableHead>
-              <TableHead>{tOrg("trialEnds")}</TableHead>
+              <TableHead>{t("periodEnd")}</TableHead>
               <TableHead>{t("createdAt")}</TableHead>
               <TableHead className="text-end">{tc("actions")}</TableHead>
             </TableRow>
@@ -93,8 +93,14 @@ export default async function PlatformPage() {
             {orgs.map((org) => {
               const settings = (org.settings ?? {}) as {
                 trial_ends_at?: string;
+                subscription_ends_at?: string;
               };
-              const trialEnd = settings.trial_ends_at?.slice(0, 10) ?? null;
+              const periodEnd = (
+                org.plan === "trial"
+                  ? settings.trial_ends_at
+                  : settings.subscription_ends_at
+              )?.slice(0, 10) ?? null;
+              const hasPeriod = ["trial", "monthly", "yearly"].includes(org.plan);
               const isSelf = org.id === profile.org_id;
               return (
                 <TableRow key={org.id}>
@@ -130,18 +136,22 @@ export default async function PlatformPage() {
                   </TableCell>
                   <TableCell>{memberCount.get(org.id) ?? 0}</TableCell>
                   <TableCell dir="ltr" className="text-sm">
-                    {trialEnd ?? "—"}
+                    {periodEnd ?? "—"}
                   </TableCell>
                   <TableCell dir="ltr" className="text-sm">
                     {org.created_at.slice(0, 10)}
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap items-center justify-end gap-2">
-                      {org.plan === "trial" ? (
-                        <form action={extendTrial}>
+                      {hasPeriod ? (
+                        <form action={extendPlanPeriod}>
                           <input type="hidden" name="org_id" value={org.id} />
                           <Button type="submit" size="sm" variant="outline">
-                            {t("extendTrial")}
+                            {org.plan === "trial"
+                              ? t("extendTrial")
+                              : org.plan === "monthly"
+                                ? t("renewMonth")
+                                : t("renewYear")}
                           </Button>
                         </form>
                       ) : null}

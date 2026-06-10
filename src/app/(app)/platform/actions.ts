@@ -11,7 +11,14 @@ import type { Json } from "@/types/database";
 // Platform-level org management (plans, suspension, trial extension).
 // Restricted to platform admins — the people running the SaaS itself.
 
-const PLANS = ["trial", "starter", "business", "enterprise", "internal"] as const;
+const PLANS = ["trial", "monthly", "yearly", "internal"] as const;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const PLAN_PERIOD_DAYS: Record<string, number> = {
+  trial: 14,
+  monthly: 30,
+  yearly: 365,
+};
 
 async function requirePlatformAdmin(): Promise<SessionUser | null> {
   const caller = await requireUser();
@@ -72,7 +79,11 @@ export async function createOrganization(
   const settings: Record<string, Json> = {};
   if (data.plan === "trial") {
     settings.trial_ends_at = new Date(
-      Date.now() + 14 * 24 * 60 * 60 * 1000,
+      Date.now() + PLAN_PERIOD_DAYS.trial * DAY_MS,
+    ).toISOString();
+  } else if (data.plan === "monthly" || data.plan === "yearly") {
+    settings.subscription_ends_at = new Date(
+      Date.now() + PLAN_PERIOD_DAYS[data.plan] * DAY_MS,
     ).toISOString();
   }
 
@@ -138,8 +149,8 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-// Changes an org's plan. Moving OFF trial clears the trial deadline; moving
-// (back) TO trial restarts a fresh 14-day window.
+// Changes an org's plan and starts a fresh period for it: trial = 14 days,
+// monthly = 30 days, yearly = 365 days, internal = no expiry.
 export async function setOrgPlan(formData: FormData) {
   if (!(await requirePlatformAdmin())) return;
   const orgId = idSchema.parse(formData.get("org_id"));
@@ -154,12 +165,16 @@ export async function setOrgPlan(formData: FormData) {
   if (!org) return;
 
   const settings = { ...((org.settings ?? {}) as Record<string, Json>) };
+  delete settings.trial_ends_at;
+  delete settings.subscription_ends_at;
   if (plan === "trial") {
     settings.trial_ends_at = new Date(
-      Date.now() + 14 * 24 * 60 * 60 * 1000,
+      Date.now() + PLAN_PERIOD_DAYS.trial * DAY_MS,
     ).toISOString();
-  } else {
-    delete settings.trial_ends_at;
+  } else if (plan === "monthly" || plan === "yearly") {
+    settings.subscription_ends_at = new Date(
+      Date.now() + PLAN_PERIOD_DAYS[plan] * DAY_MS,
+    ).toISOString();
   }
 
   await admin
@@ -169,29 +184,32 @@ export async function setOrgPlan(formData: FormData) {
   revalidatePath("/platform");
 }
 
-// Extends a trial by 14 days from now (or from its current end, whichever is
-// later) — the "give them more time" button.
-export async function extendTrial(formData: FormData) {
+// Extends the org's current period by one unit of its plan (trial +14 days,
+// monthly +30, yearly +365), counted from its current end when still in the
+// future (so renewing early never loses days) or from now when already past.
+// This is the manual-billing "تجديد" button.
+export async function extendPlanPeriod(formData: FormData) {
   if (!(await requirePlatformAdmin())) return;
   const orgId = idSchema.parse(formData.get("org_id"));
 
   const admin = createAdminClient();
   const { data: org } = await admin
     .from("organizations")
-    .select("settings")
+    .select("plan, settings")
     .eq("id", orgId)
     .maybeSingle();
   if (!org) return;
+  const days = PLAN_PERIOD_DAYS[org.plan];
+  if (!days) return; // internal / unknown plans have no period
 
+  const key = org.plan === "trial" ? "trial_ends_at" : "subscription_ends_at";
   const settings = { ...((org.settings ?? {}) as Record<string, Json>) };
-  const current =
-    typeof settings.trial_ends_at === "string" ? settings.trial_ends_at : null;
-  const base = current && current > new Date().toISOString()
-    ? new Date(current).getTime()
-    : Date.now();
-  settings.trial_ends_at = new Date(
-    base + 14 * 24 * 60 * 60 * 1000,
-  ).toISOString();
+  const current = typeof settings[key] === "string" ? (settings[key] as string) : null;
+  const base =
+    current && current > new Date().toISOString()
+      ? new Date(current).getTime()
+      : Date.now();
+  settings[key] = new Date(base + days * DAY_MS).toISOString();
 
   await admin.from("organizations").update({ settings }).eq("id", orgId);
   revalidatePath("/platform");

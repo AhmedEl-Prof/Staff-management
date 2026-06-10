@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { createOrganization, type CreateOrgState } from "./actions";
 
-const PLANS = ["trial", "starter", "business", "enterprise"] as const;
+const PLANS = ["trial", "monthly", "yearly"] as const;
 const initialState: CreateOrgState = { error: null };
 
 // Manual (sales-led) company creation: the platform admin fills the company +
