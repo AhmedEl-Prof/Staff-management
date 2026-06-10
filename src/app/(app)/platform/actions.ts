@@ -1,9 +1,11 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser, type SessionUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendEmail } from "@/lib/email";
 import type { Json } from "@/types/database";
 
 // Platform-level org management (plans, suspension, trial extension).
@@ -17,6 +19,124 @@ async function requirePlatformAdmin(): Promise<SessionUser | null> {
 }
 
 const idSchema = z.string().uuid();
+
+const createOrgSchema = z.object({
+  company_name: z.string().trim().min(2).max(120),
+  admin_name: z.string().trim().min(2).max(120),
+  admin_email: z.string().trim().email().max(254),
+  plan: z.enum(PLANS),
+});
+
+export type CreateOrgState = {
+  error: string | null;
+  credentials?: { email: string; password: string; orgName: string };
+};
+
+function tempPassword(): string {
+  const chars = "abcdefghjkmnpqrstuvwxyz23456789";
+  const bytes = randomBytes(10);
+  let out = "Or";
+  for (let i = 0; i < 10; i++) out += chars[bytes[i] % chars.length];
+  return out;
+}
+
+function makeSlug(name: string): string {
+  const base = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+  return base ? `${base}-${randomBytes(3).toString("hex")}` : `org-${randomBytes(3).toString("hex")}`;
+}
+
+// Sales-led onboarding: the platform admin creates a company + its founder
+// account manually (deal closed offline). Returns the temporary credentials
+// to hand over, and emails them too when Resend is configured.
+export async function createOrganization(
+  _prev: CreateOrgState,
+  formData: FormData,
+): Promise<CreateOrgState> {
+  if (!(await requirePlatformAdmin())) return { error: "forbidden" };
+
+  const parsed = createOrgSchema.safeParse({
+    company_name: formData.get("company_name"),
+    admin_name: formData.get("admin_name"),
+    admin_email: formData.get("admin_email"),
+    plan: formData.get("plan"),
+  });
+  if (!parsed.success) return { error: "invalid" };
+  const data = parsed.data;
+
+  const admin = createAdminClient();
+
+  const settings: Record<string, Json> = {};
+  if (data.plan === "trial") {
+    settings.trial_ends_at = new Date(
+      Date.now() + 14 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+  }
+
+  const { data: org, error: orgErr } = await admin
+    .from("organizations")
+    .insert({
+      name: data.company_name,
+      slug: makeSlug(data.company_name),
+      plan: data.plan,
+      settings,
+    })
+    .select("id, name")
+    .single();
+  if (orgErr || !org) return { error: "failed" };
+
+  const password = tempPassword();
+  const { error: userErr } = await admin.auth.admin.createUser({
+    email: data.admin_email,
+    password,
+    email_confirm: true,
+    user_metadata: {
+      full_name: data.admin_name,
+      role: "super_admin",
+      org_id: org.id,
+    },
+  });
+  if (userErr) {
+    await admin.from("organizations").delete().eq("id", org.id);
+    return {
+      error: userErr.message.toLowerCase().includes("already")
+        ? "emailTaken"
+        : "failed",
+    };
+  }
+
+  // Best-effort welcome email with the credentials.
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  await sendEmail({
+    to: data.admin_email,
+    subject: `حساب شركتك جاهز — ${org.name}`,
+    bodyHtml: `
+      <p style="margin:0 0 8px 0">أهلاً ${escapeHtml(data.admin_name)} 👋</p>
+      <p style="margin:0 0 8px 0">تم إنشاء حساب شركة <b>${escapeHtml(org.name)}</b> على نظام إدارة الموظفين.</p>
+      <p style="margin:0">البريد: <b dir="ltr">${escapeHtml(data.admin_email)}</b><br/>كلمة السر المؤقتة: <b dir="ltr">${password}</b></p>
+      <p style="margin:8px 0 0 0">ننصح بتغيير كلمة السر بعد أول دخول.</p>
+    `,
+    link: `${appUrl}/login`,
+    linkLabel: "تسجيل الدخول",
+  });
+
+  revalidatePath("/platform");
+  return {
+    error: null,
+    credentials: { email: data.admin_email, password, orgName: org.name },
+  };
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 // Changes an org's plan. Moving OFF trial clears the trial deadline; moving
 // (back) TO trial restarts a fresh 14-day window.

@@ -431,7 +431,18 @@
     "suspended": "موقوفة",
     "suspend": "إيقاف",
     "reactivate": "إعادة تفعيل",
-    "extendTrial": "تمديد التجربة 14 يوم"
+    "extendTrial": "تمديد التجربة 14 يوم",
+    "newOrgTitle": "إضافة شركة يدوياً",
+    "newOrgCompany": "اسم الشركة",
+    "newOrgAdminName": "اسم مدير الشركة",
+    "newOrgAdminEmail": "بريد المدير",
+    "newOrgCreate": "إنشاء الشركة",
+    "newOrgCreating": "جاري الإنشاء…",
+    "newOrgCreated": "تم إنشاء شركة {org} بنجاح ✓",
+    "newOrgCredsHint": "سلّم هذه البيانات للعميل (أُرسلت له بالإيميل أيضاً). لن تظهر كلمة السر مرة أخرى.",
+    "copyCreds": "نسخ بيانات الدخول",
+    "newOrgEmailTaken": "هذا البريد مسجّل بالفعل على المنصة.",
+    "newOrgFailed": "تعذّر إنشاء الشركة. حاول مرة أخرى."
   },
   "orgLocked": {
     "trialTitle": "انتهت فترة التجربة المجانية",
