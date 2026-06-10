@@ -34,10 +34,20 @@ export async function GET(request: Request) {
   );
   const { start, end } = periodRange("monthly", refPrevMonth);
 
-  const { data: profiles } = await admin
-    .from("profiles")
+  // Every active user of every ACTIVE organization.
+  const { data: activeOrgs } = await admin
+    .from("organizations")
     .select("id")
     .eq("is_active", true);
+  const orgIds = (activeOrgs ?? []).map((o) => o.id);
+
+  const { data: profiles } = orgIds.length
+    ? await admin
+        .from("profiles")
+        .select("id")
+        .in("org_id", orgIds)
+        .eq("is_active", true)
+    : { data: [] };
   const userIds = (profiles ?? []).map((p) => p.id);
   if (userIds.length === 0) {
     return NextResponse.json({ created: 0 });

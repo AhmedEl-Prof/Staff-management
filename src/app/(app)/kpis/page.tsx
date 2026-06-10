@@ -31,6 +31,7 @@ export default async function KpisPage() {
   const { data: allKpis } = await admin
     .from("kpi_definitions")
     .select("id, name, name_ar, unit, department_id")
+    .eq("org_id", caller.profile.org_id)
     .order("name_ar");
 
   let kpis: Option[];

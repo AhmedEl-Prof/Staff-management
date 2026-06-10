@@ -38,9 +38,22 @@ const PROJECT_STATUSES: ProjectStatus[] = [
 
 // Returns the set of project ids in scope for the caller (or null = all).
 async function scopedProjectIds(caller: ProfileRow): Promise<string[] | null> {
-  if (caller.role === "super_admin") return null;
-
   const admin = createAdminClient();
+
+  // Super admin: every project of their ORGANIZATION's departments.
+  if (caller.role === "super_admin") {
+    const { data: depts } = await admin
+      .from("departments")
+      .select("id")
+      .eq("org_id", caller.org_id);
+    const deptIds = (depts ?? []).map((d) => d.id);
+    if (deptIds.length === 0) return [];
+    const { data } = await admin
+      .from("projects")
+      .select("id")
+      .in("department_id", deptIds);
+    return [...new Set((data ?? []).map((p) => p.id))];
+  }
   if (caller.role === "team_leader") {
     const deptIds = await getManagedDepartmentIds(caller.id);
     if (deptIds.length === 0) {
@@ -138,6 +151,7 @@ export async function computeAnalytics(
     const { count } = await admin
       .from("profiles")
       .select("id", { count: "exact", head: true })
+      .eq("org_id", caller.org_id)
       .eq("is_active", true);
     activeMembers = count ?? 0;
   } else {

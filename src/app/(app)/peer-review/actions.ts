@@ -45,12 +45,13 @@ export async function submitPeerReview(
     return { error: "invalid", saved: false };
   }
 
-  // Reviewee must be an active employee.
+  // Reviewee must be an active employee of the caller's organization.
   const admin = createAdminClient();
   const { data: target } = await admin
     .from("profiles")
     .select("id, is_active")
     .eq("id", parsed.data.reviewee_id)
+    .eq("org_id", caller.profile.org_id)
     .maybeSingle();
   if (!target || !target.is_active) {
     return { error: "invalid", saved: false };

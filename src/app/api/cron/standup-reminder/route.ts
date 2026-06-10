@@ -25,10 +25,20 @@ export async function GET(request: Request) {
   const today = new Date().toISOString().slice(0, 10);
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-  // Active users…
+  // Active users of every ACTIVE organization (suspended orgs get no email).
+  const { data: activeOrgs } = await admin
+    .from("organizations")
+    .select("id")
+    .eq("is_active", true);
+  const orgIds = (activeOrgs ?? []).map((o) => o.id);
+  if (orgIds.length === 0) {
+    return NextResponse.json({ sent: 0, skipped: 0 });
+  }
+
   const { data: profiles } = await admin
     .from("profiles")
     .select("id")
+    .in("org_id", orgIds)
     .eq("is_active", true);
   const allIds = (profiles ?? []).map((p) => p.id);
   if (allIds.length === 0) {

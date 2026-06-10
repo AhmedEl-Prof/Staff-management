@@ -45,8 +45,21 @@ type WithDefaults<Row, Optional extends keyof Row> = Omit<Row, Optional> &
   Partial<Pick<Row, Optional>>;
 
 // -- Row shapes ---------------------------------------------------------------
+export type OrganizationRow = {
+  id: string;
+  name: string;
+  slug: string | null;
+  logo_url: string | null;
+  plan: string;
+  is_active: boolean;
+  settings: Json;
+  created_at: string;
+  updated_at: string;
+}
+
 export type ProfileRow = {
   id: string;
+  org_id: string;
   full_name: string | null;
   arabic_name: string | null;
   avatar_url: string | null;
@@ -66,6 +79,7 @@ export type ProfileRow = {
 
 export type DepartmentRow = {
   id: string;
+  org_id: string;
   name: string;
   name_ar: string;
   description: string | null;
@@ -224,6 +238,7 @@ export type NotificationPreferenceRow = {
 
 export type KpiDefinitionRow = {
   id: string;
+  org_id: string;
   department_id: string | null;
   name: string;
   name_ar: string | null;
@@ -310,6 +325,7 @@ export type UserBadgeRow = {
 
 export type AuditLogRow = {
   id: string;
+  org_id: string | null;
   user_id: string | null;
   action: string;
   entity_type: string;
@@ -459,8 +475,20 @@ type TableDef<Row, InsertOptional extends keyof Row> = {
 export interface Database {
   public: {
     Tables: {
+      organizations: TableDef<
+        OrganizationRow,
+        | "id"
+        | "slug"
+        | "logo_url"
+        | "plan"
+        | "is_active"
+        | "settings"
+        | "created_at"
+        | "updated_at"
+      >;
       profiles: TableDef<
         ProfileRow,
+        | "org_id"
         | "full_name"
         | "arabic_name"
         | "avatar_url"
@@ -480,6 +508,7 @@ export interface Database {
       departments: TableDef<
         DepartmentRow,
         | "id"
+        | "org_id"
         | "description"
         | "color"
         | "icon"
@@ -576,6 +605,7 @@ export interface Database {
       kpi_definitions: TableDef<
         KpiDefinitionRow,
         | "id"
+        | "org_id"
         | "department_id"
         | "name_ar"
         | "description"
@@ -621,6 +651,7 @@ export interface Database {
       audit_logs: TableDef<
         AuditLogRow,
         | "id"
+        | "org_id"
         | "user_id"
         | "entity_id"
         | "changes"

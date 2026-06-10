@@ -106,6 +106,8 @@ export async function inviteEmployee(
       arabic_name: data.arabic_name,
       role: data.role,
       employment_type: data.employment_type,
+      // New employees always join the inviter's organization.
+      org_id: caller.profile.org_id,
     },
   });
 

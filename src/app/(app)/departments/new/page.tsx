@@ -5,9 +5,9 @@ import { DepartmentForm } from "../department-form";
 import { createDepartment } from "../actions";
 
 export default async function NewDepartmentPage() {
-  await requireRole(["super_admin"]);
+  const { profile } = await requireRole(["super_admin"]);
   const t = await getTranslations("departments");
-  const employees = await getEmployeeOptions();
+  const employees = await getEmployeeOptions(profile.org_id);
 
   return (
     <div className="flex flex-col gap-6">

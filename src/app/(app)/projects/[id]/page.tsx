@@ -86,7 +86,7 @@ export default async function ProjectDetailPage({
     : { data: null };
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const portalUrl = portalLink ? `${appUrl}/portal/${portalLink.token}` : null;
-  const employees = await getEmployeeOptions();
+  const employees = await getEmployeeOptions(profile.org_id);
   const nameById = new Map(employees.map((e) => [e.id, e.label]));
 
   const { data: checklistRows } = await supabase

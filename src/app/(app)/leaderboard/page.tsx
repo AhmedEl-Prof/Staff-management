@@ -25,11 +25,11 @@ const RANK_STYLE = [
 ];
 
 export default async function LeaderboardPage() {
-  const { id: userId } = await requireUser();
+  const { id: userId, profile } = await requireUser();
   const t = await getTranslations("leaderboard");
 
   const [entries, myPoints] = await Promise.all([
-    getMonthlyLeaderboard(),
+    getMonthlyLeaderboard(profile.org_id),
     getUserTotalPoints(userId),
   ]);
 

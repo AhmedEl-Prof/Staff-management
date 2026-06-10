@@ -50,6 +50,7 @@ export default async function EmployeesPage() {
   let query = admin
     .from("profiles")
     .select("*")
+    .eq("org_id", caller.profile.org_id)
     .order("created_at", { ascending: true });
   if (allowedUserIds) query = query.in("id", allowedUserIds);
   const { data: profiles } = await query;

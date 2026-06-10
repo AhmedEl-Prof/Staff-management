@@ -30,10 +30,13 @@ export function zoneFor(percent: number): WorkloadZone {
 }
 
 // Computes the workload for a set of users. `userIds` scopes the result; when
-// omitted, all active users are included.
+// omitted, all active users of `orgId` are included (one of the two must be
+// provided so the scan never crosses organizations).
 export async function computeWorkloads(
   userIds?: string[],
+  orgId?: string,
 ): Promise<MemberWorkload[]> {
+  if (!userIds && !orgId) return [];
   const admin = createAdminClient();
 
   let profileQuery = admin
@@ -41,6 +44,7 @@ export async function computeWorkloads(
     .select("id, arabic_name, full_name, weekly_hours, is_active")
     .eq("is_active", true);
   if (userIds) profileQuery = profileQuery.in("id", userIds);
+  else if (orgId) profileQuery = profileQuery.eq("org_id", orgId);
   const { data: profiles } = await profileQuery;
   const people = profiles ?? [];
   if (people.length === 0) return [];
@@ -94,7 +98,7 @@ export async function computeVisibleWorkloads(
   caller: ProfileRow,
 ): Promise<MemberWorkload[]> {
   if (caller.role === "super_admin") {
-    return computeWorkloads();
+    return computeWorkloads(undefined, caller.org_id);
   }
 
   if (caller.role === "team_leader") {

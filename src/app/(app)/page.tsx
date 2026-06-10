@@ -72,6 +72,7 @@ export default async function DashboardPage() {
     const { count } = await admin
       .from("profiles")
       .select("id", { count: "exact", head: true })
+      .eq("org_id", profile.org_id)
       .eq("is_active", true);
     teamCount = count ?? 0;
   }

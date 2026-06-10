@@ -16,17 +16,18 @@ import {
 import type { PeerReviewRow } from "@/types/database";
 
 export default async function PeerReviewPage() {
-  const { id: userId } = await requireUser();
+  const { id: userId, profile } = await requireUser();
   const t = await getTranslations("peerReview");
   const { start } = currentReviewPeriod();
 
   const admin = createAdminClient();
   const supabase = await createClient();
 
-  // Colleagues = all other active employees.
+  // Colleagues = all other active employees of the caller's organization.
   const { data: profiles } = await admin
     .from("profiles")
     .select("id, arabic_name, full_name")
+    .eq("org_id", profile.org_id)
     .eq("is_active", true)
     .neq("id", userId)
     .order("arabic_name");
