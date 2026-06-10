@@ -53,11 +53,12 @@ export async function getManageableEmployees(
 ): Promise<ManageableEmployee[]> {
   const admin = createAdminClient();
 
-  // Super admins and HR see every active employee.
+  // Super admins and HR see every active employee in their organization.
   if (isCompanyWide(caller.role)) {
     const { data } = await admin
       .from("profiles")
       .select("id, arabic_name, full_name")
+      .eq("org_id", caller.org_id)
       .eq("is_active", true)
       .order("arabic_name");
     return (data ?? []).map((p) => ({
@@ -97,7 +98,17 @@ export async function canManageUser(
   caller: ProfileRow,
   targetUserId: string,
 ): Promise<boolean> {
-  if (isCompanyWide(caller.role)) return true;
+  // "Company-wide" reach stops at the company: the target must belong to the
+  // caller's organization.
+  if (isCompanyWide(caller.role)) {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("profiles")
+      .select("org_id")
+      .eq("id", targetUserId)
+      .maybeSingle();
+    return data?.org_id === caller.org_id;
+  }
   if (caller.role !== "team_leader") return false;
   if (caller.id === targetUserId) return true;
 

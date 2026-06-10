@@ -17,7 +17,7 @@ import { ConfirmDelete } from "@/components/confirm-delete";
 import { deleteDepartment } from "./actions";
 
 export default async function DepartmentsPage() {
-  await requireRole(["super_admin"]);
+  const { profile } = await requireRole(["super_admin"]);
   const t = await getTranslations("departments");
   const tc = await getTranslations("common");
   const admin = createAdminClient();
@@ -25,13 +25,15 @@ export default async function DepartmentsPage() {
   const { data: departments } = await admin
     .from("departments")
     .select("*")
+    .eq("org_id", profile.org_id)
     .order("name_ar");
   const rows = departments ?? [];
 
   // Manager names + member counts.
   const { data: profiles } = await admin
     .from("profiles")
-    .select("id, arabic_name, full_name");
+    .select("id, arabic_name, full_name")
+    .eq("org_id", profile.org_id);
   const nameById = new Map(
     (profiles ?? []).map((p) => [p.id, p.arabic_name || p.full_name || "—"]),
   );

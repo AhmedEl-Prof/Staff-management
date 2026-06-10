@@ -89,8 +89,10 @@ export interface LeaderboardEntry {
   points: number;
 }
 
-// Total points per user for the given month (default: current month).
+// Total points per user of one organization for the given month (default:
+// current month).
 export async function getMonthlyLeaderboard(
+  orgId: string,
   ref: Date = new Date(),
 ): Promise<LeaderboardEntry[]> {
   const admin = createAdminClient();
@@ -99,9 +101,18 @@ export async function getMonthlyLeaderboard(
     Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth() + 1, 1),
   );
 
+  // Scope the points scan to the org's members.
+  const { data: orgProfiles } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("org_id", orgId);
+  const orgIds = (orgProfiles ?? []).map((p) => p.id);
+  if (orgIds.length === 0) return [];
+
   const { data: rows } = await admin
     .from("points_log")
     .select("user_id, points")
+    .in("user_id", orgIds)
     .gte("created_at", start.toISOString())
     .lt("created_at", end.toISOString());
 

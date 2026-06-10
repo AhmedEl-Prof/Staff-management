@@ -19,7 +19,7 @@ const departmentSchema = z.object({
 });
 
 export async function createDepartment(formData: FormData) {
-  await requireRole(["super_admin"]);
+  const caller = await requireRole(["super_admin"]);
   const parsed = departmentSchema.safeParse({
     name: formData.get("name"),
     name_ar: formData.get("name_ar"),
@@ -32,6 +32,7 @@ export async function createDepartment(formData: FormData) {
 
   const supabase = await createClient();
   await supabase.from("departments").insert({
+    org_id: caller.profile.org_id,
     name: parsed.data.name,
     name_ar: parsed.data.name_ar,
     description: parsed.data.description ?? null,

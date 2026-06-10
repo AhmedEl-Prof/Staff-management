@@ -58,17 +58,22 @@ export async function computeEvaluation(
 ): Promise<ComputedEvaluation> {
   const admin = createAdminClient();
 
-  // Departments the user belongs to.
-  const { data: memberships } = await admin
-    .from("department_members")
-    .select("department_id")
-    .eq("user_id", userId);
+  // Departments the user belongs to + their organization (KPI catalogues are
+  // per-org: another org's "global" KPIs must never leak into this score).
+  const [{ data: memberships }, { data: subject }] = await Promise.all([
+    admin
+      .from("department_members")
+      .select("department_id")
+      .eq("user_id", userId),
+    admin.from("profiles").select("org_id").eq("id", userId).maybeSingle(),
+  ]);
   const deptIds = (memberships ?? []).map((m) => m.department_id);
 
   // KPI catalogue: matching period, and either global or in the user's depts.
   const { data: allDefs } = await admin
     .from("kpi_definitions")
     .select("id, name, name_ar, unit, weight, period, department_id")
+    .eq("org_id", subject?.org_id ?? "")
     .eq("period", periodType);
   const defs = (allDefs ?? []).filter(
     (d) => d.department_id === null || deptIds.includes(d.department_id),

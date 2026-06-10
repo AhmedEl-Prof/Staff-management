@@ -21,7 +21,7 @@ export default async function EditDepartmentPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireRole(["super_admin"]);
+  const { profile } = await requireRole(["super_admin"]);
   const { id } = await params;
   const t = await getTranslations("departments");
   const tRoles = await getTranslations("roles");
@@ -32,10 +32,11 @@ export default async function EditDepartmentPage({
     .from("departments")
     .select("*")
     .eq("id", id)
+    .eq("org_id", profile.org_id)
     .single();
   if (!department) notFound();
 
-  const employees = await getEmployeeOptions();
+  const employees = await getEmployeeOptions(profile.org_id);
   const nameById = new Map(employees.map((e) => [e.id, e.label]));
 
   const { data: memberRows } = await admin
