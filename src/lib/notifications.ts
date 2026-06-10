@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
 import { sendPushToUser } from "@/lib/push";
+import { sendWhatsAppToUser } from "@/lib/whatsapp";
 
 // Notification "type" — drives which preference flag gates the email.
 export type NotificationType =
@@ -69,6 +70,22 @@ export async function notifyUser(args: NotifyArgs): Promise<void> {
     });
   } catch (err) {
     console.error("[notify] push path failed", err);
+  }
+
+  // WhatsApp — best-effort; a no-op until the WhatsApp Cloud API env vars are
+  // configured. Gated by the user's whatsapp_notifications preference inside.
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const text = [
+      args.title,
+      args.message,
+      args.link ? `${appUrl}${args.link}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    await sendWhatsAppToUser(args.userId, text);
+  } catch (err) {
+    console.error("[notify] whatsapp path failed", err);
   }
 
   if (args.inAppOnly) return;

@@ -14,6 +14,7 @@ const DEFAULT_PREFS: PrefsInitial = {
   email_mentions: true,
   email_evaluations: true,
   in_app_notifications: true,
+  whatsapp_notifications: true,
 };
 
 export default async function ProfilePage({
@@ -32,7 +33,7 @@ export default async function ProfilePage({
   const { data: prefRow } = await supabase
     .from("notification_preferences")
     .select(
-      "email_task_assigned, email_task_deadline, email_mentions, email_evaluations, in_app_notifications",
+      "email_task_assigned, email_task_deadline, email_mentions, email_evaluations, in_app_notifications, whatsapp_notifications",
     )
     .eq("user_id", id)
     .maybeSingle();

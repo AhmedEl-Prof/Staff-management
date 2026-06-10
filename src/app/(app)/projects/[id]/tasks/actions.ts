@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { notifyUser } from "@/lib/notifications";
 import { awardTaskCompletion } from "@/lib/gamification";
+import { spawnNextOccurrence } from "@/lib/recurrence";
 
 // Task writes are governed by RLS:
 //   tasks_insert / tasks_delete  -> manages_project (super admin / team leader)
@@ -31,6 +32,7 @@ const taskSchema = z.object({
   estimated_hours: z.coerce.number().min(0).max(9999).optional(),
   start_date: z.string().optional(),
   due_date: z.string().optional(),
+  recurrence: z.enum(["daily", "weekly", "monthly"]).optional(),
 });
 
 function parseTask(formData: FormData) {
@@ -43,6 +45,7 @@ function parseTask(formData: FormData) {
     estimated_hours: formData.get("estimated_hours") || undefined,
     start_date: formData.get("start_date") || undefined,
     due_date: formData.get("due_date") || undefined,
+    recurrence: formData.get("recurrence") || undefined,
   });
 }
 
@@ -66,6 +69,7 @@ export async function createTask(formData: FormData) {
       estimated_hours: parsed.data.estimated_hours ?? null,
       start_date: parsed.data.start_date ?? null,
       due_date: parsed.data.due_date ?? null,
+      recurrence: parsed.data.recurrence ?? null,
       completed_at: parsed.data.status === "done" ? new Date().toISOString() : null,
     })
     .select("id")
@@ -119,6 +123,7 @@ export async function updateTask(formData: FormData) {
       estimated_hours: parsed.data.estimated_hours ?? null,
       start_date: parsed.data.start_date ?? null,
       due_date: parsed.data.due_date ?? null,
+      recurrence: parsed.data.recurrence ?? null,
       completed_at: completedAt,
     })
     .eq("id", id);
@@ -146,6 +151,7 @@ export async function updateTask(formData: FormData) {
       due_date: parsed.data.due_date ?? null,
       completed_at: completedAt,
     });
+    await spawnNextOccurrence(id);
   }
 
   revalidatePath(`/projects/${projectId}/tasks`);
@@ -201,6 +207,7 @@ export async function updateTaskStatus(formData: FormData) {
       due_date: prev?.due_date ?? null,
       completed_at: completedAt,
     });
+    await spawnNextOccurrence(id);
   }
 
   revalidatePath(`/projects/${projectId}/tasks`);
