@@ -23,14 +23,20 @@ export async function GET(request: Request) {
 
   const { data: orgs } = await admin
     .from("organizations")
-    .select("id, name, settings")
-    .eq("plan", "trial")
+    .select("id, name, plan, settings")
+    .in("plan", ["trial", "monthly", "yearly"])
     .eq("is_active", true);
 
   let sent = 0;
   for (const org of orgs ?? []) {
-    const settings = (org.settings ?? {}) as { trial_ends_at?: string };
-    const endsAt = settings.trial_ends_at;
+    const settings = (org.settings ?? {}) as {
+      trial_ends_at?: string;
+      subscription_ends_at?: string;
+    };
+    const endsAt =
+      org.plan === "trial"
+        ? settings.trial_ends_at
+        : settings.subscription_ends_at;
     if (!endsAt || endsAt <= nowIso || endsAt > windowEnd) continue;
 
     const daysLeft = Math.max(
@@ -50,12 +56,19 @@ export async function GET(request: Request) {
       const email = authRow.user?.email;
       if (!email) continue;
 
+      const isTrial = org.plan === "trial";
       const ok = await sendEmail({
         to: email,
-        subject: `تنبيه: تجربة ${org.name} المجانية تنتهي خلال ${daysLeft} يوم`,
+        subject: isTrial
+          ? `تنبيه: تجربة ${org.name} المجانية تنتهي خلال ${daysLeft} يوم`
+          : `تنبيه: اشتراك ${org.name} ينتهي خلال ${daysLeft} يوم`,
         bodyHtml: `
           <p style="margin:0 0 8px 0">مرحباً 👋</p>
-          <p style="margin:0">التجربة المجانية لشركة <b>${escapeHtml(org.name)}</b> تنتهي خلال <b>${daysLeft}</b> يوم. كل بياناتكم محفوظة — للاستمرار بدون انقطاع تواصل معنا للترقية.</p>
+          <p style="margin:0">${
+            isTrial
+              ? `التجربة المجانية لشركة <b>${escapeHtml(org.name)}</b> تنتهي خلال <b>${daysLeft}</b> يوم. كل بياناتكم محفوظة — للاستمرار بدون انقطاع تواصل معنا للترقية.`
+              : `اشتراك شركة <b>${escapeHtml(org.name)}</b> ينتهي خلال <b>${daysLeft}</b> يوم. جدّد الاشتراك لتستمروا بدون انقطاع — كل بياناتكم محفوظة في كل الأحوال.`
+          }</p>
         `,
       });
       if (ok) sent++;

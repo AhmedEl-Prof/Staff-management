@@ -22,9 +22,14 @@ export default async function OrganizationPage() {
     .single();
   if (!org) return null;
 
-  const settings = (org.settings ?? {}) as { trial_ends_at?: string };
-  const trialEndsAt = settings.trial_ends_at?.slice(0, 10) ?? null;
-  const KNOWN_PLANS = ["internal", "trial", "starter", "business", "enterprise"];
+  const settings = (org.settings ?? {}) as {
+    trial_ends_at?: string;
+    subscription_ends_at?: string;
+  };
+  const periodEndsAt = (
+    org.plan === "trial" ? settings.trial_ends_at : settings.subscription_ends_at
+  )?.slice(0, 10) ?? null;
+  const KNOWN_PLANS = ["internal", "trial", "monthly", "yearly"];
   const planLabel = KNOWN_PLANS.includes(org.plan)
     ? t(`plans.${org.plan}`)
     : org.plan;
@@ -54,11 +59,13 @@ export default async function OrganizationPage() {
             {planLabel}
           </Badge>
         </div>
-        {trialEndsAt ? (
+        {periodEndsAt ? (
           <div>
-            <p className="text-muted-foreground">{t("trialEnds")}</p>
+            <p className="text-muted-foreground">
+              {org.plan === "trial" ? t("trialEnds") : t("subscriptionEnds")}
+            </p>
             <p className="mt-1 font-medium" dir="ltr">
-              {trialEndsAt}
+              {periodEndsAt}
             </p>
           </div>
         ) : null}

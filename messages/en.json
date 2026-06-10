@@ -432,6 +432,9 @@
     "suspend": "Suspend",
     "reactivate": "Reactivate",
     "extendTrial": "Extend trial 14 days",
+    "renewMonth": "Renew 1 month",
+    "renewYear": "Renew 1 year",
+    "periodEnd": "Ends on",
     "newOrgTitle": "Add a company manually",
     "newOrgCompany": "Company name",
     "newOrgAdminName": "Company admin name",
@@ -449,6 +452,8 @@
   "orgLocked": {
     "trialTitle": "Your free trial has ended",
     "trialBody": "The free trial for {org} has ended. All your data is safe — contact us to upgrade and your account will be activated immediately.",
+    "subscriptionTitle": "Your subscription has ended",
+    "subscriptionBody": "The subscription for {org} has ended. All your data is safe — renew by contacting us and everything comes back instantly.",
     "suspendedTitle": "Account temporarily suspended",
     "suspendedBody": "The account for {org} is currently suspended. All data is intact — contact us to reactivate.",
     "contact": "Contact us to upgrade",
@@ -460,12 +465,12 @@
     "plan": "Plan",
     "plans": {
       "internal": "Internal",
-      "trial": "Free trial",
-      "starter": "Starter",
-      "business": "Business",
-      "enterprise": "Enterprise"
+      "trial": "14-day free trial",
+      "monthly": "Monthly plan",
+      "yearly": "Yearly plan"
     },
     "trialEnds": "Trial ends",
+    "subscriptionEnds": "Subscription ends",
     "activeMembers": "Active members",
     "identity": "Company identity",
     "name": "Company name",
