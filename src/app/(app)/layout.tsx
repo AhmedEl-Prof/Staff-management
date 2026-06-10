@@ -113,7 +113,9 @@ export default async function AppLayout({
       <div className="flex items-center justify-between border-b p-4">
         <div>
           <p className="text-sm font-bold">{t("name")}</p>
-          <p className="text-muted-foreground text-xs">{t("company")}</p>
+          <p className="text-muted-foreground text-xs">
+            {access.org?.name ?? t("company")}
+          </p>
         </div>
         <div className="flex items-center gap-1">
           <GlobalSearch withHotkey />

@@ -26,6 +26,7 @@ export default async function NewEmployeePage() {
     const { data } = await admin
       .from("departments")
       .select("id, name_ar, name")
+      .eq("org_id", caller.profile.org_id)
       .order("name_ar");
     departments = (data ?? []).map((d) => ({
       id: d.id,

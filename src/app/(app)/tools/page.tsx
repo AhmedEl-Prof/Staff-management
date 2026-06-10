@@ -22,7 +22,10 @@ export default async function ToolsPage({
   const managedIds = await getManagedDepartmentIds(userId);
   let visibleIds: string[];
   if (isCompanyWide(profile.role)) {
-    const { data } = await admin.from("departments").select("id");
+    const { data } = await admin
+      .from("departments")
+      .select("id")
+      .eq("org_id", profile.org_id);
     visibleIds = (data ?? []).map((d) => d.id);
   } else {
     const { data: memberships } = await admin

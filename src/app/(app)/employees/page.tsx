@@ -67,7 +67,8 @@ export default async function EmployeesPage() {
     : { data: [] };
   const { data: depts } = await admin
     .from("departments")
-    .select("id, name_ar, name");
+    .select("id, name_ar, name")
+    .eq("org_id", caller.profile.org_id);
   const deptName = new Map(
     (depts ?? []).map((d) => [d.id, d.name_ar || d.name]),
   );

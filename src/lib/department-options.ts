@@ -18,6 +18,7 @@ export async function getAssignableDepartments(
     const { data } = await admin
       .from("departments")
       .select("id, name_ar, name")
+      .eq("org_id", caller.org_id)
       .order("name_ar");
     return (data ?? []).map((d) => ({ id: d.id, label: d.name_ar || d.name }));
   }
