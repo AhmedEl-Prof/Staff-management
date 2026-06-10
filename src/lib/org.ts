@@ -1,6 +1,20 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { OrganizationRow } from "@/types/database";
 
+// Active-employee ceiling per plan. Unknown plans get the trial limit, which
+// fails safe (small) rather than open.
+const PLAN_EMPLOYEE_LIMITS: Record<string, number> = {
+  trial: 10,
+  starter: 10,
+  business: 30,
+  enterprise: Number.POSITIVE_INFINITY,
+  internal: Number.POSITIVE_INFINITY,
+};
+
+export function employeeLimitFor(plan: string): number {
+  return PLAN_EMPLOYEE_LIMITS[plan] ?? PLAN_EMPLOYEE_LIMITS.trial;
+}
+
 export interface OrgAccess {
   org: OrganizationRow | null;
   /** True when the org may use the app (active + trial not expired). */

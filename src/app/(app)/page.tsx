@@ -77,6 +77,16 @@ export default async function DashboardPage() {
     teamCount = count ?? 0;
   }
 
+  // Fresh organization (no departments yet): show the getting-started guide.
+  let showOnboarding = false;
+  if (profile.role === "super_admin") {
+    const { count: deptCount } = await admin
+      .from("departments")
+      .select("id", { count: "exact", head: true })
+      .eq("org_id", profile.org_id);
+    showOnboarding = (deptCount ?? 0) === 0;
+  }
+
   const cards = [
     {
       key: "activeProjects",
@@ -123,6 +133,37 @@ export default async function DashboardPage() {
           {t("subtitle")} · {tRoles(profile.role)}
         </p>
       </div>
+
+      {/* Getting started (fresh org) */}
+      {showOnboarding ? (
+        <section className="flex flex-col gap-3 rounded-xl border bg-card p-5">
+          <h2 className="text-lg font-semibold">{t("onboardingTitle")}</h2>
+          <p className="text-sm text-muted-foreground">
+            {t("onboardingSubtitle")}
+          </p>
+          <ol className="flex flex-col gap-2">
+            {(
+              [
+                { href: "/departments/new", key: "onboardingStep1" },
+                { href: "/employees/new", key: "onboardingStep2" },
+                { href: "/projects/new", key: "onboardingStep3" },
+              ] as const
+            ).map((step, i) => (
+              <li key={step.key}>
+                <Link
+                  href={step.href}
+                  className="hover:bg-muted flex items-center gap-3 rounded-md border p-3 text-sm font-medium"
+                >
+                  <span className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                    {i + 1}
+                  </span>
+                  {t(step.key)}
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
