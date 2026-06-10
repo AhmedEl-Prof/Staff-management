@@ -168,7 +168,9 @@ export function InviteForm({
             ? t("emailExists")
             : state.error === "notAllowed"
               ? t("notAllowed")
-              : t("inviteSubtitle")}
+              : state.error === "limitReached"
+                ? t("limitReached")
+                : t("inviteSubtitle")}
         </p>
       ) : null}
 

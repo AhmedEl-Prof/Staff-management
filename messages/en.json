@@ -302,6 +302,7 @@
     "you": "You",
     "deleteConfirm": "Permanently delete this account? All their data will be removed and this cannot be undone.",
     "emailExists": "This email is already in use",
+    "limitReached": "You've reached your plan's employee limit. Upgrade to add more.",
     "notAllowed": "You are not allowed to perform this action",
     "seniorityCol": "Seniority"
   },
@@ -420,7 +421,16 @@
     "name": "Company name",
     "logoUrl": "Logo URL",
     "saved": "Saved",
-    "saveError": "Couldn't save. Please try again."
+    "saveError": "Couldn't save. Please try again.",
+    "whatsappTitle": "WhatsApp connection",
+    "whatsappSubtitle": "Connect your company's own WhatsApp Business number so system notifications reach your team from your number — from Meta for Developers (WhatsApp → API Setup).",
+    "whatsappPhoneId": "Phone Number ID",
+    "whatsappToken": "Access Token",
+    "whatsappTokenHint": "Stored encrypted and never readable after saving — only replaceable.",
+    "whatsappConnected": "Connected",
+    "whatsappConnect": "Connect number",
+    "whatsappReplace": "Update credentials",
+    "whatsappDisconnect": "Disconnect"
   },
   "search": {
     "open": "Search",
@@ -553,6 +563,11 @@
     "title": "Dashboard",
     "welcome": "Welcome",
     "subtitle": "A quick look at your team's work",
+    "onboardingTitle": "🚀 Set up your company",
+    "onboardingSubtitle": "Three steps and you're ready to work with your team:",
+    "onboardingStep1": "Create your first department (e.g. Marketing, Development…)",
+    "onboardingStep2": "Invite your employees by email",
+    "onboardingStep3": "Create your first project and start assigning tasks",
     "activeProjects": "Active projects",
     "myOpenTasks": "My open tasks",
     "teamMembers": "Team members",

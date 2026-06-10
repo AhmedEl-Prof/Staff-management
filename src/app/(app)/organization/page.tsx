@@ -1,8 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { orgWhatsAppConnected } from "@/lib/whatsapp";
+import { employeeLimitFor } from "@/lib/org";
 import { Badge } from "@/components/ui/badge";
 import { OrgForm } from "./org-form";
+import { WhatsAppForm } from "./whatsapp-form";
 
 // Organization settings (super admin): company identity + plan overview.
 export default async function OrganizationPage() {
@@ -23,11 +26,16 @@ export default async function OrganizationPage() {
   const planLabel = KNOWN_PLANS.includes(org.plan)
     ? t(`plans.${org.plan}`)
     : org.plan;
-  const memberCount = await admin
-    .from("profiles")
-    .select("id", { count: "exact", head: true })
-    .eq("org_id", org.id)
-    .eq("is_active", true);
+  const [memberCount, waConnected] = await Promise.all([
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("org_id", org.id)
+      .eq("is_active", true),
+    orgWhatsAppConnected(org.id),
+  ]);
+  const limit = employeeLimitFor(org.plan);
+  const limitLabel = Number.isFinite(limit) ? ` / ${limit}` : "";
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,7 +61,10 @@ export default async function OrganizationPage() {
         ) : null}
         <div>
           <p className="text-muted-foreground">{t("activeMembers")}</p>
-          <p className="mt-1 font-medium">{memberCount.count ?? 0}</p>
+          <p className="mt-1 font-medium">
+            {memberCount.count ?? 0}
+            {limitLabel}
+          </p>
         </div>
       </div>
 
@@ -61,6 +72,8 @@ export default async function OrganizationPage() {
         <h2 className="text-lg font-semibold">{t("identity")}</h2>
         <OrgForm name={org.name} logoUrl={org.logo_url} />
       </section>
+
+      <WhatsAppForm connected={waConnected} />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { canManageUser, getManagedDepartmentIds } from "@/lib/permissions";
+import { employeeLimitFor } from "@/lib/org";
 import { sendEmail } from "@/lib/email";
 
 const inviteSchema = z.object({
@@ -93,6 +94,24 @@ export async function inviteEmployee(
   }
 
   const admin = createAdminClient();
+
+  // Plan ceiling: active employees per organization.
+  const [{ data: orgRow }, { count: activeCount }] = await Promise.all([
+    admin
+      .from("organizations")
+      .select("plan")
+      .eq("id", caller.profile.org_id)
+      .maybeSingle(),
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("org_id", caller.profile.org_id)
+      .eq("is_active", true),
+  ]);
+  if ((activeCount ?? 0) >= employeeLimitFor(orgRow?.plan ?? "trial")) {
+    return { error: "limitReached", success: false };
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const password = generateTempPassword();
 

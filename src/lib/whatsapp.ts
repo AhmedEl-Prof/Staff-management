@@ -1,16 +1,44 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { decryptToken } from "@/lib/token-crypto";
 
-// WhatsApp delivery via the Meta WhatsApp Business Cloud API. The channel is
-// optional: without WHATSAPP_ACCESS_TOKEN + WHATSAPP_PHONE_NUMBER_ID every
-// call is a silent no-op, so the rest of the notification pipeline never has
-// to care whether WhatsApp is configured.
+// WhatsApp delivery via the Meta WhatsApp Business Cloud API.
+//
+// Credential resolution, per recipient: their organization's own connected
+// number (org_integrations, token encrypted at rest) first, then the
+// platform-level env vars as a fallback. With neither configured every call
+// is a silent no-op, so the notification pipeline never has to care.
 
 const GRAPH_URL = "https://graph.facebook.com/v20.0";
 
-export function whatsappConfigured(): boolean {
-  return Boolean(
-    process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID,
-  );
+interface WhatsAppCreds {
+  token: string;
+  phoneNumberId: string;
+}
+
+function envCreds(): WhatsAppCreds | null {
+  const token = process.env.WHATSAPP_ACCESS_TOKEN;
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  return token && phoneNumberId ? { token, phoneNumberId } : null;
+}
+
+// The org's own connected number, when set up and decryptable.
+async function orgCreds(orgId: string): Promise<WhatsAppCreds | null> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("org_integrations")
+    .select("whatsapp_phone_id, whatsapp_token_enc")
+    .eq("org_id", orgId)
+    .maybeSingle();
+  if (!data?.whatsapp_phone_id || !data.whatsapp_token_enc) return null;
+  try {
+    return {
+      token: decryptToken(data.whatsapp_token_enc),
+      phoneNumberId: data.whatsapp_phone_id,
+    };
+  } catch (err) {
+    console.error("[whatsapp] org token decrypt failed", err);
+    return null;
+  }
 }
 
 // Normalizes a stored number to international digits for the API.
@@ -26,33 +54,31 @@ export function normalizeWhatsAppNumber(raw: string): string | null {
   return digits.length >= 10 && digits.length <= 15 ? digits : null;
 }
 
-// Sends a plain-text WhatsApp message. Best-effort: returns false on any
-// failure and never throws.
+// Sends a plain-text WhatsApp message with the given credentials.
+// Best-effort: returns false on any failure and never throws.
 export async function sendWhatsAppMessage(
   to: string,
   body: string,
+  creds: WhatsAppCreds | null = envCreds(),
 ): Promise<boolean> {
-  if (!whatsappConfigured()) return false;
+  if (!creds) return false;
   const number = normalizeWhatsAppNumber(to);
   if (!number) return false;
 
   try {
-    const res = await fetch(
-      `${GRAPH_URL}/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messaging_product: "whatsapp",
-          to: number,
-          type: "text",
-          text: { body: body.slice(0, 4096) },
-        }),
+    const res = await fetch(`${GRAPH_URL}/${creds.phoneNumberId}/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${creds.token}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to: number,
+        type: "text",
+        text: { body: body.slice(0, 4096) },
+      }),
+    });
     if (!res.ok) {
       console.error("[whatsapp] send failed", res.status, await res.text());
       return false;
@@ -65,19 +91,18 @@ export async function sendWhatsAppMessage(
 }
 
 // Sends a WhatsApp message to a user via the number on their profile
-// (whatsapp field, falling back to phone). No-op when unconfigured, the user
-// has no number, or they opted out in notification preferences.
+// (whatsapp field, falling back to phone), using their org's credentials
+// (falling back to the platform's). No-op when unconfigured, the user has no
+// number, or they opted out in notification preferences.
 export async function sendWhatsAppToUser(
   userId: string,
   body: string,
 ): Promise<boolean> {
-  if (!whatsappConfigured()) return false;
-
   const admin = createAdminClient();
   const [{ data: profile }, { data: prefs }] = await Promise.all([
     admin
       .from("profiles")
-      .select("whatsapp, phone")
+      .select("whatsapp, phone, org_id")
       .eq("id", userId)
       .maybeSingle(),
     admin
@@ -87,9 +112,25 @@ export async function sendWhatsAppToUser(
       .maybeSingle(),
   ]);
 
+  if (!profile) return false;
   if (prefs && prefs.whatsapp_notifications === false) return false;
-  const number = profile?.whatsapp || profile?.phone;
+  const number = profile.whatsapp || profile.phone;
   if (!number) return false;
 
-  return sendWhatsAppMessage(number, body);
+  const creds = (await orgCreds(profile.org_id)) ?? envCreds();
+  if (!creds) return false;
+
+  return sendWhatsAppMessage(number, body, creds);
+}
+
+// True when the org has its own WhatsApp number connected (used by the UI to
+// show connection state without ever exposing the token).
+export async function orgWhatsAppConnected(orgId: string): Promise<boolean> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("org_integrations")
+    .select("whatsapp_phone_id, whatsapp_token_enc")
+    .eq("org_id", orgId)
+    .maybeSingle();
+  return Boolean(data?.whatsapp_phone_id && data.whatsapp_token_enc);
 }

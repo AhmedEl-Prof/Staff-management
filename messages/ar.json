@@ -302,6 +302,7 @@
     "you": "أنت",
     "deleteConfirm": "متأكد من حذف هذا الحساب نهائياً؟ هيتم حذف كل بياناته ولا يمكن التراجع.",
     "emailExists": "هذا البريد مستخدم بالفعل",
+    "limitReached": "وصلت للحد الأقصى لعدد الموظفين في خطتك الحالية. رقِّ الخطة لإضافة المزيد.",
     "notAllowed": "غير مصرّح لك بهذا الإجراء",
     "seniorityCol": "التصنيف"
   },
@@ -420,7 +421,16 @@
     "name": "اسم الشركة",
     "logoUrl": "رابط الشعار",
     "saved": "تم الحفظ",
-    "saveError": "تعذّر الحفظ. حاول مرة أخرى."
+    "saveError": "تعذّر الحفظ. حاول مرة أخرى.",
+    "whatsappTitle": "ربط WhatsApp",
+    "whatsappSubtitle": "اربط رقم WhatsApp Business الخاص بشركتك لتصل إشعارات السيستم لموظفيك من رقمكم — من Meta for Developers (WhatsApp → API Setup).",
+    "whatsappPhoneId": "Phone Number ID",
+    "whatsappToken": "Access Token",
+    "whatsappTokenHint": "يُخزَّن مشفّراً ولا يمكن لأحد قراءته بعد الحفظ — فقط استبداله.",
+    "whatsappConnected": "متصل",
+    "whatsappConnect": "ربط الرقم",
+    "whatsappReplace": "تحديث البيانات",
+    "whatsappDisconnect": "فصل الرقم"
   },
   "search": {
     "open": "بحث",
@@ -553,6 +563,11 @@
     "title": "لوحة التحكم",
     "welcome": "أهلاً بك",
     "subtitle": "نظرة سريعة على شغل فريقك",
+    "onboardingTitle": "🚀 ابدأ إعداد شركتك",
+    "onboardingSubtitle": "ثلاث خطوات وتكون جاهزاً للعمل مع فريقك:",
+    "onboardingStep1": "أنشئ أول قسم (مثلاً: التسويق، التطوير…)",
+    "onboardingStep2": "ادعُ موظفيك بالإيميل",
+    "onboardingStep3": "أنشئ أول مشروع وابدأ توزيع التاسكات",
     "activeProjects": "المشاريع النشطة",
     "myOpenTasks": "تاسكاتي المفتوحة",
     "teamMembers": "أعضاء الفريق",
