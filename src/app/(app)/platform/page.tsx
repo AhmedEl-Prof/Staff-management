@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -143,6 +144,12 @@ export default async function PlatformPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap items-center justify-end gap-2">
+                      <Link
+                        href={`/platform/${org.id}`}
+                        className="hover:bg-muted inline-flex h-8 items-center rounded-md border px-3 text-sm font-medium"
+                      >
+                        {tc("edit")}
+                      </Link>
                       {hasPeriod ? (
                         <form action={extendPlanPeriod}>
                           <input type="hidden" name="org_id" value={org.id} />

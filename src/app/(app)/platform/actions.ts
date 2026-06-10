@@ -6,6 +6,7 @@ import { z } from "zod";
 import { requireUser, type SessionUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import { isValidSlug, isValidCustomDomain } from "@/lib/tenant";
 import type { Json } from "@/types/database";
 
 // Platform-level org management (plans, suspension, trial extension).
@@ -139,6 +140,78 @@ export async function createOrganization(
     error: null,
     credentials: { email: data.admin_email, password, orgName: org.name },
   };
+}
+
+const editOrgSchema = z.object({
+  org_id: idSchema,
+  name: z.string().trim().min(2).max(120),
+  slug: z.string().trim().toLowerCase().max(40).optional(),
+  custom_domain: z.string().trim().toLowerCase().max(253).optional(),
+});
+
+export type EditOrgState = { error: string | null; success: boolean };
+
+// Platform-side edit of a company's identity & routing: name, subdomain slug
+// and custom domain. Slug/domain are validated and checked for uniqueness;
+// the custom domain must also be added to the Vercel project (manual step)
+// for TLS to be issued.
+export async function updateOrgDetails(
+  _prev: EditOrgState,
+  formData: FormData,
+): Promise<EditOrgState> {
+  if (!(await requirePlatformAdmin())) return { error: "forbidden", success: false };
+
+  const parsed = editOrgSchema.safeParse({
+    org_id: formData.get("org_id"),
+    name: formData.get("name"),
+    slug: formData.get("slug") || undefined,
+    custom_domain: formData.get("custom_domain") || undefined,
+  });
+  if (!parsed.success) return { error: "invalid", success: false };
+  const { org_id, name } = parsed.data;
+  const slug = parsed.data.slug || null;
+  const customDomain = parsed.data.custom_domain || null;
+
+  if (slug && !isValidSlug(slug)) {
+    return { error: "invalidSlug", success: false };
+  }
+  if (customDomain && !isValidCustomDomain(customDomain)) {
+    return { error: "invalidDomain", success: false };
+  }
+
+  const admin = createAdminClient();
+  if (slug) {
+    const { data: taken } = await admin
+      .from("organizations")
+      .select("id")
+      .eq("slug", slug)
+      .neq("id", org_id)
+      .maybeSingle();
+    if (taken) return { error: "slugTaken", success: false };
+  }
+  if (customDomain) {
+    const { data: taken } = await admin
+      .from("organizations")
+      .select("id")
+      .eq("custom_domain", customDomain)
+      .neq("id", org_id)
+      .maybeSingle();
+    if (taken) return { error: "domainTaken", success: false };
+  }
+
+  const { error } = await admin
+    .from("organizations")
+    .update({
+      name,
+      ...(slug ? { slug } : {}),
+      custom_domain: customDomain,
+    })
+    .eq("id", org_id);
+  if (error) return { error: "failed", success: false };
+
+  revalidatePath("/platform");
+  revalidatePath(`/platform/${org_id}`);
+  return { error: null, success: true };
 }
 
 function escapeHtml(s: string): string {

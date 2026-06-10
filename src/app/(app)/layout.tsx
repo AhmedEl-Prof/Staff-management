@@ -2,7 +2,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { slugFromHost, orgUrl } from "@/lib/tenant";
+import { slugFromHost, orgFromHost, orgUrl } from "@/lib/tenant";
 import { canManagePeople } from "@/lib/permissions";
 import { getOrgAccess } from "@/lib/org";
 import { createClient } from "@/lib/supabase/server";
@@ -39,11 +39,21 @@ export default async function AppLayout({
     );
   }
 
-  // Subdomain tenancy: a member browsing another org's subdomain is bounced
-  // to their own organization's home.
-  const hostSlug = slugFromHost((await headers()).get("host"));
-  if (hostSlug && access.org?.slug && hostSlug !== access.org.slug) {
-    redirect(orgUrl(access.org.slug));
+  // Tenancy by host: a member browsing another org's subdomain or custom
+  // domain is bounced to their own organization's home. The DB lookup only
+  // runs when the host isn't already one of the member's own hosts.
+  const host = (await headers()).get("host");
+  const hostname = host?.split(":")[0].toLowerCase() ?? null;
+  const hostSlug = slugFromHost(host);
+  const onOwnHost =
+    !hostname ||
+    hostname === access.org?.custom_domain ||
+    (hostSlug !== null && hostSlug === access.org?.slug);
+  if (!onOwnHost) {
+    const hostOrg = await orgFromHost(host);
+    if (hostOrg && hostOrg.id !== profile.org_id) {
+      redirect(orgUrl(access.org?.slug ?? null, access.org?.custom_domain));
+    }
   }
 
   const isSuperAdmin = profile.role === "super_admin";
