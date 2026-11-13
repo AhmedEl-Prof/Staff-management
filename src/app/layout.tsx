@@ -7,6 +7,7 @@ import { localeDirection, type Locale } from "@/i18n/config";
 import { Providers } from "@/components/providers";
 import { ServiceWorkerRegister } from "@/components/sw-register";
 import { InstallPrompt } from "@/components/install-prompt";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // Cairo renders Arabic and Latin scripts cleanly and suits an RTL UI.
@@ -65,6 +66,7 @@ export default async function RootLayout({
           <Providers>{children}</Providers>
           <ServiceWorkerRegister />
           <InstallPrompt />
+          <Analytics />
         </NextIntlClientProvider>
       </body>
     </html>
